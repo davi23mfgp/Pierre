@@ -1,0 +1,158 @@
+"use client"
+
+import { useCallback, useEffect, useState } from "react"
+
+import { buscar, enviar } from "@/lib/cliente"
+import { competenciaAtual, rotuloCompetencia, ultimasCompetencias } from "@/lib/datas"
+import { formatarMoeda } from "@/lib/dinheiro"
+import { Cartao, Metrica, Vazio } from "@/components/ui/painel"
+
+interface Transacao {
+  id: string
+  data: string
+  descricao: string
+  valorCentavos: number
+  tipo: "RECEITA" | "DESPESA" | "TRANSFERENCIA"
+  categoriaId: string | null
+  categoria: { nome: string; cor: string } | null
+  conta: { nome: string }
+}
+
+interface Categoria {
+  id: string
+  nome: string
+}
+
+export default function Transacoes() {
+  const [competencia, setCompetencia] = useState(competenciaAtual())
+  const [transacoes, setTransacoes] = useState<Transacao[]>([])
+  const [categorias, setCategorias] = useState<Categoria[]>([])
+  const [totais, setTotais] = useState({ receitasCentavos: 0, despesasCentavos: 0 })
+  const [busca, setBusca] = useState("")
+  const [semCategoria, setSemCategoria] = useState(false)
+  const [carregando, setCarregando] = useState(true)
+
+  const carregar = useCallback(async () => {
+    setCarregando(true)
+    const parametros = new URLSearchParams({ competencia, limite: "200" })
+    if (busca) parametros.set("busca", busca)
+    if (semCategoria) parametros.set("semCategoria", "1")
+
+    const dados = await buscar<{ transacoes: Transacao[]; totais: typeof totais }>(
+      `/api/transacoes?${parametros.toString()}`,
+    )
+    setTransacoes(dados.transacoes)
+    setTotais(dados.totais)
+    setCarregando(false)
+  }, [competencia, busca, semCategoria])
+
+  useEffect(() => {
+    carregar()
+  }, [carregar])
+
+  useEffect(() => {
+    buscar<Categoria[]>("/api/categorias").then(setCategorias)
+  }, [])
+
+  /**
+   * Trocar a categoria já cria a regra: é o momento em que o usuário está
+   * dizendo ao Pierre o que aquele lançamento é. Perguntar "quer criar regra?"
+   * a cada correção seria atrito puro.
+   */
+  async function recategorizar(id: string, categoriaId: string) {
+    await enviar(`/api/transacoes/${id}`, { categoriaId, criarRegra: true }, "PATCH")
+    carregar()
+  }
+
+  const saldo = totais.receitasCentavos - totais.despesasCentavos
+
+  return (
+    <div className="space-y-4">
+      <Cartao>
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            value={competencia}
+            onChange={(evento) => setCompetencia(evento.target.value)}
+            className="rounded-full border border-hairline bg-background px-4 py-2 text-sm"
+          >
+            {ultimasCompetencias(18).reverse().map((mes) => (
+              <option key={mes} value={mes}>
+                {rotuloCompetencia(mes)}
+              </option>
+            ))}
+          </select>
+
+          <input
+            value={busca}
+            onChange={(evento) => setBusca(evento.target.value)}
+            placeholder="Buscar transações…"
+            className="flex-1 rounded-full border border-hairline bg-background px-4 py-2 text-sm outline-none focus:border-ios-blue/50"
+          />
+
+          <label className="flex items-center gap-2 rounded-full border border-hairline px-4 py-2 text-sm">
+            <input
+              type="checkbox"
+              checked={semCategoria}
+              onChange={(evento) => setSemCategoria(evento.target.checked)}
+            />
+            só sem categoria
+          </label>
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-4">
+          <Metrica rotulo="Lançamentos" valor={String(transacoes.length)} />
+          <Metrica rotulo="Receitas" valor={formatarMoeda(totais.receitasCentavos)} tom="positivo" />
+          <Metrica rotulo="Despesas" valor={formatarMoeda(totais.despesasCentavos)} tom="negativo" />
+          <Metrica rotulo="Saldo" valor={formatarMoeda(saldo)} tom={saldo >= 0 ? "positivo" : "negativo"} />
+        </div>
+      </Cartao>
+
+      <Cartao>
+        {carregando && <p className="py-8 text-center text-sm text-muted-fg">Carregando…</p>}
+
+        {!carregando && transacoes.length === 0 && (
+          <Vazio titulo="Nenhum lançamento neste filtro" texto="Troque o mês ou importe um extrato." />
+        )}
+
+        <div className="divide-y divide-hairline">
+          {transacoes.map((transacao) => (
+            <div key={transacao.id} className="flex flex-wrap items-center gap-3 py-3">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm">{transacao.descricao}</p>
+                <p className="text-[12px] text-muted-fg">
+                  {new Date(transacao.data).toLocaleDateString("pt-BR", { timeZone: "UTC" })} · {transacao.conta.nome}
+                </p>
+              </div>
+
+              <select
+                value={transacao.categoriaId ?? ""}
+                onChange={(evento) => recategorizar(transacao.id, evento.target.value)}
+                className={`rounded-full border px-3 py-1.5 text-xs ${
+                  transacao.categoriaId
+                    ? "border-hairline bg-background"
+                    : "border-ios-orange/50 bg-ios-orange/10 text-amber-200"
+                }`}
+              >
+                <option value="">sem categoria</option>
+                {categorias.map((categoria) => (
+                  <option key={categoria.id} value={categoria.id}>
+                    {categoria.nome}
+                  </option>
+                ))}
+              </select>
+
+              <span
+                className={`w-28 text-right text-sm font-medium ${
+                  transacao.tipo === "RECEITA" ? "text-ios-green" : ""
+                }`}
+              >
+                {transacao.tipo === "RECEITA" ? "+" : "-"}
+                {formatarMoeda(transacao.valorCentavos)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Cartao>
+    </div>
+  )
+}

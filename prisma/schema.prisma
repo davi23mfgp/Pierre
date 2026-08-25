@@ -1,0 +1,831 @@
+// ============================================================
+// Pierre — contador pessoal para PF (solo, casal, família) e MEI.
+// Multi-tenant por lar (Lar). Dinheiro sempre em centavos (Int):
+// float em dinheiro acumula erro de arredondamento e o extrato deixa de fechar.
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum TipoLar {
+  SOLO
+  CASAL
+  FAMILIA
+}
+
+enum PapelMembro {
+  TITULAR
+  CONJUGE
+  DEPENDENTE
+  CONVIDADO // vê, não edita (ex.: contador externo)
+}
+
+enum TipoConta {
+  CORRENTE
+  POUPANCA
+  CARTAO_CREDITO
+  DINHEIRO
+  INVESTIMENTO
+  PJ_MEI // conta separada do CNPJ: misturar PF e PJ é o erro nº 1 do MEI
+}
+
+enum TipoTransacao {
+  RECEITA
+  DESPESA
+  TRANSFERENCIA
+}
+
+enum OrigemTransacao {
+  MANUAL
+  IMPORT_OFX
+  IMPORT_CSV
+  IMPORT_PDF
+  OPEN_FINANCE
+  RECORRENCIA
+}
+
+enum GrupoCategoria {
+  MORADIA
+  ALIMENTACAO
+  TRANSPORTE
+  SAUDE
+  EDUCACAO
+  LAZER
+  PESSOAL
+  SERVICOS
+  DIVIDAS
+  IMPOSTOS
+  INVESTIMENTO
+  RENDA
+  NEGOCIO_MEI
+  OUTROS
+}
+
+enum Periodicidade {
+  SEMANAL
+  QUINZENAL
+  MENSAL
+  BIMESTRAL
+  TRIMESTRAL
+  SEMESTRAL
+  ANUAL
+}
+
+enum TipoMeta {
+  RESERVA_EMERGENCIA
+  VIAGEM
+  APOSENTADORIA
+  IMOVEL
+  VEICULO
+  EDUCACAO
+  QUITAR_DIVIDA
+  OUTRO
+}
+
+enum StatusMeta {
+  ATIVA
+  PAUSADA
+  CONCLUIDA
+  CANCELADA
+}
+
+enum TipoDivida {
+  CARTAO_ROTATIVO
+  CHEQUE_ESPECIAL
+  EMPRESTIMO_PESSOAL
+  CONSIGNADO
+  FINANCIAMENTO_VEICULO
+  FINANCIAMENTO_IMOVEL
+  ESTUDANTIL
+  PARCELAMENTO
+  OUTRO
+}
+
+enum EstrategiaDivida {
+  AVALANCHE // maior juros primeiro — paga menos no total
+  BOLA_DE_NEVE // menor saldo primeiro — vitória rápida, mantém a pessoa no plano
+  PROPORCIONAL
+}
+
+enum AtividadeMei {
+  COMERCIO
+  INDUSTRIA
+  SERVICOS
+  COMERCIO_E_SERVICOS
+  TRANSPORTE_CARGA // limite próprio, maior
+}
+
+enum StatusConexao {
+  ATIVA
+  EXPIRADA
+  ERRO
+  REVOGADA
+}
+
+enum SeveridadeAlerta {
+  INFO
+  ATENCAO
+  CRITICO
+}
+
+enum PapelMensagem {
+  USUARIO
+  PIERRE
+}
+
+enum OrigemCaptura {
+  NOTIFICACAO // aviso de compra do app do banco, repassado pelo celular
+  TELEGRAM // mensagem ou arquivo enviado ao bot
+  ATALHO // atalho do iOS / widget
+  EMAIL
+  MANUAL
+}
+
+enum StatusCaptura {
+  PENDENTE // esperando você confirmar
+  CONFIRMADA
+  DESCARTADA
+  /// Não deu para entender o texto: fica guardado para você ver o que chegou.
+  NAO_ENTENDIDA
+}
+
+// ============================================================
+// LAR E PESSOAS
+// ============================================================
+
+model Lar {
+  id          String  @id @default(cuid())
+  nome        String
+  tipo        TipoLar @default(SOLO)
+  moeda       String  @default("BRL")
+  fusoHorario String  @default("America/Sao_Paulo")
+
+  // Dia em que o "mês financeiro" vira. Quem recebe dia 5 não pensa em
+  // 1º a 31 — o orçamento dele começa no dia do salário.
+  diaInicioMes Int @default(1)
+
+  estrategiaDivida EstrategiaDivida @default(AVALANCHE)
+  // Meses de custo fixo que a reserva de emergência deve cobrir.
+  mesesReserva     Int              @default(6)
+
+  /// Marca quando o usuário terminou a conversa inicial. Enquanto for null, o
+  /// app leva para o /bem-vindo em vez de mostrar um painel vazio.
+  onboardingEm DateTime?
+
+  /// Gasto mensal que o usuário estimou na conversa inicial. É a referência de
+  /// custo de vida enquanto não houver histórico lançado — sem ela, o app
+  /// calcularia uma sobra que não existe e prometeria quitação rápida demais.
+  custoEstimadoCentavos Int @default(0)
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  membros         Membro[]
+  usuarios        Usuario[]
+  contas          Conta[]
+  categorias      Categoria[]
+  transacoes      Transacao[]
+  regras          RegraCategorizacao[]
+  recorrencias    Recorrencia[]
+  orcamentos      Orcamento[]
+  metas           Meta[]
+  dividas         Divida[]
+  simulacoes      SimulacaoEmprestimo[]
+  faturas         Fatura[]
+  importacoes     Importacao[]
+  conexoes        ConexaoOpenFinance[]
+  alertas         Alerta[]
+  conversas       Conversa[]
+  meiPerfil       MeiPerfil?
+  meiCompetencias MeiCompetencia[]
+  parcelamentos   Parcelamento[]
+  capturas        Captura[]
+  chavesCaptura   ChaveCaptura[]
+}
+
+model Usuario {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  senhaHash    String
+  nome         String
+  avatarUrl    String?
+  larId        String
+  lar          Lar       @relation(fields: [larId], references: [id], onDelete: Cascade)
+  membroId     String?   @unique
+  membro       Membro?   @relation(fields: [membroId], references: [id])
+  ultimoLogin  DateTime?
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+
+  conversas Conversa[]
+
+  @@index([larId])
+}
+
+/// Pessoa dentro do lar. Nem todo membro faz login (filho, dependente),
+/// por isso Membro é separado de Usuario.
+model Membro {
+  id                  String      @id @default(cuid())
+  larId               String
+  lar                 Lar         @relation(fields: [larId], references: [id], onDelete: Cascade)
+  nome                String
+  papel               PapelMembro @default(TITULAR)
+  cor                 String      @default("blue")
+  rendaMensalCentavos Int         @default(0)
+  criadoEm            DateTime    @default(now())
+
+  usuario    Usuario?
+  contas     Conta[]
+  transacoes Transacao[]
+  regras     RegraCategorizacao[]
+
+  @@index([larId])
+}
+
+// ============================================================
+// CONTAS E LANÇAMENTOS
+// ============================================================
+
+model Conta {
+  id                   String    @id @default(cuid())
+  larId                String
+  lar                  Lar       @relation(fields: [larId], references: [id], onDelete: Cascade)
+  membroId             String?
+  membro               Membro?   @relation(fields: [membroId], references: [id])
+  nome                 String
+  instituicao          String?
+  tipo                 TipoConta @default(CORRENTE)
+  saldoInicialCentavos Int       @default(0)
+  cor                  String    @default("blue")
+  arquivada            Boolean   @default(false)
+
+  // Cartão de crédito
+  limiteCentavos Int?
+  diaFechamento  Int?
+  diaVencimento  Int?
+
+  conexaoId      String?
+  conexao        ConexaoOpenFinance? @relation(fields: [conexaoId], references: [id])
+  contaExternaId String? // id da conta no agregador
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  transacoes    Transacao[]
+  faturas       Fatura[]
+  metas         Meta[]
+  recorrencias  Recorrencia[]
+  parcelamentos Parcelamento[]
+  dividas       Divida[]
+
+  @@index([larId])
+}
+
+model Categoria {
+  id    String         @id @default(cuid())
+  larId String
+  lar   Lar            @relation(fields: [larId], references: [id], onDelete: Cascade)
+  nome  String
+  grupo GrupoCategoria @default(OUTROS)
+  tipo  TipoTransacao  @default(DESPESA)
+  cor   String         @default("blue")
+  icone String         @default("circle")
+
+  /// Essencial = corta por último. Base do plano de corte e do cálculo da reserva.
+  essencial Boolean @default(false)
+
+  /// Categoria criada pelo seed: não pode ser apagada, só renomeada.
+  sistema Boolean     @default(false)
+  paiId   String?
+  pai     Categoria?  @relation("Subcategoria", fields: [paiId], references: [id])
+  filhas  Categoria[] @relation("Subcategoria")
+  ordem   Int         @default(0)
+
+  transacoes    Transacao[]
+  regras        RegraCategorizacao[]
+  orcamentos    Orcamento[]
+  recorrencias  Recorrencia[]
+  parcelamentos Parcelamento[]
+
+  @@unique([larId, nome, paiId])
+  @@index([larId])
+}
+
+model Transacao {
+  id          String     @id @default(cuid())
+  larId       String
+  lar         Lar        @relation(fields: [larId], references: [id], onDelete: Cascade)
+  contaId     String
+  conta       Conta      @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  categoriaId String?
+  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
+  membroId    String?
+  membro      Membro?    @relation(fields: [membroId], references: [id])
+
+  data      DateTime
+  descricao String
+
+  /// Texto cru do extrato. Guardado para reprocessar regras sem perder o original.
+  descricaoOriginal String?
+
+  /// Sempre positivo. O sinal vem de `tipo` — valor negativo em banco vira
+  /// soma errada assim que alguém esquece o Math.abs.
+  valorCentavos Int
+  tipo          TipoTransacao
+  pago          Boolean         @default(true)
+  origem        OrigemTransacao @default(MANUAL)
+  observacao    String?
+  tags          String[]        @default([])
+
+  /// Competência (YYYY-MM) — separa quando gastou de quando pagou.
+  competencia String
+
+  transferenciaParId String?    @unique
+  transferenciaPar   Transacao? @relation("ParTransferencia", fields: [transferenciaParId], references: [id])
+  transferenciaDe    Transacao? @relation("ParTransferencia")
+
+  faturaId String?
+  fatura   Fatura? @relation(fields: [faturaId], references: [id])
+
+  metaId String?
+  meta   Meta?   @relation(fields: [metaId], references: [id])
+
+  dividaId String?
+  divida   Divida? @relation(fields: [dividaId], references: [id])
+
+  recorrenciaId String?
+  recorrencia   Recorrencia? @relation(fields: [recorrenciaId], references: [id])
+
+  importacaoId String?
+  importacao   Importacao? @relation(fields: [importacaoId], references: [id])
+
+  /// Impressão digital do lançamento (conta+data+valor+descrição).
+  /// Único por lar: reimportar o mesmo extrato não duplica nada.
+  hashImport         String?
+  transacaoExternaId String?
+
+  /// MEI: marca que o lançamento entra no faturamento do CNPJ.
+  meiFaturamento Boolean @default(false)
+  notaFiscal     String?
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@unique([larId, hashImport])
+  @@index([larId, data])
+  @@index([larId, competencia])
+  @@index([contaId, data])
+  @@index([categoriaId])
+}
+
+/// Regra de categorização automática. Roda na importação e no reprocessamento.
+model RegraCategorizacao {
+  id    String @id @default(cuid())
+  larId String
+  lar   Lar    @relation(fields: [larId], references: [id], onDelete: Cascade)
+
+  /// Trecho procurado na descrição (case-insensitive) ou regex se `regex` = true.
+  padrao      String
+  regex       Boolean   @default(false)
+  categoriaId String
+  categoria   Categoria @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
+  membroId    String?
+  membro      Membro?   @relation(fields: [membroId], references: [id])
+
+  /// Renomeia o lançamento ("PAG*IFOOD 33" -> "iFood").
+  renomearPara String?
+  tags         String[] @default([])
+
+  /// Maior prioridade vence. Regra aprendida do usuário nasce acima das do seed.
+  prioridade Int     @default(0)
+  ativa      Boolean @default(true)
+
+  /// Quantas vezes já pegou — mostra ao usuário o que a regra está fazendo.
+  acertos  Int      @default(0)
+  criadoEm DateTime @default(now())
+
+  @@index([larId])
+}
+
+model Fatura {
+  id            String    @id @default(cuid())
+  larId         String
+  lar           Lar       @relation(fields: [larId], references: [id], onDelete: Cascade)
+  contaId       String
+  conta         Conta     @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  competencia   String // YYYY-MM
+  fechamento    DateTime
+  vencimento    DateTime
+  totalCentavos Int       @default(0)
+  paga          Boolean   @default(false)
+  pagaEm        DateTime?
+
+  transacoes Transacao[]
+
+  @@unique([contaId, competencia])
+  @@index([larId])
+}
+
+model Recorrencia {
+  id            String        @id @default(cuid())
+  larId         String
+  lar           Lar           @relation(fields: [larId], references: [id], onDelete: Cascade)
+  descricao     String
+  valorCentavos Int
+  tipo          TipoTransacao
+  periodicidade Periodicidade @default(MENSAL)
+  diaVencimento Int
+  proximaData   DateTime
+  fimEm         DateTime?
+  contaId       String
+  conta         Conta         @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  categoriaId   String?
+  categoria     Categoria?    @relation(fields: [categoriaId], references: [id])
+
+  /// Valor muda todo mês (luz, água): entra na projeção pela média, não pelo fixo.
+  valorVariavel Boolean  @default(false)
+  ativa         Boolean  @default(true)
+  criadoEm      DateTime @default(now())
+
+  transacoes Transacao[]
+
+  @@index([larId])
+}
+
+model Orcamento {
+  id             String    @id @default(cuid())
+  larId          String
+  lar            Lar       @relation(fields: [larId], references: [id], onDelete: Cascade)
+  competencia    String // YYYY-MM
+  categoriaId    String
+  categoria      Categoria @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
+  limiteCentavos Int
+
+  @@unique([larId, competencia, categoriaId])
+  @@index([larId, competencia])
+}
+
+// ============================================================
+// METAS E DÍVIDAS
+// ============================================================
+
+model Meta {
+  id                   String    @id @default(cuid())
+  larId                String
+  lar                  Lar       @relation(fields: [larId], references: [id], onDelete: Cascade)
+  nome                 String
+  tipo                 TipoMeta  @default(OUTRO)
+  alvoCentavos         Int
+  saldoCentavos        Int       @default(0)
+  dataAlvo             DateTime?
+  aporteMensalCentavos Int       @default(0)
+
+  /// Rendimento anual esperado, em pontos-base (1200 = 12,00% a.a.).
+  /// Inteiro evita o float na projeção composta.
+  rendimentoAnualBps Int        @default(0)
+  prioridade         Int        @default(0)
+  status             StatusMeta @default(ATIVA)
+  cor                String     @default("blue")
+  icone              String     @default("target")
+  contaId            String?
+  conta              Conta?     @relation(fields: [contaId], references: [id])
+  observacao         String?
+  criadoEm           DateTime   @default(now())
+  atualizadoEm       DateTime   @updatedAt
+
+  transacoes Transacao[]
+
+  @@index([larId])
+}
+
+model Divida {
+  id                   String     @id @default(cuid())
+  larId                String
+  lar                  Lar        @relation(fields: [larId], references: [id], onDelete: Cascade)
+
+  /// Conta que originou a dívida (cheque especial de uma conta corrente).
+  /// Com o vínculo, o plano de pagamento sabe que o saldo negativo daquela
+  /// conta e esta dívida são a mesma coisa, e não conta o valor duas vezes.
+  contaId String?
+  conta   Conta?  @relation(fields: [contaId], references: [id], onDelete: SetNull)
+
+  credor               String
+  tipo                 TipoDivida @default(OUTRO)
+  saldoDevedorCentavos Int
+
+  /// Juros ao mês em pontos-base (250 = 2,50% a.m.).
+  jurosMensalBps  Int       @default(0)
+  parcelaCentavos Int       @default(0)
+  parcelasTotal   Int?
+  parcelasPagas   Int       @default(0)
+  diaVencimento   Int       @default(10)
+  quitada         Boolean   @default(false)
+  quitadaEm       DateTime?
+  observacao      String?
+  criadoEm        DateTime  @default(now())
+  atualizadoEm    DateTime  @updatedAt
+
+  transacoes Transacao[]
+
+  @@index([larId])
+}
+
+/// Compra parcelada no cartão.
+///
+/// Fica separada de `Divida` porque o comportamento é outro: não tem juro
+/// declarado, não se "quita antecipado" da mesma forma, e o que importa é
+/// quanto dela cai em cada fatura futura. É esse valor que trava o orçamento
+/// dos próximos meses sem aparecer em lugar nenhum do extrato de hoje.
+model Parcelamento {
+  id            String   @id @default(cuid())
+  larId         String
+  lar           Lar      @relation(fields: [larId], references: [id], onDelete: Cascade)
+  contaId       String
+  conta         Conta    @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  descricao     String
+  estabelecimento String?
+  categoriaId   String?
+  categoria     Categoria? @relation(fields: [categoriaId], references: [id])
+
+  valorTotalCentavos   Int
+  parcelaCentavos      Int
+  parcelasTotal        Int
+  parcelasPagas        Int      @default(0)
+  dataCompra           DateTime
+  /// Competência da primeira parcela (YYYY-MM). Todas as outras saem daqui.
+  primeiraCompetencia  String
+
+  ativo    Boolean  @default(true)
+  origem   OrigemTransacao @default(MANUAL)
+  criadoEm DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  parcelas ParcelaCompra[]
+
+  @@index([larId])
+  @@index([contaId])
+}
+
+model ParcelaCompra {
+  id             String       @id @default(cuid())
+  parcelamentoId String
+  parcelamento   Parcelamento @relation(fields: [parcelamentoId], references: [id], onDelete: Cascade)
+  numero         Int
+  competencia    String // YYYY-MM da fatura em que cai
+  vencimento     DateTime
+  valorCentavos  Int
+  paga           Boolean      @default(false)
+  pagaEm         DateTime?
+
+  @@unique([parcelamentoId, numero])
+  @@index([competencia])
+}
+
+model SimulacaoEmprestimo {
+  id            String @id @default(cuid())
+  larId         String
+  lar           Lar    @relation(fields: [larId], references: [id], onDelete: Cascade)
+  titulo        String
+  valorCentavos Int
+  parcelas      Int
+
+  /// Taxa nominal informada pelo banco, ao mês, em pontos-base.
+  jurosMensalBps Int
+
+  /// Custos que o banco não põe na "taxa": IOF, tarifa, seguro.
+  custosExtrasCentavos Int @default(0)
+
+  /// Resultado calculado: parcela, CET, total pago, comprometimento de renda.
+  resultado Json
+
+  /// Veredito do Pierre: APROVAR / CUIDADO / EVITAR + motivos.
+  veredito String?
+  criadoEm DateTime @default(now())
+
+  @@index([larId])
+}
+
+// ============================================================
+// MEI
+// ============================================================
+
+model MeiPerfil {
+  id           String       @id @default(cuid())
+  larId        String       @unique
+  lar          Lar          @relation(fields: [larId], references: [id], onDelete: Cascade)
+  cnpj         String?
+  razaoSocial  String?
+  atividade    AtividadeMei @default(SERVICOS)
+  dataAbertura DateTime?
+
+  /// Limite anual de faturamento em centavos. Guardado no perfil (não no código)
+  /// porque muda por lei e por atividade — transportador de carga tem outro.
+  limiteAnualCentavos Int @default(8100000)
+
+  /// Valor do DAS mensal em centavos — muda todo ano com o salário mínimo.
+  dasMensalCentavos Int @default(7580)
+  diaVencimentoDas  Int @default(20)
+
+  /// Pró-labore: quanto o MEI transfere do CNPJ para a PF todo mês.
+  proLaboreCentavos Int @default(0)
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+}
+
+model MeiCompetencia {
+  id                      String    @id @default(cuid())
+  larId                   String
+  lar                     Lar       @relation(fields: [larId], references: [id], onDelete: Cascade)
+  competencia             String // YYYY-MM
+  receitaComercioCentavos Int       @default(0)
+  receitaServicosCentavos Int       @default(0)
+  dasPago                 Boolean   @default(false)
+  dasPagoEm               DateTime?
+  dasValorCentavos        Int       @default(0)
+  observacao              String?
+
+  @@unique([larId, competencia])
+  @@index([larId])
+}
+
+// ============================================================
+// IMPORTAÇÃO E OPEN FINANCE
+// ============================================================
+
+model Importacao {
+  id          String   @id @default(cuid())
+  larId       String
+  lar         Lar      @relation(fields: [larId], references: [id], onDelete: Cascade)
+  contaId     String?
+  arquivoNome String
+  formato     String // ofx | csv | pdf
+  totalLinhas Int      @default(0)
+  importadas  Int      @default(0)
+  duplicadas  Int      @default(0)
+  erros       Int      @default(0)
+  detalhes    Json?
+  criadoEm    DateTime @default(now())
+
+  transacoes Transacao[]
+
+  @@index([larId])
+}
+
+model ConexaoOpenFinance {
+  id          String        @id @default(cuid())
+  larId       String
+  lar         Lar           @relation(fields: [larId], references: [id], onDelete: Cascade)
+  provedor    String // pluggy | belvo | sandbox
+  itemId      String
+  instituicao String
+  status      StatusConexao @default(ATIVA)
+  ultimaSync  DateTime?
+
+  /// Consentimento de Open Finance expira (12 meses no padrão BCB).
+  /// Sem esta data o app não avisa o usuário antes de a sincronização parar.
+  consentimentoExpiraEm DateTime?
+  erroMensagem          String?
+  criadoEm              DateTime  @default(now())
+  atualizadoEm          DateTime  @updatedAt
+
+  contas Conta[]
+
+  @@unique([larId, provedor, itemId])
+  @@index([larId])
+}
+
+// ============================================================
+// PIERRE — ALERTAS E CONVERSA
+// ============================================================
+
+model Alerta {
+  id         String           @id @default(cuid())
+  larId      String
+  lar        Lar              @relation(fields: [larId], references: [id], onDelete: Cascade)
+  tipo       String
+  severidade SeveridadeAlerta @default(INFO)
+  titulo     String
+  texto      String
+  acaoRota   String?
+  dados      Json?
+  lido       Boolean          @default(false)
+
+  /// Chave estável do alerta no período — evita repetir o mesmo aviso todo dia.
+  chave    String
+  criadoEm DateTime @default(now())
+
+  @@unique([larId, chave])
+  @@index([larId, lido])
+}
+
+model Conversa {
+  id           String   @id @default(cuid())
+  larId        String
+  lar          Lar      @relation(fields: [larId], references: [id], onDelete: Cascade)
+  usuarioId    String
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  titulo       String   @default("Nova conversa")
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  mensagens Mensagem[]
+
+  @@index([larId])
+}
+
+model Mensagem {
+  id         String        @id @default(cuid())
+  conversaId String
+  conversa   Conversa      @relation(fields: [conversaId], references: [id], onDelete: Cascade)
+  papel      PapelMensagem
+  texto      String
+
+  /// Números que o Pierre usou para responder — a resposta fica auditável.
+  contexto Json?
+  criadoEm DateTime @default(now())
+
+  @@index([conversaId])
+}
+
+
+// ============================================================
+// CAPTURA RÁPIDA
+// ============================================================
+
+/// Chave de um canal de entrada (celular, bot do Telegram, atalho do iOS).
+///
+/// Fica separada da sessão de propósito: o celular manda lançamento o dia
+/// inteiro em segundo plano, e obrigá-lo a manter login de navegador ativo
+/// quebraria na primeira expiração de cookie. Uma chave por aparelho permite
+/// revogar só o que foi perdido.
+model ChaveCaptura {
+  id        String   @id @default(cuid())
+  larId     String
+  lar       Lar      @relation(fields: [larId], references: [id], onDelete: Cascade)
+  nome      String
+  /// Hash da chave. O valor em claro é mostrado uma única vez, na criação —
+  /// guardar o original permitiria a quem lesse o banco lançar em nome do dono.
+  chaveHash String   @unique
+  /// Últimos caracteres, só para o usuário reconhecer qual chave é qual.
+  sufixo    String
+  origem    OrigemCaptura @default(NOTIFICACAO)
+  /// Identificador do chat do Telegram, quando o canal é o bot.
+  chatId    String?
+  ativa     Boolean  @default(true)
+  ultimoUso DateTime?
+  usos      Int      @default(0)
+  criadoEm  DateTime @default(now())
+
+  capturas Captura[]
+
+  @@index([larId])
+}
+
+/// Um lançamento que chegou de fora e ainda não virou transação.
+///
+/// Nada entra direto no extrato: notificação de banco erra (compra negada,
+/// estorno, pré-autorização de posto) e um lançamento errado no meio do
+/// histórico é pior que um lançamento faltando.
+model Captura {
+  id       String        @id @default(cuid())
+  larId    String
+  lar      Lar           @relation(fields: [larId], references: [id], onDelete: Cascade)
+  chaveId  String?
+  chave    ChaveCaptura? @relation(fields: [chaveId], references: [id], onDelete: SetNull)
+
+  origem     OrigemCaptura @default(NOTIFICACAO)
+  status     StatusCaptura @default(PENDENTE)
+  /// Texto exatamente como chegou. É a prova do que foi lido.
+  textoBruto String
+
+  valorCentavos   Int?
+  estabelecimento String?
+  data            DateTime?
+  cartaoFinal     String?
+  instituicao     String?
+  /// Parcela detectada na notificação ("2/10").
+  parcelaNumero Int?
+  parcelaTotal  Int?
+
+  contaId     String?
+  categoriaId String?
+  /// 0 a 100 — abaixo de 70 a tela pede conferência antes de aceitar.
+  confianca   Int     @default(0)
+
+  transacaoId String?  @unique
+  criadoEm    DateTime @default(now())
+  decididoEm  DateTime?
+
+  @@index([larId, status])
+}

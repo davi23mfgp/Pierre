@@ -1,0 +1,52 @@
+import { prisma } from "@/lib/prisma"
+import { criarToken, gravarCookieSessao, hashSenha } from "@/lib/auth"
+import { corpo, erro, exigir, ok } from "@/lib/api"
+import { semearLar } from "@/lib/semear"
+
+interface Entrada {
+  nome: string
+  email: string
+  senha: string
+  tipoLar?: "SOLO" | "CASAL" | "FAMILIA"
+  nomeLar?: string
+  modoMei?: boolean
+}
+
+export async function POST(requisicao: Request) {
+  const dados = await corpo<Entrada>(requisicao)
+
+  const email = exigir(dados.email, "Informe o e-mail").trim().toLowerCase()
+  const nome = exigir(dados.nome, "Informe seu nome").trim()
+  const senha = exigir(dados.senha, "Informe uma senha")
+
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return erro("E-mail inválido.")
+  if (senha.length < 8) return erro("A senha precisa ter ao menos 8 caracteres.")
+
+  const jaExiste = await prisma.usuario.findUnique({ where: { email }, select: { id: true } })
+  if (jaExiste) return erro("Já existe uma conta com esse e-mail.", 409)
+
+  const lar = await prisma.lar.create({
+    data: {
+      nome: dados.nomeLar?.trim() || `Finanças de ${nome.split(" ")[0]}`,
+      tipo: dados.tipoLar ?? "SOLO",
+    },
+  })
+
+  const membro = await prisma.membro.create({
+    data: { larId: lar.id, nome, papel: "TITULAR" },
+  })
+
+  const usuario = await prisma.usuario.create({
+    data: { email, nome, senhaHash: await hashSenha(senha), larId: lar.id, membroId: membro.id },
+  })
+
+  // Categorias e contas padrão nascem junto: app de finanças que abre vazio
+  // faz o usuário desistir antes do primeiro lançamento.
+  await semearLar(lar.id, { modoMei: dados.modoMei ?? false })
+
+  await gravarCookieSessao(
+    await criarToken({ usuarioId: usuario.id, email, nome, larId: lar.id, membroId: membro.id }),
+  )
+
+  return ok({ id: usuario.id, nome, email, larId: lar.id }, 201)
+}
