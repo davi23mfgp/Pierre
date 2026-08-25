@@ -16,6 +16,13 @@ export const metadata: Metadata = {
   title: "Pierre — seu contador pessoal",
   description:
     "Organize contas, dívidas e metas em um lugar só. Projeção de caixa, plano de pagamento e ajuda para decidir empréstimo. Para pessoa física e MEI.",
+  manifest: "/manifest.webmanifest",
+  // Instalado na tela inicial do celular, o app abre sem barra de navegador.
+  appleWebApp: { capable: true, title: "Pierre", statusBarStyle: "black-translucent" },
+  icons: {
+    icon: [{ url: "/icones/icone-192.png", sizes: "192x192", type: "image/png" }],
+    apple: [{ url: "/icones/icone-192.png", sizes: "192x192" }],
+  },
 }
 
 export const viewport: Viewport = {
@@ -27,6 +34,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   // O app tem tabela de valores: bloquear o zoom prejudicaria quem precisa dele.
   maximumScale: 5,
+  // Ocupa a tela toda no celular, inclusive atrás do recorte da câmera.
+  viewportFit: "cover",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

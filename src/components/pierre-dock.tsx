@@ -84,7 +84,7 @@ export function PierreDock() {
     return (
       <button
         onClick={() => setAberto(true)}
-        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full border border-ios-blue/30 bg-ios-blue/10 px-4 py-3 text-[13px] font-medium text-ios-blue shadow-apple-float backdrop-blur-xl transition hover:bg-ios-blue/20"
+        className="fixed bottom-[76px] right-4 z-40 sm:bottom-5 sm:right-5 flex items-center gap-2 rounded-full border border-ios-blue/30 bg-ios-blue/10 px-4 py-3 text-[13px] font-medium text-ios-blue shadow-apple-float backdrop-blur-xl transition hover:bg-ios-blue/20"
       >
         <Sparkles className="h-4 w-4" />
         Conversar com o Pierre

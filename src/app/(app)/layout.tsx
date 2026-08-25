@@ -25,7 +25,7 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
   if (!lar.onboardingEm) redirect("/bem-vindo")
 
   return (
-    <div className="mx-auto min-h-screen w-full max-w-6xl px-4 pb-28">
+    <div className="mx-auto min-h-screen w-full max-w-6xl px-4 pb-32 sm:pb-28">
       <BarraTopo nome={sessao.nome} />
       <Navegacao mei={Boolean(lar.meiPerfil)} />
       <main className="animate-page-enter">{children}</main>
