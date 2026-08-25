@@ -8,6 +8,8 @@ import { montarPanorama } from "@/lib/pierre/panorama"
 import { compromissosFuturos, resumoParcelamentos } from "@/lib/parcelamentos"
 import { Barra, Cartao, Metrica, Vazio } from "@/components/ui/painel"
 import { GraficoCategorias, GraficoEvolucao, GraficoParcelas } from "@/components/graficos"
+import { MapaDeCalor } from "@/components/mapa-de-calor"
+import { CategoriasComparadas } from "@/components/categorias-comparadas"
 
 export const dynamic = "force-dynamic"
 
@@ -132,6 +134,22 @@ export default async function Painel() {
           </div>
         </Cartao>
       </div>
+
+      {panorama.mes.despesasCentavos > 0 && (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Cartao titulo="Quando o dinheiro sai">
+            <MapaDeCalor
+              dias={panorama.mes.gastosPorDia}
+              mediaDiariaCentavos={panorama.mes.mediaDiariaCentavos}
+              maiorGasto={panorama.mes.maiorGastoDoDia}
+            />
+          </Cartao>
+
+          <Cartao titulo="Categorias vs. mês passado">
+            <CategoriasComparadas linhas={panorama.mes.despesasPorCategoria} limite={6} />
+          </Cartao>
+        </div>
+      )}
 
       {panorama.historico.some((mes) => mes.receitasCentavos > 0 || mes.despesasCentavos > 0) && (
         <Cartao titulo="Entrou e saiu, mês a mês">

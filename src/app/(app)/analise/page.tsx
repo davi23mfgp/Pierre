@@ -6,6 +6,8 @@ import { montarDiagnostico, type Faixa } from "@/lib/pierre/diagnostico"
 import { compromissosFuturos, resumoParcelamentos } from "@/lib/parcelamentos"
 import { Barra, Cartao, Metrica, Vazio } from "@/components/ui/painel"
 import { GraficoAnel, GraficoCategorias, GraficoEvolucao } from "@/components/graficos"
+import { MapaDeCalor } from "@/components/mapa-de-calor"
+import { CategoriasComparadas } from "@/components/categorias-comparadas"
 import { cn } from "@/lib/utils"
 
 export const dynamic = "force-dynamic"
@@ -262,6 +264,20 @@ export default async function Analise() {
 
         <Cartao titulo="Entrou e saiu, mês a mês">
           <GraficoEvolucao dados={panorama.historico} />
+        </Cartao>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Cartao titulo="Quando o dinheiro sai">
+          <MapaDeCalor
+            dias={panorama.mes.gastosPorDia}
+            mediaDiariaCentavos={panorama.mes.mediaDiariaCentavos}
+            maiorGasto={panorama.mes.maiorGastoDoDia}
+          />
+        </Cartao>
+
+        <Cartao titulo="O que mudou desde o mês passado">
+          <CategoriasComparadas linhas={panorama.mes.despesasPorCategoria} limite={10} />
         </Cartao>
       </div>
 

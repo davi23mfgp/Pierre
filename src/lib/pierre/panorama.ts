@@ -12,6 +12,7 @@ import {
   competenciaMaisMeses,
   distanciaEmMeses,
   janelaDoMes,
+  partesCompetencia,
   ultimasCompetencias,
 } from "@/lib/datas"
 import {
@@ -42,8 +43,23 @@ export interface Panorama {
     despesasCentavos: number
     sobraCentavos: number
     taxaPoupancaBps: number
-    despesasPorCategoria: { categoriaId: string | null; nome: string; grupo: string; essencial: boolean; totalCentavos: number }[]
+    despesasPorCategoria: {
+      categoriaId: string | null
+      nome: string
+      grupo: string
+      essencial: boolean
+      totalCentavos: number
+      /// Mesmo período do mês passado, para comparar em vez de só informar.
+      anteriorCentavos: number
+      /// Variação em pontos-base. null quando não havia gasto antes — nesse
+      /// caso "aumentou 100%" seria uma leitura sem sentido.
+      variacaoBps: number | null
+    }[]
     despesasPorMembro: { membroId: string | null; nome: string; totalCentavos: number }[]
+    /// Gasto de cada dia do mês, para o mapa de calor.
+    gastosPorDia: { dia: number; diaDaSemana: number; totalCentavos: number }[]
+    maiorGastoDoDia: { dia: number; totalCentavos: number } | null
+    mediaDiariaCentavos: number
     aPagarCentavos: number
     naoCategorizadas: number
   }
@@ -188,6 +204,17 @@ export async function montarPanorama(larId: string, competencia = competenciaAtu
     porCategoria.set(chave, atual)
   }
 
+  // Mesmo mapa para o mês anterior: é o que permite dizer "gastou 39% menos em
+  // supermercado" em vez de só mostrar o número do mês, que sozinho não diz se
+  // a pessoa está melhorando ou piorando.
+  const competenciaAnterior = competenciaMaisMeses(competencia, -1)
+  const porCategoriaAnterior = new Map<string, number>()
+  for (const transacao of transacoesHistorico) {
+    if (transacao.competencia !== competenciaAnterior || transacao.tipo !== "DESPESA") continue
+    const chave = transacao.categoriaId ?? "sem-categoria"
+    porCategoriaAnterior.set(chave, (porCategoriaAnterior.get(chave) ?? 0) + transacao.valorCentavos)
+  }
+
   const porMembro = new Map<string, { membroId: string | null; nome: string; totalCentavos: number }>()
   for (const transacao of doMes.filter((t) => t.tipo === "DESPESA")) {
     const chave = transacao.membroId ?? "compartilhado"
@@ -199,6 +226,31 @@ export async function montarPanorama(larId: string, competencia = competenciaAtu
     atual.totalCentavos += transacao.valorCentavos
     porMembro.set(chave, atual)
   }
+
+  // ── Gasto por dia ─────────────────────────────────────────
+  // Todos os dias do mês entram, inclusive os sem gasto: o mapa de calor
+  // precisa da grade completa, e um dia zerado é informação (não gastou nada).
+  const { ano: anoDoMes, mes: mesDoMes } = partesCompetencia(competencia)
+  const totalDeDias = new Date(Date.UTC(anoDoMes, mesDoMes, 0)).getUTCDate()
+  const porDia = new Map<number, number>()
+
+  for (const transacao of doMes.filter((t) => t.tipo === "DESPESA")) {
+    const diaDoMes = transacao.data.getUTCDate()
+    porDia.set(diaDoMes, (porDia.get(diaDoMes) ?? 0) + transacao.valorCentavos)
+  }
+
+  const gastosPorDia = Array.from({ length: totalDeDias }, (_, indice) => {
+    const numeroDoDia = indice + 1
+    return {
+      dia: numeroDoDia,
+      diaDaSemana: new Date(Date.UTC(anoDoMes, mesDoMes - 1, numeroDoDia)).getUTCDay(),
+      totalCentavos: porDia.get(numeroDoDia) ?? 0,
+    }
+  })
+
+  // A média considera só os dias em que houve gasto: incluir os zerados diria
+  // que a pessoa gasta menos por dia do que realmente gasta quando gasta.
+  const diasComGasto = [...porDia.values()].filter((valor) => valor > 0).length
 
   // ── Histórico e médias ────────────────────────────────────
   const historico = historicoCompetencias.map((mes) => {
@@ -388,8 +440,24 @@ export async function montarPanorama(larId: string, competencia = competenciaAtu
       despesasCentavos: despesasMes,
       sobraCentavos: receitasMes - despesasMes,
       taxaPoupancaBps: bps(receitasMes - despesasMes, receitasMes),
-      despesasPorCategoria: [...porCategoria.values()].sort((a, b) => b.totalCentavos - a.totalCentavos),
+      despesasPorCategoria: [...porCategoria.entries()]
+        .map(([chave, linha]) => {
+          const anterior = porCategoriaAnterior.get(chave) ?? 0
+          return {
+            ...linha,
+            anteriorCentavos: anterior,
+            variacaoBps: anterior > 0 ? Math.round(((linha.totalCentavos - anterior) / anterior) * 10_000) : null,
+          }
+        })
+        .sort((a, b) => b.totalCentavos - a.totalCentavos),
       despesasPorMembro: [...porMembro.values()].sort((a, b) => b.totalCentavos - a.totalCentavos),
+      gastosPorDia,
+      maiorGastoDoDia:
+        gastosPorDia.length > 0
+          ? gastosPorDia.reduce((maior, linha) => (linha.totalCentavos > maior.totalCentavos ? linha : maior))
+          : null,
+      mediaDiariaCentavos:
+        diasComGasto > 0 ? Math.round(despesasMes / diasComGasto) : 0,
       aPagarCentavos: transacoesMes.filter((t) => !t.pago && t.tipo === "DESPESA").reduce((s, t) => s + t.valorCentavos, 0),
       naoCategorizadas: doMes.filter((t) => !t.categoriaId).length,
     },
