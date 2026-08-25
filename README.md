@@ -145,6 +145,23 @@ funcionar fora de casa.
 Os ícones são gerados por `node scripts/icones.mjs` — o PNG é montado à mão com zlib, para não
 trazer uma dependência de imagem só para desenhar um símbolo.
 
+## Testes
+
+```bash
+npm test
+```
+
+138 testes sobre o motor de cálculo, rodando com o runner nativo do Node (sem
+dependência extra) em meio segundo. Cobrem centavos e arredondamento, Tabela
+Price, CET por bisseção, estratégias de quitação, metas, aposentadoria, limite
+do MEI, competências e janela do mês, categorização, leitor de notificação,
+simulador de cenários e o parecer.
+
+Boa parte fixa regressões que aconteceram de verdade durante o desenvolvimento
+— cada uma tem o comentário do que quebrou. Os testes foram verificados
+revertendo a correção e conferindo que falham: um deles não falhava, era teatro,
+e foi reescrito até pegar o caso real.
+
 ## Conta de demonstração
 
 ```bash

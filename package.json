@@ -12,7 +12,9 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "db:start": "node scripts/banco.mjs start",
-    "db:stop": "node scripts/banco.mjs stop"
+    "db:stop": "node scripts/banco.mjs stop",
+    "test": "node --import tsx --test \"testes/*.test.ts\"",
+    "test:watch": "node --import tsx --test --watch \"testes/*.test.ts\""
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
