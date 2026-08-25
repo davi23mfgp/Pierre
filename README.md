@@ -124,6 +124,40 @@ Detalhes que importam:
 - senha de PDF nunca passa pelo Telegram: mensagem de chat fica guardada no aparelho e no servidor do
   mensageiro. Para fatura com senha, use a tela **Importar**, que pergunta na hora e não guarda.
 
+## Usar pelo celular
+
+O app é feito para o telefone: barra inferior com as cinco telas do dia a dia, e o resto acessível
+pela fileira de atalhos. Dá para instalar na tela inicial e abrir sem barra de navegador.
+
+**Na mesma rede (Wi-Fi de casa) — funciona hoje:**
+
+1. no computador, `npm run db:start` e `npm run dev`;
+2. no celular, abra `http://SEU_IP:3000` (o `npm run dev` mostra o endereço em "Network");
+3. no Chrome ou Safari, menu → **Adicionar à tela de início**.
+
+O computador precisa estar ligado e no mesmo Wi-Fi. É a forma mais rápida, e não expõe nada para
+fora da sua rede.
+
+**De qualquer lugar:** aí é preciso publicar o app (Vercel ou similar) com um Postgres na nuvem, ou
+abrir um túnel temporário. Publicado, o endereço também serve para a captura por notificação
+funcionar fora de casa.
+
+Os ícones são gerados por `node scripts/icones.mjs` — o PNG é montado à mão com zlib, para não
+trazer uma dependência de imagem só para desenhar um símbolo.
+
+## Conta de demonstração
+
+```bash
+node scripts/demo.mjs
+```
+
+Cria um lar fictício ("Casa da Marina") com seis meses de histórico: 251 lançamentos, quatro
+parcelamentos em andamento, três dívidas, orçamento estourando em algumas categorias, três metas e
+capturas esperando conferência. Serve para ver todas as telas com dados coerentes — a soma dos
+lançamentos bate com os saldos, e as parcelas batem com as faturas.
+
+Entrar: `demo@pierre.local` / `demo12345`. Para remover: `node scripts/demo.mjs --limpar`.
+
 ## Como a nota de saúde é calculada
 
 Média das faixas dos indicadores, **com teto pela pior delas**: se algum indicador está crítico a nota
