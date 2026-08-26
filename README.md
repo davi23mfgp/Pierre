@@ -4,6 +4,9 @@ App de finanças pessoais para quem cuida do dinheiro sozinho, em casal ou em fa
 Feito sobre a mesma stack do ERP Controllares: Next.js (App Router), Prisma + PostgreSQL, Tailwind,
 Radix e autenticação por JWT em cookie `httpOnly`.
 
+**Retomando o projeto?** Leia `docs/COMECAR-AQUI.md` — em cinco minutos você sabe
+tanto quanto a última sessão.
+
 ## O que ele faz
 
 - **Contas e cartões** — saldo derivado dos lançamentos (nunca um campo gravado que desatualiza).
