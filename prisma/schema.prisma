@@ -10,7 +10,11 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // Em produção o Postgres gerenciado (Neon, Supabase) fica atrás de um pooler:
+  // as consultas do app vão pela URL com pool, mas migration precisa de conexão
+  // direta — pooler não aceita os comandos de DDL que o migrate emite.
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ============================================================

@@ -1,6 +1,6 @@
 # Onde o projeto está
 
-Última atualização: 25/08/2026.
+Última atualização: 26/08/2026.
 
 ## Resumo
 
@@ -27,7 +27,7 @@ computador do Davi e é acessado pelo celular na rede de casa.
 | Metas | `/metas` | progresso, aporte necessário, data prevista |
 | Contas fixas | `/recorrencias` | alimenta projeção e reserva |
 | Regras | `/regras` | o que o Pierre aprendeu, reprocessar histórico |
-| MEI | `/mei` | limite anual, DAS — **só leitura** |
+| MEI | `/mei` | limite anual, DAS, lançamento de faturamento e baixa do DAS |
 | Configurações | `/configuracoes` | contas, refazer conversa inicial |
 | Conversa inicial | `/bem-vindo` | 7 perguntas, todas puláveis |
 
@@ -35,17 +35,16 @@ computador do Davi e é acessado pelo celular na rede de casa.
 
 Em ordem de valor, na minha leitura:
 
-1. **MEI é só leitura.** Não dá para lançar faturamento nem dar baixa no DAS
-   pela tela. A API (`/api/mei`) já aceita os dois — falta a interface.
-2. **Publicar.** Sem isso o app só funciona com o computador ligado, e a
-   captura por notificação não funciona fora de casa. Precisa de Postgres na
-   nuvem (Neon, Supabase) e deploy (Vercel).
-3. **Telas sem teste.** A suíte cobre o motor de cálculo, não a interface.
+1. **Publicar.** O código já está pronto para isso: o `build` aplica as
+   migrations, o schema tem `directUrl` para o pooler do Postgres gerenciado e
+   `docs/PUBLICAR.md` tem o passo a passo. Falta o que só o Davi pode fazer —
+   criar as contas no Neon e na Vercel e colar as variáveis.
+2. **Telas sem teste.** A suíte cobre o motor de cálculo, não a interface.
    Todo defeito de tela desta base apareceu à mão.
-4. **Faturas em PDF do Davi.** Os três PDFs dele têm senha; o app já pede a
+3. **Faturas em PDF do Davi.** Os três PDFs dele têm senha; o app já pede a
    senha na tela Importar, mas ele ainda não informou. São 31 parcelamentos
    reais que continuam fora do sistema.
-5. **Taxa real do cheque especial dele.** O app assume o teto de 8% a.m.
+4. **Taxa real do cheque especial dele.** O app assume o teto de 8% a.m.
    quando não informada.
 
 ## Contas no banco local
