@@ -22,6 +22,12 @@ npm test          # deve dar 138 passando
 npm run dev
 ```
 
+Com o `npm run dev` de pé, noutro terminal:
+
+```bash
+npm run test:fumaca   # deve dar 39 rotas de pé
+```
+
 Entre com `demo@pierre.local` / `demo12345` e abra `/analise`. Se o parecer
 aparecer com DRE, balanço e indicadores, o sistema está inteiro.
 

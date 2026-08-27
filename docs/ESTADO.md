@@ -39,8 +39,10 @@ Em ordem de valor, na minha leitura:
    migrations, o schema tem `directUrl` para o pooler do Postgres gerenciado e
    `docs/PUBLICAR.md` tem o passo a passo. Falta o que só o Davi pode fazer —
    criar as contas no Neon e na Vercel e colar as variáveis.
-2. **Telas sem teste.** A suíte cobre o motor de cálculo, não a interface.
-   Todo defeito de tela desta base apareceu à mão.
+2. **Telas com teste raso.** `npm run test:fumaca` prova que as 39 rotas
+   respondem e que rota protegida sem sessão continua fechada, mas não prova
+   que o número na tela está certo. Teste de comportamento de interface
+   (preencher formulário, conferir o que aparece) continua faltando.
 3. **Faturas em PDF do Davi.** Os três PDFs dele têm senha; o app já pede a
    senha na tela Importar, mas ele ainda não informou. São 31 parcelamentos
    reais que continuam fora do sistema.
@@ -58,6 +60,10 @@ Em ordem de valor, na minha leitura:
 
 - **Sem Open Finance.** O Davi disse que não vai usar. O adaptador continua em
   `src/lib/open-finance/` (contrato + Pluggy + sandbox), fora do menu.
+- **Sem Open Finance (detalhe achado depois).** O callback em
+  `src/app/api/open-finance/callback/route.ts:17` redireciona para `/contas`,
+  página que não existe. Como o fluxo nunca é chamado, não quebra nada hoje —
+  mas se o adaptador voltar ao menu, isso quebra primeiro.
 - **Telegram, PDF e modelo de linguagem: adiados.** O código existe e funciona,
   mas ele pediu foco em cálculo e análise.
 - **Visual do ERP Controllares.** `globals.css` veio de lá. Tokens `ios-*`,

@@ -2,6 +2,9 @@
   "name": "pierre",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && prisma migrate deploy && next build",
@@ -14,7 +17,8 @@
     "db:start": "node scripts/banco.mjs start",
     "db:stop": "node scripts/banco.mjs stop",
     "test": "node --import tsx --test \"testes/*.test.ts\"",
-    "test:watch": "node --import tsx --test --watch \"testes/*.test.ts\""
+    "test:watch": "node --import tsx --test --watch \"testes/*.test.ts\"",
+    "test:fumaca": "node scripts/fumaca.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
