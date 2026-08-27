@@ -18,7 +18,7 @@
  */
 
 const BASE = process.env.BASE_URL ?? "http://localhost:3000"
-const EMAIL = process.env.EMAIL_FUMACA ?? "demo@pierre.local"
+const EMAIL = process.env.EMAIL_FUMACA ?? "demo@bean.local"
 const SENHA = process.env.SENHA_FUMACA ?? "demo12345"
 
 const PAGINAS = [
@@ -64,7 +64,7 @@ const APIS = [
   "/api/orcamento",
   "/api/panorama",
   "/api/parcelamentos",
-  "/api/pierre/alertas",
+  "/api/bean-counter/alertas",
   "/api/plano-pagamento",
   "/api/recorrencias",
   "/api/regras",
@@ -100,8 +100,8 @@ async function entrar() {
     )
   }
 
-  const cookie = resposta.headers.getSetCookie().find((linha) => linha.startsWith("pierre_sessao="))
-  if (!cookie) throw new Error("login respondeu 200 mas não mandou o cookie pierre_sessao.")
+  const cookie = resposta.headers.getSetCookie().find((linha) => linha.startsWith("sessao="))
+  if (!cookie) throw new Error("login respondeu 200 mas não mandou o cookie sessao.")
 
   return cookie.split(";")[0]
 }
@@ -165,7 +165,7 @@ const semEspacos = (texto) => texto.replace(/[\s ]/g, "")
 /**
  * O saldo do painel tem de ser o mesmo de `/api/panorama`.
  *
- * `src/lib/pierre/panorama.ts` é a fonte única justamente para o mesmo saldo
+ * `src/lib/bean-counter/panorama.ts` é a fonte única justamente para o mesmo saldo
  * não aparecer diferente em dois lugares. Se alguém um dia calcular o total na
  * própria tela, os dois divergem e esta checagem grita — que é a única forma
  * barata de pegar isso sem abrir o navegador.

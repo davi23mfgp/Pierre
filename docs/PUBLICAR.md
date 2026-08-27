@@ -1,4 +1,4 @@
-# Publicar o Pierre
+# Publicar o Bean.counter
 
 Hoje o app só funciona com o computador ligado e o Postgres portátil rodando.
 Publicar resolve duas coisas: o celular passa a acessar de qualquer lugar, e a
@@ -38,7 +38,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 
 ## 3. App na Vercel
 
-1. https://vercel.com → **Add New → Project** → importe `davi23mfgp/Pierre`.
+1. https://vercel.com → **Add New → Project** → importe `davi23mfgp/Pierre` (o repositório ainda tem o nome antigo).
 2. Framework Next.js é detectado sozinho. Não mexa em build command: o
    `npm run build` do projeto já faz `prisma generate && prisma migrate deploy
    && next build`, então o banco novo sai do deploy com o schema aplicado.
@@ -82,7 +82,7 @@ junto, é uma migração de dados à parte, não um passo de deploy.
   Para dado financeiro que vale anos, vale exportar um dump de tempos em tempos:
 
   ```bash
-  pg_dump "SUA_DIRECT_URL" -Fc -f pierre-AAAA-MM-DD.dump
+  pg_dump "SUA_DIRECT_URL" -Fc -f bean-counter-AAAA-MM-DD.dump
   ```
 
 - **Domínio próprio.** A Vercel dá um `*.vercel.app`; domínio próprio é

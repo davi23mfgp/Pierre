@@ -31,7 +31,7 @@ export default function Login() {
   return (
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <p className="text-xs uppercase tracking-[0.3em] text-muted-fg">Pierre</p>
+        <p className="text-xs uppercase tracking-[0.3em] text-muted-fg">Bean.counter</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Seu dinheiro te esperando para uma conversa.</h1>
         <p className="mt-2 text-sm text-muted-fg">Entre para ver onde você está e o que fazer agora.</p>
 

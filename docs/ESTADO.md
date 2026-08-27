@@ -26,7 +26,7 @@ computador do Davi e é acessado pelo celular na rede de casa.
 | Empréstimo | `/emprestimos` | CET, veredito, tabela de amortização |
 | Metas | `/metas` | progresso, aporte necessário, data prevista |
 | Contas fixas | `/recorrencias` | alimenta projeção e reserva |
-| Regras | `/regras` | o que o Pierre aprendeu, reprocessar histórico |
+| Regras | `/regras` | o que o Bean aprendeu, reprocessar histórico |
 | MEI | `/mei` | limite anual, DAS, lançamento de faturamento e baixa do DAS |
 | Configurações | `/configuracoes` | contas, refazer conversa inicial |
 | Conversa inicial | `/bem-vindo` | 7 perguntas, todas puláveis |
@@ -55,8 +55,22 @@ Em ordem de valor, na minha leitura:
 
 - `davi23mfgp@gmail.com` — a conta real do Davi. **Não apague.** Ele pulou a
   conversa inicial, então está quase vazia.
-- `demo@pierre.local` / `demo12345` — demonstração "Casa da Marina", 6 meses de
+- `demo@bean.local` / `demo12345` — demonstração "Casa da Marina", 6 meses de
   histórico. Recriar com `node scripts/demo.mjs`.
+
+## Renomeação: o que ainda carrega o nome antigo
+
+O produto virou **Bean.counter** em 27/08/2026. Código, telas, rotas, documentos
+e o enum `PapelMensagem` já usam o nome novo. Continua antigo, de propósito:
+
+| O quê | Por quê | Como trocar |
+|---|---|---|
+| repositório `davi23mfgp/Pierre` | renomear no GitHub muda a URL de todo mundo | Settings → Rename, e `git remote set-url origin` |
+| pasta do projeto `Documents\pierre` | caminho aberto em editor e terminal | renomear e reabrir |
+| cluster `%LOCALAPPDATA%\pierre-pg`, banco e usuário `pierre` | tem os dados dentro; renomear exige dump e restore | `pg_dump`, recriar com o nome novo, restaurar, ajustar `.env` |
+
+Nada disso aparece para quem usa o app nem para quem for comprar o produto —
+só para quem abrir a máquina de desenvolvimento.
 
 ## Decisões de produto já tomadas
 
@@ -70,4 +84,4 @@ Em ordem de valor, na minha leitura:
   mas ele pediu foco em cálculo e análise.
 - **Visual do ERP Controllares.** `globals.css` veio de lá. Tokens `ios-*`,
   `surface-1`, `hairline`, `.ios-card`, fonte Onest. Nada de verde estilo
-  Pierre — foi corrigido uma vez, não reintroduza.
+  Bean.counter — foi corrigido uma vez, não reintroduza.

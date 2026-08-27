@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 
-import { simular, comparar, type CenarioBase } from "@/lib/pierre/simulador"
+import { simular, comparar, type CenarioBase } from "@/lib/bean-counter/simulador"
 
 const base = (parcial: Partial<CenarioBase> = {}): CenarioBase => ({
   competenciaInicial: "2026-08",

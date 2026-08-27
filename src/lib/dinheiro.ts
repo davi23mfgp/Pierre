@@ -1,7 +1,7 @@
 /**
  * Dinheiro em centavos.
  *
- * Todo valor monetário do Pierre é um Int de centavos. Float em dinheiro
+ * Todo valor monetário do Bean é um Int de centavos. Float em dinheiro
  * acumula erro (0.1 + 0.2 !== 0.3) e, somado mês a mês, faz o extrato não
  * fechar com o banco. Converte-se para reais só na borda: exibição e entrada.
  */

@@ -9,7 +9,7 @@ if (!process.env.JWT_SECRET) {
 }
 const SEGREDO = new TextEncoder().encode(process.env.JWT_SECRET)
 
-export const COOKIE_SESSAO = "pierre_sessao"
+export const COOKIE_SESSAO = "sessao"
 
 export interface Sessao {
   usuarioId: string

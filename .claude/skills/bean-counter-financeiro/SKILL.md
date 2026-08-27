@@ -1,9 +1,9 @@
 ---
-name: pierre-financeiro
-description: Regras de cálculo financeiro do app Pierre — centavos inteiros, taxas em pontos-base, saldo derivado, cheque especial como saldo negativo. Use ao mexer em qualquer código que envolva dinheiro, juros, projeção, saldo, parcela, dívida, meta ou indicador financeiro neste projeto.
+name: bean-counter-financeiro
+description: Regras de cálculo financeiro do app Bean.counter — centavos inteiros, taxas em pontos-base, saldo derivado, cheque especial como saldo negativo. Use ao mexer em qualquer código que envolva dinheiro, juros, projeção, saldo, parcela, dívida, meta ou indicador financeiro neste projeto.
 ---
 
-# Cálculo financeiro no Pierre
+# Cálculo financeiro no Bean
 
 Antes de escrever qualquer linha que toque dinheiro, confira estas regras.
 O detalhamento de cada uma está em `docs/DECISOES.md`.
@@ -41,7 +41,7 @@ O detalhamento de cada uma está em `docs/DECISOES.md`.
 
 ## Onde o número mora
 
-`src/lib/pierre/panorama.ts` é a **fonte única**. Precisa de um número novo numa
+`src/lib/bean-counter/panorama.ts` é a **fonte única**. Precisa de um número novo numa
 tela? Adicione ao panorama, não calcule na tela — dois cálculos divergem e o
 mesmo saldo aparece diferente em dois lugares.
 

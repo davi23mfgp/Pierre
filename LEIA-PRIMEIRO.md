@@ -1,4 +1,4 @@
-# Pierre — pacote completo
+# Bean.counter — pacote completo
 
 Projeto inteiro: código, histórico do git, documentação, testes e o banco de
 decisões. Descompacte, instale as dependências e está rodando.
@@ -24,9 +24,9 @@ npm test             # 138 testes, deve dar tudo verde
 npm run dev
 ```
 
-Entrar: `demo@pierre.local` / `demo12345`
+Entrar: `demo@bean.local` / `demo12345`
 
-O banco em si **não está aqui** — ele vive em `%LOCALAPPDATA%\pierre-pg`, fora
+O banco em si **não está aqui** — ele vive em `%LOCALAPPDATA%\bean-counter-pg`, fora
 da pasta do projeto. Em outra máquina, recrie com as instruções de
 `docs/AMBIENTE.md` e rode `node scripts/demo.mjs`.
 

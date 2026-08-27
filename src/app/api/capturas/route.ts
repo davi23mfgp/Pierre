@@ -36,7 +36,7 @@ export const POST = comSessao(async (sessao, requisicao) => {
     categoriaId?: string | null
     valorCentavos?: number
     descricao?: string
-    /// Ensina o Pierre: a categoria escolhida vira regra para os próximos.
+    /// Ensina o Bean: a categoria escolhida vira regra para os próximos.
     criarRegra?: boolean
   }>(requisicao)
 

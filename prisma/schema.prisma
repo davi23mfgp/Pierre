@@ -1,5 +1,5 @@
 // ============================================================
-// Pierre — contador pessoal para PF (solo, casal, família) e MEI.
+// Bean.counter — contador pessoal para PF (solo, casal, família) e MEI.
 // Multi-tenant por lar (Lar). Dinheiro sempre em centavos (Int):
 // float em dinheiro acumula erro de arredondamento e o extrato deixa de fechar.
 // ============================================================
@@ -144,7 +144,7 @@ enum SeveridadeAlerta {
 
 enum PapelMensagem {
   USUARIO
-  PIERRE
+  ASSISTENTE
 }
 
 enum OrigemCaptura {
@@ -612,7 +612,7 @@ model SimulacaoEmprestimo {
   /// Resultado calculado: parcela, CET, total pago, comprometimento de renda.
   resultado Json
 
-  /// Veredito do Pierre: APROVAR / CUIDADO / EVITAR + motivos.
+  /// Veredito do Bean: APROVAR / CUIDADO / EVITAR + motivos.
   veredito String?
   criadoEm DateTime @default(now())
 
@@ -710,7 +710,7 @@ model ConexaoOpenFinance {
 }
 
 // ============================================================
-// PIERRE — ALERTAS E CONVERSA
+// ASSISTENTE — ALERTAS E CONVERSA
 // ============================================================
 
 model Alerta {
@@ -755,7 +755,7 @@ model Mensagem {
   papel      PapelMensagem
   texto      String
 
-  /// Números que o Pierre usou para responder — a resposta fica auditável.
+  /// Números que o Bean usou para responder — a resposta fica auditável.
   contexto Json?
   criadoEm DateTime @default(now())
 

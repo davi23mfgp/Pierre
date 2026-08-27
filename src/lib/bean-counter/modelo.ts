@@ -1,5 +1,5 @@
 /**
- * Camada de modelo do Pierre.
+ * Camada de modelo do Bean.
  *
  * Só é chamada quando o motor de regras não sabe responder. Opcional: sem
  * ANTHROPIC_API_KEY o app continua funcionando inteiro, apenas com respostas
@@ -9,8 +9,8 @@
 import Anthropic from "@anthropic-ai/sdk"
 import type { BetaMessageParam, BetaTextBlock } from "@anthropic-ai/sdk/resources/beta/messages"
 
-import type { Panorama } from "@/lib/pierre/panorama"
-import { PERSONA, contextoParaModelo, type RespostaPierre } from "@/lib/pierre/chat"
+import type { Panorama } from "@/lib/bean-counter/panorama"
+import { PERSONA, contextoParaModelo, type RespostaAssistente } from "@/lib/bean-counter/chat"
 
 const MODELO = process.env.ANTHROPIC_MODEL || "claude-opus-5"
 
@@ -29,7 +29,7 @@ function obterCliente(): Anthropic {
 }
 
 export interface TurnoConversa {
-  papel: "USUARIO" | "PIERRE"
+  papel: "USUARIO" | "ASSISTENTE"
   texto: string
 }
 
@@ -70,7 +70,7 @@ export async function responderComModelo(params: {
   pergunta: string
   panorama: Panorama
   historico?: TurnoConversa[]
-}): Promise<RespostaPierre> {
+}): Promise<RespostaAssistente> {
   const resposta = await obterCliente().beta.messages.create(
     parametros(params.historico ?? [], params.pergunta, params.panorama),
   )

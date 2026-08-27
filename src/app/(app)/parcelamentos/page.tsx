@@ -125,7 +125,7 @@ export default async function Parcelamentos() {
         })}
 
         {emAndamento.length === 0 && (
-          <Vazio titulo="Nenhuma compra parcelada" texto="Importe a fatura do cartão para o Pierre encontrar as parcelas." />
+          <Vazio titulo="Nenhuma compra parcelada" texto="Importe a fatura do cartão para o Bean encontrar as parcelas." />
         )}
       </div>
     </div>

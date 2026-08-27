@@ -1,5 +1,5 @@
 /**
- * Seleção do provedor e sincronização para dentro do banco do Pierre.
+ * Seleção do provedor e sincronização para dentro do banco do Bean.
  */
 
 import { prisma } from "@/lib/prisma"

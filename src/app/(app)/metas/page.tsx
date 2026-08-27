@@ -32,7 +32,7 @@ export default async function Metas() {
     <div className="space-y-4">
       <Cartao titulo="Metas">
         <p className="text-sm text-muted-fg">
-          A ordem que o Pierre defende: sair de dívida cara, montar a reserva, depois metas de prazo curto e, por
+          A ordem que o Bean defende: sair de dívida cara, montar a reserva, depois metas de prazo curto e, por
           último, o longo prazo. Aporte só entra depois que o mês fecha no positivo.
         </p>
         {concluidas > 0 && (
@@ -101,7 +101,7 @@ export default async function Metas() {
         })}
 
         {metas.length === 0 && (
-          <Vazio titulo="Nenhuma meta ativa" texto="Crie uma meta para o Pierre calcular quanto guardar por mês." />
+          <Vazio titulo="Nenhuma meta ativa" texto="Crie uma meta para o Bean calcular quanto guardar por mês." />
         )}
       </div>
     </div>

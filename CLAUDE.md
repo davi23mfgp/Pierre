@@ -1,4 +1,4 @@
-# Pierre — instruções para o agente
+# Bean.counter — instruções para o agente
 
 Este arquivo é lido automaticamente no início de cada sessão do Claude Code.
 Leia também `docs/` antes de mexer em qualquer cálculo.
@@ -7,8 +7,14 @@ Leia também `docs/` antes de mexer em qualquer cálculo.
 
 App de finanças pessoais para pessoa física (sozinha, casal, família) e MEI.
 O dono é **Davi** (`davi23mfgp@gmail.com`), que usa o app para as próprias
-contas. Referência de produto: o app Pierre (pierre.finance); referência de
-código e visual: o ERP Controllares, do próprio Davi.
+contas, e pretende vendê-lo. Referência de código e visual: o ERP Controllares
+— confirme a titularidade antes da venda, porque o `globals.css` veio de lá.
+
+O produto se chamava Pierre até 27/08/2026. O nome foi trocado justamente
+porque coincidia com o de um app de finanças existente, e marca é o que de fato
+gera conflito — cálculo contábil, não. Se encontrar "pierre" em algum canto,
+é sobra da renomeação; o que sobra de propósito está listado em
+`docs/ESTADO.md`.
 
 O objetivo declarado dele, nas palavras dele: um contador profissional que
 ajude a organizar dívidas, juntar para metas, projetar e decidir empréstimo.

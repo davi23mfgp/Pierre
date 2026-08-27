@@ -1,5 +1,5 @@
 /**
- * Alertas do Pierre — o que ele diria sem ser perguntado.
+ * Alertas do Bean — o que ele diria sem ser perguntado.
  *
  * Cada alerta tem uma `chave` estável dentro do período. É ela que impede o
  * mesmo aviso de reaparecer todo dia: um assessor que repete o mesmo recado
@@ -11,7 +11,7 @@ import type { SeveridadeAlerta } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
 import { formatarMoeda } from "@/lib/dinheiro"
 import { rotuloCompetencia } from "@/lib/datas"
-import { montarPanorama, type Panorama } from "@/lib/pierre/panorama"
+import { montarPanorama, type Panorama } from "@/lib/bean-counter/panorama"
 
 export interface AlertaGerado {
   tipo: string
@@ -144,7 +144,7 @@ export function gerarAlertas(panorama: Panorama): AlertaGerado[] {
       tipo: "sem_categoria",
       severidade: "INFO",
       titulo: `${panorama.mes.naoCategorizadas} lançamentos sem categoria`,
-      texto: "Categorizar deixa a projeção e o orçamento corretos. Cada correção vira uma regra: da próxima vez o Pierre acerta sozinho.",
+      texto: "Categorizar deixa a projeção e o orçamento corretos. Cada correção vira uma regra: da próxima vez o Bean acerta sozinho.",
       acaoRota: "/transacoes?filtro=sem-categoria",
       chave: `sem_categoria:${mes}`,
     })

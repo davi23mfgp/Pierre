@@ -1,7 +1,7 @@
 /**
  * Contrato de agregador de Open Finance.
  *
- * O Pierre não fala direto com o Open Finance do Banco Central: participar do
+ * O Bean não fala direto com o Open Finance do Banco Central: participar do
  * ecossistema exige ser instituição autorizada e certificada. O caminho viável
  * para um app é um agregador já autorizado (Pluggy, Belvo e similares) — este
  * arquivo é a fronteira que isola qual deles está em uso.

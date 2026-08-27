@@ -152,7 +152,7 @@ export async function semearLar(larId: string, opcoes: { modoMei?: boolean } = {
       prioridade: 100,
       icone: "shield",
       cor: "teal",
-      observacao: "O alvo é ajustado automaticamente conforme o Pierre aprende seu custo mensal.",
+      observacao: "O alvo é ajustado automaticamente conforme o Bean aprende seu custo mensal.",
     },
   })
 

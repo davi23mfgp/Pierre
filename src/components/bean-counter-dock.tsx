@@ -6,7 +6,7 @@ import { Sparkles, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface Turno {
-  papel: "USUARIO" | "PIERRE"
+  papel: "USUARIO" | "ASSISTENTE"
   texto: string
 }
 
@@ -18,13 +18,13 @@ const SUGESTOES = [
 ]
 
 /**
- * Conversa com o Pierre, presente em todas as telas.
+ * Conversa com o Bean, presente em todas as telas.
  *
  * A resposta chega em streaming quando vem do modelo e de uma vez quando vem do
  * motor de regras. O componente trata os dois casos pelo Content-Type: JSON é
  * resposta pronta, texto puro é fluxo.
  */
-export function PierreDock() {
+export function BeanCounterDock() {
   const [aberto, setAberto] = useState(false)
   const [turnos, setTurnos] = useState<Turno[]>([])
   const [pergunta, setPergunta] = useState("")
@@ -40,7 +40,7 @@ export function PierreDock() {
     setPensando(true)
 
     try {
-      const resposta = await fetch("/api/pierre/chat", {
+      const resposta = await fetch("/api/bean-counter/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pergunta: texto, conversaId: conversaId.current }),
@@ -52,11 +52,11 @@ export function PierreDock() {
       if (resposta.headers.get("Content-Type")?.includes("application/json")) {
         const dados = await resposta.json()
         if (dados.conversaId) conversaId.current = dados.conversaId
-        setTurnos((atual) => [...atual, { papel: "PIERRE", texto: dados.texto ?? dados.erro }])
+        setTurnos((atual) => [...atual, { papel: "ASSISTENTE", texto: dados.texto ?? dados.erro }])
       } else if (resposta.body) {
-        // O turno do Pierre entra vazio e vai crescendo: assim o texto aparece
+        // O turno do Bean entra vazio e vai crescendo: assim o texto aparece
         // conforme chega, em vez de a tela ficar parada até o fim.
-        setTurnos((atual) => [...atual, { papel: "PIERRE", texto: "" }])
+        setTurnos((atual) => [...atual, { papel: "ASSISTENTE", texto: "" }])
         const leitor = resposta.body.getReader()
         const decodificador = new TextDecoder()
 
@@ -66,14 +66,14 @@ export function PierreDock() {
           const pedaco = decodificador.decode(value, { stream: true })
           setTurnos((atual) => {
             const copia = [...atual]
-            copia[copia.length - 1] = { papel: "PIERRE", texto: copia[copia.length - 1].texto + pedaco }
+            copia[copia.length - 1] = { papel: "ASSISTENTE", texto: copia[copia.length - 1].texto + pedaco }
             return copia
           })
           fim.current?.scrollIntoView({ behavior: "smooth" })
         }
       }
     } catch {
-      setTurnos((atual) => [...atual, { papel: "PIERRE", texto: "Não consegui responder agora. Tente de novo." }])
+      setTurnos((atual) => [...atual, { papel: "ASSISTENTE", texto: "Não consegui responder agora. Tente de novo." }])
     } finally {
       setPensando(false)
       fim.current?.scrollIntoView({ behavior: "smooth" })
@@ -87,7 +87,7 @@ export function PierreDock() {
         className="fixed bottom-[76px] right-4 z-40 sm:bottom-5 sm:right-5 flex items-center gap-2 rounded-full border border-ios-blue/30 bg-ios-blue/10 px-4 py-3 text-[13px] font-medium text-ios-blue shadow-apple-float backdrop-blur-xl transition hover:bg-ios-blue/20"
       >
         <Sparkles className="h-4 w-4" />
-        Conversar com o Pierre
+        Conversar com o Bean
       </button>
     )
   }
@@ -97,7 +97,7 @@ export function PierreDock() {
       <header className="flex items-center justify-between border-b border-hairline px-4 py-3">
         <div className="flex items-center gap-2 text-sm font-medium">
           <Sparkles className="h-4 w-4 text-ios-green" />
-          Pierre
+          Bean.counter
         </div>
         <button onClick={() => setAberto(false)} className="text-muted-fg hover:text-foreground">
           <X className="h-4 w-4" />
@@ -136,7 +136,7 @@ export function PierreDock() {
           </div>
         ))}
 
-        {pensando && <p className="text-[12px] text-muted-fg">Pierre está calculando…</p>}
+        {pensando && <p className="text-[12px] text-muted-fg">Bean.counter está calculando…</p>}
         <div ref={fim} />
       </div>
 

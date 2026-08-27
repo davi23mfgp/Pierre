@@ -46,7 +46,7 @@ export const PATCH = comSessao<Contexto>(async (sessao, requisicao, contexto) =>
     include: { categoria: true, conta: true },
   })
 
-  // É aqui que o Pierre aprende: o usuário corrige uma vez e não corrige mais.
+  // É aqui que o Bean aprende: o usuário corrige uma vez e não corrige mais.
   if (dados.criarRegra && dados.categoriaId) {
     const base = regraAPartirDeCorrecao({
       descricaoOriginal: atual.descricaoOriginal ?? atual.descricao,

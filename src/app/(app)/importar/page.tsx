@@ -124,7 +124,7 @@ export default function Importar() {
     <div className="space-y-4">
       <Cartao titulo="Importar extrato ou fatura">
         <p className="text-sm text-muted-fg">
-          Aceita OFX, CSV e PDF. O Pierre lê, categoriza pelo que já aprendeu e mostra tudo antes de gravar — nada
+          Aceita OFX, CSV e PDF. O Bean lê, categoriza pelo que já aprendeu e mostra tudo antes de gravar — nada
           entra sem você conferir. Reimportar o mesmo arquivo não duplica lançamento.
         </p>
 

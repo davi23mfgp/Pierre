@@ -1,8 +1,8 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 
-import { montarDiagnostico } from "@/lib/pierre/diagnostico"
-import type { Panorama } from "@/lib/pierre/panorama"
+import { montarDiagnostico } from "@/lib/bean-counter/diagnostico"
+import type { Panorama } from "@/lib/bean-counter/panorama"
 
 /**
  * O parecer é o que o usuário lê primeiro. Um número que contradiz o rótulo ao

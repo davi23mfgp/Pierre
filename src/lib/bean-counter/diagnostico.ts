@@ -18,7 +18,7 @@
 
 import { formatarMoeda } from "@/lib/dinheiro"
 import { rotuloCompetencia } from "@/lib/datas"
-import type { Panorama } from "@/lib/pierre/panorama"
+import type { Panorama } from "@/lib/bean-counter/panorama"
 
 export type Faixa = "BOM" | "ATENCAO" | "CRITICO" | "SEM_DADO"
 

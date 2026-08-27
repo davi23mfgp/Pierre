@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma"
 import { comSessao, corpo, exigir, ok } from "@/lib/api"
 import { competenciaAtual } from "@/lib/datas"
-import { montarPanorama } from "@/lib/pierre/panorama"
-import { responderPorRegras } from "@/lib/pierre/chat"
-import { modeloDisponivel, responderComModeloStream, type TurnoConversa } from "@/lib/pierre/modelo"
+import { montarPanorama } from "@/lib/bean-counter/panorama"
+import { responderPorRegras } from "@/lib/bean-counter/chat"
+import { modeloDisponivel, responderComModeloStream, type TurnoConversa } from "@/lib/bean-counter/modelo"
 
 // O chat lê o panorama inteiro do banco a cada pergunta: resposta financeira
 // vale pelo número atual, não por um cache de minutos atrás.
@@ -38,7 +38,7 @@ export const POST = comSessao(async (sessao, requisicao) => {
     await prisma.mensagem.create({
       data: {
         conversaId: conversa.id,
-        papel: "PIERRE",
+        papel: "ASSISTENTE",
         texto: porRegras.texto,
         contexto: (porRegras.contexto ?? {}) as object,
       },
@@ -49,7 +49,7 @@ export const POST = comSessao(async (sessao, requisicao) => {
   if (!modeloDisponivel()) {
     const texto =
       "Essa eu não sei responder sozinho. Posso te ajudar com saldo, gastos por categoria, dívidas, metas, reserva, projeção, empréstimo e MEI — é só perguntar de um desses jeitos."
-    await prisma.mensagem.create({ data: { conversaId: conversa.id, papel: "PIERRE", texto } })
+    await prisma.mensagem.create({ data: { conversaId: conversa.id, papel: "ASSISTENTE", texto } })
     return ok({ texto, fonte: "regras", conversaId: conversa.id })
   }
 
@@ -71,7 +71,7 @@ export const POST = comSessao(async (sessao, requisicao) => {
     historico,
     aoConcluir: async (textoCompleto) => {
       await prisma.mensagem.create({
-        data: { conversaId: conversa.id, papel: "PIERRE", texto: textoCompleto },
+        data: { conversaId: conversa.id, papel: "ASSISTENTE", texto: textoCompleto },
       })
     },
   })

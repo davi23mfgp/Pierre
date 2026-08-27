@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { comSessao, corpo, exigir, ok } from "@/lib/api"
 import { competenciaAtual } from "@/lib/datas"
 import { analisarEmprestimo } from "@/lib/financeiro"
-import { montarPanorama } from "@/lib/pierre/panorama"
+import { montarPanorama } from "@/lib/bean-counter/panorama"
 
 export const GET = comSessao(async (sessao) =>
   ok(

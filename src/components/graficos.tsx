@@ -23,7 +23,7 @@ import { formatarMoeda, formatarMoedaCurta } from "@/lib/dinheiro"
 import { rotuloCompetencia } from "@/lib/datas"
 
 /**
- * Gráficos do Pierre.
+ * Gráficos do Bean.
  *
  * Regras que valem para todos:
  * - o eixo de valores usa forma curta (R$ 1,2 mil); o número exato aparece no

@@ -4,7 +4,7 @@
  * Duas camadas, nesta ordem:
  * 1. regras do lar (aprendidas ou escritas pelo usuário) — sempre vencem;
  * 2. dicionário embutido de comerciantes brasileiros — cobre o primeiro
- *    extrato, quando o usuário ainda não ensinou nada ao Pierre.
+ *    extrato, quando o usuário ainda não ensinou nada ao Bean.
  *
  * O que a camada 2 acerta vira sugestão; o que o usuário corrigir vira regra
  * na camada 1, com prioridade acima do dicionário.

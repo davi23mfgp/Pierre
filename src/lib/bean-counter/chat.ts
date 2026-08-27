@@ -1,5 +1,5 @@
 /**
- * Pierre — o assessor.
+ * Bean.counter — o assessor.
  *
  * Duas camadas, nesta ordem:
  * 1. motor de intenções local, que responde as perguntas frequentes direto do
@@ -10,16 +10,16 @@
  * resposta certa que sai do banco. Mandar isso para um modelo custa dinheiro,
  * demora e abre espaço para número inventado.
  *
- * O Pierre nunca recomenda ativo, corretora ou aplicação específica: explica
+ * O Bean nunca recomenda ativo, corretora ou aplicação específica: explica
  * mecanismo, mostra o número e deixa a decisão com a pessoa.
  */
 
 import { formatarMoeda, formatarPercentual, paraCentavos } from "@/lib/dinheiro"
 import { rotuloCompetencia } from "@/lib/datas"
 import { analisarEmprestimo } from "@/lib/financeiro"
-import type { Panorama } from "@/lib/pierre/panorama"
+import type { Panorama } from "@/lib/bean-counter/panorama"
 
-export interface RespostaPierre {
+export interface RespostaAssistente {
   texto: string
   /// Números usados na resposta — a tela mostra e o usuário confere.
   contexto?: Record<string, unknown>
@@ -60,7 +60,7 @@ function numeroNaPergunta(pergunta: string, ...rotulos: string[]): number | null
  * Responde pelo motor de regras. Devolve null quando não tem certeza —
  * é o sinal para o modelo assumir. Chutar aqui seria pior que passar adiante.
  */
-export function responderPorRegras(pergunta: string, panorama: Panorama): RespostaPierre | null {
+export function responderPorRegras(pergunta: string, panorama: Panorama): RespostaAssistente | null {
   const p = NORMALIZAR(pergunta)
 
   // ── Saldo e situação geral ────────────────────────────────
@@ -327,7 +327,7 @@ export function responderPorRegras(pergunta: string, panorama: Panorama): Respos
   if (contem(p, "o que voce faz", "como funciona", "me ajuda", "ajuda", "oi", "ola", "bom dia", "boa tarde", "boa noite")) {
     return {
       texto: [
-        "Sou o Pierre, seu assessor financeiro. Trabalho com os seus números, não com conselho genérico.",
+        "Sou o Bean, seu assessor financeiro. Trabalho com os seus números, não com conselho genérico.",
         "",
         "Pode me perguntar coisas como:",
         "• Quanto eu tenho hoje?",
@@ -418,7 +418,7 @@ export function contextoParaModelo(panorama: Panorama): string {
   return linhas.join("\n")
 }
 
-export const PERSONA = `Você é o Pierre, assessor financeiro pessoal dentro de um app brasileiro de finanças para pessoa física (sozinha, casal ou família) e para MEI.
+export const PERSONA = `Você é o Bean, assessor financeiro pessoal dentro de um app brasileiro de finanças para pessoa física (sozinha, casal ou família) e para MEI.
 
 Como você fala:
 - Português do Brasil, direto, sem jargão. Se usar um termo técnico (CET, amortização, desenquadramento), explique em meia linha.

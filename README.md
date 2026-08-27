@@ -1,4 +1,4 @@
-# Pierre — contador pessoal (PF e MEI)
+# Bean.counter — contador pessoal (PF e MEI)
 
 App de finanças pessoais para quem cuida do dinheiro sozinho, em casal ou em família, com modo MEI.
 Feito sobre a mesma stack do ERP Controllares: Next.js (App Router), Prisma + PostgreSQL, Tailwind,
@@ -41,7 +41,7 @@ tanto quanto a última sessão.
   seu, porque notificação de banco erra (compra negada, estorno, pré-autorização de posto).
 - **Gráficos** — evolução de entradas e saídas, rosca de gastos por categoria, fluxo de caixa
   projetado com a linha do zero em destaque e barras das parcelas já comprometidas.
-- **Pierre, o assessor** — responde sobre os seus números. Motor de regras local resolve as perguntas
+- **Bean.counter, o assessor** — responde sobre os seus números. Motor de regras local resolve as perguntas
   frequentes na hora e de graça; o modelo de linguagem entra só no que sobra, e é opcional.
 
 ## Rodar
@@ -53,24 +53,24 @@ npm run db:start
 npm run dev
 ```
 
-Depois abra `http://localhost:3000`, crie sua conta e responda as sete perguntas do Pierre — é ele
+Depois abra `http://localhost:3000`, crie sua conta e responda as sete perguntas do Bean — é ele
 que monta seu painel a partir das respostas. Dá para pular e cadastrar tudo depois.
 
 Para desligar o banco: `npm run db:stop`.
 
 ### Banco local
 
-Postgres 17 roda a partir de binários portáteis em `%LOCALAPPDATA%\pierre-pg`, sem serviço do
+Postgres 17 roda a partir de binários portáteis em `%LOCALAPPDATA%\bean-counter-pg`, sem serviço do
 Windows e sem privilégio de administrador (o instalador oficial exige UAC; este caminho não).
 Como não é serviço, ele não sobe sozinho ao ligar o computador — daí o `npm run db:start`.
 
 Recriar do zero, se um dia precisar:
 
 ```bash
-# baixe postgresql-17-windows-x64-binaries.zip, extraia em %LOCALAPPDATA%\pierre-pg
-initdb -D %LOCALAPPDATA%\pierre-pg\data -U pierre --pwfile=senha.txt -E UTF8 --locale=C
-pg_ctl -D %LOCALAPPDATA%\pierre-pg\data -l pg.log -o "-p 5432" start
-psql -U pierre -h 127.0.0.1 -d postgres -c "CREATE DATABASE pierre;"
+# baixe postgresql-17-windows-x64-binaries.zip, extraia em %LOCALAPPDATA%\bean-counter-pg
+initdb -D %LOCALAPPDATA%\bean-counter-pg\data -U bean-counter --pwfile=senha.txt -E UTF8 --locale=C
+pg_ctl -D %LOCALAPPDATA%\bean-counter-pg\data -l pg.log -o "-p 5432" start
+psql -U bean-counter -h 127.0.0.1 -d postgres -c "CREATE DATABASE bean-counter;"
 npx prisma migrate deploy
 ```
 
@@ -176,7 +176,7 @@ parcelamentos em andamento, três dívidas, orçamento estourando em algumas cat
 capturas esperando conferência. Serve para ver todas as telas com dados coerentes — a soma dos
 lançamentos bate com os saldos, e as parcelas batem com as faturas.
 
-Entrar: `demo@pierre.local` / `demo12345`. Para remover: `node scripts/demo.mjs --limpar`.
+Entrar: `demo@bean.local` / `demo12345`. Para remover: `node scripts/demo.mjs --limpar`.
 
 ## Como a nota de saúde é calculada
 
@@ -212,7 +212,7 @@ botão em Configurações.
 
 ## Assistente
 
-Sem `ANTHROPIC_API_KEY` o Pierre funciona pelo motor de regras: saldo, gastos por categoria, dívidas,
+Sem `ANTHROPIC_API_KEY` o Bean funciona pelo motor de regras: saldo, gastos por categoria, dívidas,
 metas, reserva, projeção, empréstimo e MEI. Com a chave, ele também responde o que fugir desses temas,
 usando apenas o panorama financeiro enviado no contexto.
 
@@ -228,7 +228,7 @@ src/lib/categorizar.ts      dicionário + regras que aprendem
 src/lib/importar/           OFX, CSV, PDF e deduplicação
 src/lib/open-finance/       contrato + provedores (sandbox, Pluggy)
 src/lib/parcelamentos.ts    parcelas datadas e compromisso futuro
-src/lib/pierre/             panorama, diagnóstico, alertas, plano de pagamento, simulador, chat
+src/lib/bean-counter/             panorama, diagnóstico, alertas, plano de pagamento, simulador, chat
 src/lib/captura/            leitor de notificação bancária e ponte com o celular
 src/app/(app)/              telas autenticadas
 src/app/api/                rotas

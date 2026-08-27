@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma"
 import { comSessao, corpo, ok } from "@/lib/api"
 import { competenciaAtual } from "@/lib/datas"
-import { montarPanorama } from "@/lib/pierre/panorama"
+import { montarPanorama } from "@/lib/bean-counter/panorama"
 import { compromissosFuturos } from "@/lib/parcelamentos"
-import { comparar, type Ajuste, type CenarioBase } from "@/lib/pierre/simulador"
+import { comparar, type Ajuste, type CenarioBase } from "@/lib/bean-counter/simulador"
 
 export const dynamic = "force-dynamic"
 

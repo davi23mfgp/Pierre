@@ -56,7 +56,7 @@ export default function Transacoes() {
 
   /**
    * Trocar a categoria já cria a regra: é o momento em que o usuário está
-   * dizendo ao Pierre o que aquele lançamento é. Perguntar "quer criar regra?"
+   * dizendo ao Bean o que aquele lançamento é. Perguntar "quer criar regra?"
    * a cada correção seria atrito puro.
    */
   async function recategorizar(id: string, categoriaId: string) {

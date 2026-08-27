@@ -40,7 +40,7 @@ export function comSessao<T>(handler: (sessao: Sessao, requisicao: Request, cont
       return await handler(sessao, requisicao, contexto)
     } catch (excecao) {
       if (excecao instanceof ErroDeUso) return erro(excecao.message, excecao.status)
-      console.error("[pierre] falha na rota", requisicao.url, excecao)
+      console.error("[bean-counter] falha na rota", requisicao.url, excecao)
       return erro("Algo deu errado. Tente de novo em instantes.", 500)
     }
   }

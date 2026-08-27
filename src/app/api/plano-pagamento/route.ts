@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma"
 import { comSessao, ok } from "@/lib/api"
 import { competenciaAtual } from "@/lib/datas"
-import { montarPlanoPagamento, type AlvoPagamento } from "@/lib/pierre/plano-pagamento"
+import { montarPlanoPagamento, type AlvoPagamento } from "@/lib/bean-counter/plano-pagamento"
 import { compromissosFuturos } from "@/lib/parcelamentos"
-import { montarPanorama } from "@/lib/pierre/panorama"
+import { montarPanorama } from "@/lib/bean-counter/panorama"
 
 /**
  * Plano de "ir pagando".
