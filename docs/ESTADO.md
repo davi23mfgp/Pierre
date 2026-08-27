@@ -39,10 +39,12 @@ Em ordem de valor, na minha leitura:
    migrations, o schema tem `directUrl` para o pooler do Postgres gerenciado e
    `docs/PUBLICAR.md` tem o passo a passo. Falta o que só o Davi pode fazer —
    criar as contas no Neon e na Vercel e colar as variáveis.
-2. **Telas com teste raso.** `npm run test:fumaca` prova que as 39 rotas
-   respondem e que rota protegida sem sessão continua fechada, mas não prova
-   que o número na tela está certo. Teste de comportamento de interface
-   (preencher formulário, conferir o que aparece) continua faltando.
+2. **Telas com teste raso.** `npm run test:fumaca` prova que as 40 checagens
+   passam: toda página e toda rota de leitura respondem, rota protegida sem
+   sessão continua fechada, e o saldo do painel bate com `/api/panorama`. O que
+   falta é comportamento — preencher formulário, salvar, conferir o que a tela
+   passa a mostrar — e os métodos de escrita da API, que o script não exercita
+   para não sujar o banco.
 3. **Faturas em PDF do Davi.** Os três PDFs dele têm senha; o app já pede a
    senha na tela Importar, mas ele ainda não informou. São 31 parcelamentos
    reais que continuam fora do sistema.
