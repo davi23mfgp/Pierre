@@ -157,6 +157,49 @@ async function visitar(rota, cookie, { esperado = 200 } = {}) {
   return resposta
 }
 
+const moeda = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" })
+
+/** Espaço não separável do Intl x espaço comum do HTML: a comparação ignora os dois. */
+const semEspacos = (texto) => texto.replace(/[\s ]/g, "")
+
+/**
+ * O saldo do painel tem de ser o mesmo de `/api/panorama`.
+ *
+ * `src/lib/pierre/panorama.ts` é a fonte única justamente para o mesmo saldo
+ * não aparecer diferente em dois lugares. Se alguém um dia calcular o total na
+ * própria tela, os dois divergem e esta checagem grita — que é a única forma
+ * barata de pegar isso sem abrir o navegador.
+ */
+async function saldoBateComPanorama(cookie) {
+  const rota = "/painel vs /api/panorama"
+
+  const [pagina, api] = await Promise.all([
+    fetch(`${BASE}/painel`, { headers: { cookie } }),
+    fetch(`${BASE}/api/panorama`, { headers: { cookie } }),
+  ])
+
+  if (!pagina.ok || !api.ok) {
+    registrar(false, rota, `painel ${pagina.status}, panorama ${api.status}`)
+    return
+  }
+
+  const { saldoTotalCentavos } = await api.json()
+  if (typeof saldoTotalCentavos !== "number") {
+    registrar(false, rota, "panorama não devolveu saldoTotalCentavos")
+    return
+  }
+
+  const esperado = moeda.format(saldoTotalCentavos / 100)
+  const html = semEspacos(await pagina.text())
+
+  if (!html.includes(semEspacos(esperado))) {
+    registrar(false, rota, `a API diz ${esperado}, e esse valor não aparece na tela`)
+    return
+  }
+
+  registrar(true, `${rota} — ${esperado}`)
+}
+
 async function principal() {
   console.log(`Teste de fumaça em ${BASE}\n`)
 
@@ -179,6 +222,9 @@ async function principal() {
   await visitar("/api/panorama", null, { esperado: 401 })
   await visitar("/painel", null, { esperado: 307 })
 
+  console.log("\nCoerência entre tela e fonte única")
+  await saldoBateComPanorama(cookie)
+
   console.log("")
   if (falhas.length > 0) {
     console.error(vermelho(`${falhas.length} falha(s):`))
@@ -186,7 +232,7 @@ async function principal() {
     process.exit(1)
   }
 
-  const total = PAGINAS.length + PAGINAS_PUBLICAS.length + APIS.length + 2
+  const total = PAGINAS.length + PAGINAS_PUBLICAS.length + APIS.length + 3
   console.log(verde(`${total} rotas de pé.`))
 }
 
