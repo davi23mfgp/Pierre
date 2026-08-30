@@ -1,10 +1,6 @@
 /**
  * Liga e desliga o Postgres local do Tino.
  *
- * A pasta ainda se chama `pierre-pg` — é o cluster que já existe no disco, com
- * os dados dentro. Renomear obriga a exportar, recriar e restaurar; enquanto
- * isso não for feito, o nome antigo fica.
- *
  * O banco roda a partir de binários portáteis em %LOCALAPPDATA%\tino-pg, sem
  * serviço do Windows e sem privilégio de administrador. Como não é serviço, ele
  * não sobe sozinho depois de reiniciar a máquina — daí este script.
@@ -17,7 +13,7 @@ import { spawnSync } from "node:child_process"
 import { existsSync } from "node:fs"
 import { join } from "node:path"
 
-const base = join(process.env.LOCALAPPDATA ?? "", "pierre-pg")
+const base = join(process.env.LOCALAPPDATA ?? "", "tino-pg")
 const pgCtl = join(base, "pgsql", "bin", "pg_ctl.exe")
 const dados = join(base, "data")
 const log = join(base, "pg.log")

@@ -6,7 +6,7 @@ Windows 11, o projeto em `C:\Users\iasdn\Documents\pierre`.
 
 ## Banco
 
-**Postgres 17 portátil** em `%LOCALAPPDATA%\pierre-pg`, sem serviço do Windows e
+**Postgres 17 portátil** em `%LOCALAPPDATA%	ino-pg`, sem serviço do Windows e
 sem privilégio de administrador.
 
 Por que portátil: o instalador oficial exige UAC, e a elevação foi recusada na
@@ -22,16 +22,16 @@ npm run db:stop
 Conexão (já no `.env`, que não está no repositório):
 
 ```
-postgresql://pierre:pierre_local_2026@127.0.0.1:5432/pierre
+postgresql://tino:tino_local_2026@127.0.0.1:5432/tino
 ```
 
 Recriar do zero, se um dia sumir:
 
 ```bash
-# baixe postgresql-17-windows-x64-binaries.zip, extraia em %LOCALAPPDATA%\pierre-pg
-initdb -D %LOCALAPPDATA%\pierre-pg\data -U pierre --pwfile=senha.txt -E UTF8 --locale=C
-pg_ctl -D %LOCALAPPDATA%\pierre-pg\data -l pg.log -o "-p 5432" start
-psql -U pierre -h 127.0.0.1 -d postgres -c "CREATE DATABASE pierre;"
+# baixe postgresql-17-windows-x64-binaries.zip, extraia em %LOCALAPPDATA%	ino-pg
+initdb -D %LOCALAPPDATA%	ino-pg\data -U tino --pwfile=senha.txt -E UTF8 --locale=C
+pg_ctl -D %LOCALAPPDATA%	ino-pg\data -l pg.log -o "-p 5432" start
+psql -U tino -h 127.0.0.1 -d postgres -c "CREATE DATABASE tino;"
 npx prisma migrate deploy
 node scripts/demo.mjs
 ```
@@ -41,7 +41,7 @@ node scripts/demo.mjs
 Fora do repositório de propósito. Para recriar:
 
 ```
-DATABASE_URL="postgresql://pierre:pierre_local_2026@127.0.0.1:5432/pierre?schema=public"
+DATABASE_URL="postgresql://tino:tino_local_2026@127.0.0.1:5432/tino?schema=public"
 JWT_SECRET="<64 caracteres hex aleatórios>"
 OPEN_FINANCE_PROVIDER="sandbox"
 ANTHROPIC_API_KEY=""

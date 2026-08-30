@@ -61,17 +61,23 @@ Em ordem de valor, na minha leitura:
 ## Renomeação: o que ainda carrega o nome antigo
 
 O produto virou **Tino** em 30/08/2026 (passou por Bean.counter no caminho,
-descartado por ser descritivo demais para registrar como marca). Código, telas, rotas, documentos
-e o enum `PapelMensagem` já usam o nome novo. Continua antigo, de propósito:
+descartado por ser descritivo demais para registrar como marca). Código, telas,
+rotas, documentos, o enum `PapelMensagem`, o banco local, o usuário do banco e
+a pasta do Postgres portátil já usam o nome novo.
+
+Continua antigo, e cada um por um motivo:
 
 | O quê | Por quê | Como trocar |
 |---|---|---|
-| repositório `davi23mfgp/Pierre` | renomear no GitHub muda a URL de todo mundo | Settings → Rename, e `git remote set-url origin` |
+| repositório `davi23mfgp/Pierre` | renomear muda a URL para todo mundo, e o projeto na Vercel aponta para ela | Settings → Rename no GitHub, depois `git remote set-url origin` |
 | pasta do projeto `Documents\pierre` | caminho aberto em editor e terminal | renomear e reabrir |
-| cluster `%LOCALAPPDATA%\pierre-pg`, banco e usuário `pierre` | tem os dados dentro; renomear exige dump e restore | `pg_dump`, recriar com o nome novo, restaurar, ajustar `.env` |
+| `PIERRE` na migration `20260823223045_inicial` | **não trocar.** Editar migration já aplicada quebra o checksum e o `migrate deploy` passa a falhar em toda máquina, produção inclusive. A migration `20260827120000` já renomeia o valor para `ASSISTENTE`. | nada a fazer |
+| a menção à troca de nome no `CLAUDE.md` | é o registro de que a marca mudou de propósito, com data | nada a fazer |
 
-Nada disso aparece para quem usa o app nem para quem for comprar o produto —
-só para quem abrir a máquina de desenvolvimento.
+O banco `pierre` antigo continua no cluster, intacto, ao lado do `tino`. É o
+caminho de volta se algo tiver ficado para trás na cópia — apague só depois de
+alguns dias de uso normal. Há também um dump de antes da troca em
+`%LOCALAPPDATA%\Temp\claude\...\scratchpad\pierre.dump`.
 
 ## Decisões de produto já tomadas
 
