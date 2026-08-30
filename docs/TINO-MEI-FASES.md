@@ -37,6 +37,9 @@ caderno, nada mais importa.
 
 - tela de venda: escolhe item, quantidade, forma de pagamento, fecha
 - produto criado na hora, com nome e preço, quando ainda não existe
+- cliente com nome e telefone, criado na hora — entra aqui e não na fase 3
+  porque fiado sem saber de quem não serve para cobrar, que é exatamente para
+  o que o caderno é usado hoje
 - formas: dinheiro, Pix, débito, crédito à vista, crédito parcelado, fiado
 - **cada forma calcula líquido e data de recebimento** a partir da taxa e do
   prazo cadastrados: a venda de R$ 100 no crédito não vira R$ 100 hoje, e o
@@ -48,8 +51,8 @@ caderno, nada mais importa.
 fechamento de caixa que bate com a soma das vendas em dinheiro menos sangria;
 teste de fumaça passando pelas telas novas.
 
-**Fora:** estoque (a venda ainda não baixa saldo), cliente cadastrado, troca e
-devolução.
+**Fora:** estoque (a venda ainda não baixa saldo), histórico e cobrança do
+cliente, troca e devolução.
 
 ---
 

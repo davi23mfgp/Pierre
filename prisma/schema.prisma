@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
   // Em produção o Postgres gerenciado (Neon, Supabase) fica atrás de um pooler:
   // as consultas do app vão pela URL com pool, mas migration precisa de conexão
   // direta — pooler não aceita os comandos de DDL que o migrate emite.
@@ -215,6 +215,7 @@ model Lar {
   parcelamentos   Parcelamento[]
   capturas        Captura[]
   chavesCaptura   ChaveCaptura[]
+  lojas           Loja[]
 }
 
 model Usuario {
@@ -513,9 +514,9 @@ model Meta {
 }
 
 model Divida {
-  id                   String     @id @default(cuid())
-  larId                String
-  lar                  Lar        @relation(fields: [larId], references: [id], onDelete: Cascade)
+  id    String @id @default(cuid())
+  larId String
+  lar   Lar    @relation(fields: [larId], references: [id], onDelete: Cascade)
 
   /// Conta que originou a dívida (cheque especial de uma conta corrente).
   /// Com o vínculo, o plano de pagamento sabe que o saldo negativo daquela
@@ -551,28 +552,28 @@ model Divida {
 /// quanto dela cai em cada fatura futura. É esse valor que trava o orçamento
 /// dos próximos meses sem aparecer em lugar nenhum do extrato de hoje.
 model Parcelamento {
-  id            String   @id @default(cuid())
-  larId         String
-  lar           Lar      @relation(fields: [larId], references: [id], onDelete: Cascade)
-  contaId       String
-  conta         Conta    @relation(fields: [contaId], references: [id], onDelete: Cascade)
-  descricao     String
+  id              String     @id @default(cuid())
+  larId           String
+  lar             Lar        @relation(fields: [larId], references: [id], onDelete: Cascade)
+  contaId         String
+  conta           Conta      @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  descricao       String
   estabelecimento String?
-  categoriaId   String?
-  categoria     Categoria? @relation(fields: [categoriaId], references: [id])
+  categoriaId     String?
+  categoria       Categoria? @relation(fields: [categoriaId], references: [id])
 
-  valorTotalCentavos   Int
-  parcelaCentavos      Int
-  parcelasTotal        Int
-  parcelasPagas        Int      @default(0)
-  dataCompra           DateTime
+  valorTotalCentavos  Int
+  parcelaCentavos     Int
+  parcelasTotal       Int
+  parcelasPagas       Int      @default(0)
+  dataCompra          DateTime
   /// Competência da primeira parcela (YYYY-MM). Todas as outras saem daqui.
-  primeiraCompetencia  String
+  primeiraCompetencia String
 
-  ativo    Boolean  @default(true)
-  origem   OrigemTransacao @default(MANUAL)
-  criadoEm DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
+  ativo        Boolean         @default(true)
+  origem       OrigemTransacao @default(MANUAL)
+  criadoEm     DateTime        @default(now())
+  atualizadoEm DateTime        @updatedAt
 
   parcelas ParcelaCompra[]
 
@@ -762,7 +763,6 @@ model Mensagem {
   @@index([conversaId])
 }
 
-
 // ============================================================
 // CAPTURA RÁPIDA
 // ============================================================
@@ -774,22 +774,22 @@ model Mensagem {
 /// quebraria na primeira expiração de cookie. Uma chave por aparelho permite
 /// revogar só o que foi perdido.
 model ChaveCaptura {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
   larId     String
-  lar       Lar      @relation(fields: [larId], references: [id], onDelete: Cascade)
+  lar       Lar           @relation(fields: [larId], references: [id], onDelete: Cascade)
   nome      String
   /// Hash da chave. O valor em claro é mostrado uma única vez, na criação —
   /// guardar o original permitiria a quem lesse o banco lançar em nome do dono.
-  chaveHash String   @unique
+  chaveHash String        @unique
   /// Últimos caracteres, só para o usuário reconhecer qual chave é qual.
   sufixo    String
   origem    OrigemCaptura @default(NOTIFICACAO)
   /// Identificador do chat do Telegram, quando o canal é o bot.
   chatId    String?
-  ativa     Boolean  @default(true)
+  ativa     Boolean       @default(true)
   ultimoUso DateTime?
-  usos      Int      @default(0)
-  criadoEm  DateTime @default(now())
+  usos      Int           @default(0)
+  criadoEm  DateTime      @default(now())
 
   capturas Captura[]
 
@@ -802,11 +802,11 @@ model ChaveCaptura {
 /// estorno, pré-autorização de posto) e um lançamento errado no meio do
 /// histórico é pior que um lançamento faltando.
 model Captura {
-  id       String        @id @default(cuid())
-  larId    String
-  lar      Lar           @relation(fields: [larId], references: [id], onDelete: Cascade)
-  chaveId  String?
-  chave    ChaveCaptura? @relation(fields: [chaveId], references: [id], onDelete: SetNull)
+  id      String        @id @default(cuid())
+  larId   String
+  lar     Lar           @relation(fields: [larId], references: [id], onDelete: Cascade)
+  chaveId String?
+  chave   ChaveCaptura? @relation(fields: [chaveId], references: [id], onDelete: SetNull)
 
   origem     OrigemCaptura @default(NOTIFICACAO)
   status     StatusCaptura @default(PENDENTE)
@@ -819,17 +819,225 @@ model Captura {
   cartaoFinal     String?
   instituicao     String?
   /// Parcela detectada na notificação ("2/10").
-  parcelaNumero Int?
-  parcelaTotal  Int?
+  parcelaNumero   Int?
+  parcelaTotal    Int?
 
   contaId     String?
   categoriaId String?
   /// 0 a 100 — abaixo de 70 a tela pede conferência antes de aceitar.
   confianca   Int     @default(0)
 
-  transacaoId String?  @unique
-  criadoEm    DateTime @default(now())
+  transacaoId String?   @unique
+  criadoEm    DateTime  @default(now())
   decididoEm  DateTime?
 
   @@index([larId, status])
+}
+
+// ============================================================
+// TINO.MEI — LOJA
+//
+// Sistema de balcão para o MEI que tem loja em galeria ou shopping.
+// Escopo e fases em docs/TINO-MEI.md e docs/TINO-MEI-FASES.md.
+//
+// Preso ao Lar como todo o resto: quem liga a loja é a mesma conta que já
+// cuida do dinheiro pessoal, e é isso que deixa o app responder quanto do
+// limite do MEI já foi usado sem ninguém redigitar faturamento.
+// ============================================================
+
+enum FormaPagamento {
+  DINHEIRO
+  PIX
+  DEBITO
+  CREDITO_VISTA
+  CREDITO_PARCELADO
+  FIADO
+}
+
+model Loja {
+  id    String @id @default(cuid())
+  larId String
+  lar   Lar    @relation(fields: [larId], references: [id], onDelete: Cascade)
+
+  nome     String
+  /// Galeria, box, quiosque. Só para o dono se achar quando tiver mais de uma.
+  endereco String?
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  produtos    ProdutoLoja[]
+  vendas      VendaLoja[]
+  caixas      Caixa[]
+  recebimento FormaRecebimento[]
+  clientes    ClienteLoja[]
+
+  @@index([larId])
+}
+
+/// Taxa e prazo de cada forma de pagamento, cadastrados uma vez.
+///
+/// É o que impede o app de dizer que a venda de R$ 100 no crédito virou R$ 100
+/// hoje. A maquininha cobra taxa e paga depois; sem isso o dono planeja com
+/// dinheiro que ainda não chegou — o erro que mais quebra loja pequena.
+model FormaRecebimento {
+  id     String @id @default(cuid())
+  lojaId String
+  loja   Loja   @relation(fields: [lojaId], references: [id], onDelete: Cascade)
+
+  forma     FormaPagamento
+  /// Pontos-base: 349 = 3,49% por venda.
+  taxaBps   Int            @default(0)
+  /// Dias corridos até o dinheiro cair. Dinheiro e Pix são 0; crédito costuma
+  /// ser 30.
+  prazoDias Int            @default(0)
+
+  @@unique([lojaId, forma])
+}
+
+model ProdutoLoja {
+  id     String @id @default(cuid())
+  lojaId String
+  loja   Loja   @relation(fields: [lojaId], references: [id], onDelete: Cascade)
+
+  nome          String
+  codigoBarras  String?
+  precoCentavos Int     @default(0)
+  /// Quanto custou para comprar. Fica em zero até a fase de estoque; sem ele a
+  /// margem não é calculada, e margem estimada é pior que margem ausente.
+  custoCentavos Int     @default(0)
+  ativo         Boolean @default(true)
+
+  criadoEm DateTime @default(now())
+
+  itens ItemVenda[]
+
+  @@unique([lojaId, codigoBarras])
+  @@index([lojaId, nome])
+}
+
+/// Cliente da loja. Nome e telefone bastam.
+///
+/// Entra já na primeira fase por causa do fiado: dívida sem saber de quem não
+/// serve para cobrar, que é justamente para o que o caderno é usado hoje.
+model ClienteLoja {
+  id     String @id @default(cuid())
+  lojaId String
+  loja   Loja   @relation(fields: [lojaId], references: [id], onDelete: Cascade)
+
+  nome     String
+  telefone String?
+  criadoEm DateTime @default(now())
+
+  vendas VendaLoja[]
+
+  @@index([lojaId, nome])
+}
+
+model Caixa {
+  id     String @id @default(cuid())
+  lojaId String
+  loja   Loja   @relation(fields: [lojaId], references: [id], onDelete: Cascade)
+
+  abertoEm  DateTime  @default(now())
+  fechadoEm DateTime?
+
+  /// Troco deixado na gaveta na abertura.
+  aberturaCentavos            Int  @default(0)
+  /// O que o dono contou na gaveta ao fechar. Guardado como ele informou, sem
+  /// ajuste: a diferença para o esperado é justamente o que ele precisa ver.
+  fechamentoInformadoCentavos Int?
+
+  vendas   VendaLoja[]
+  sangrias SangriaCaixa[]
+
+  @@index([lojaId, abertoEm])
+}
+
+/// Dinheiro tirado da gaveta durante o expediente (depósito, pagamento, troco).
+model SangriaCaixa {
+  id      String @id @default(cuid())
+  caixaId String
+  caixa   Caixa  @relation(fields: [caixaId], references: [id], onDelete: Cascade)
+
+  valorCentavos Int
+  motivo        String?
+  criadoEm      DateTime @default(now())
+}
+
+model VendaLoja {
+  id     String @id @default(cuid())
+  lojaId String
+  loja   Loja   @relation(fields: [lojaId], references: [id], onDelete: Cascade)
+
+  caixaId String?
+  caixa   Caixa?  @relation(fields: [caixaId], references: [id])
+
+  clienteId String?
+  cliente   ClienteLoja? @relation(fields: [clienteId], references: [id])
+
+  /// Sequencial por loja, para o dono e o cliente falarem do mesmo pedido.
+  numero Int
+
+  /// Soma dos itens menos o desconto. Gravado porque o preço do produto muda
+  /// com o tempo e a venda de ontem tem de continuar valendo o de ontem.
+  totalCentavos    Int @default(0)
+  descontoCentavos Int @default(0)
+
+  cancelada   Boolean   @default(false)
+  canceladaEm DateTime?
+  observacao  String?
+
+  criadoEm DateTime @default(now())
+
+  itens      ItemVenda[]
+  pagamentos PagamentoVenda[]
+
+  @@unique([lojaId, numero])
+  @@index([lojaId, criadoEm])
+}
+
+model ItemVenda {
+  id      String    @id @default(cuid())
+  vendaId String
+  venda   VendaLoja @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+
+  produtoId String?
+  produto   ProdutoLoja? @relation(fields: [produtoId], references: [id])
+
+  /// Copiada do produto na hora da venda. Se o produto for renomeado ou
+  /// apagado depois, o histórico continua legível.
+  descricao             String
+  quantidade            Int    @default(1)
+  precoUnitarioCentavos Int
+  totalCentavos         Int
+
+  @@index([vendaId])
+}
+
+/// Uma venda pode ser paga em mais de uma forma (metade Pix, metade dinheiro).
+model PagamentoVenda {
+  id      String    @id @default(cuid())
+  vendaId String
+  venda   VendaLoja @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+
+  forma         FormaPagamento
+  valorCentavos Int
+
+  /// Taxa e líquido congelados no momento da venda. A taxa da maquininha muda
+  /// com o tempo; recalcular depois faria a venda de março mudar de valor.
+  taxaBps              Int @default(0)
+  valorLiquidoCentavos Int
+
+  /// Quando o dinheiro cai. Hoje para dinheiro e Pix, D+30 para crédito.
+  previsaoRecebimentoEm DateTime
+  /// Preenchido quando o dono confirma que caiu. Enquanto for null, o valor
+  /// conta como a receber, nunca como saldo disponível.
+  recebidoEm            DateTime?
+
+  /// Número de parcelas no crédito parcelado. 1 nas demais formas.
+  parcelas Int @default(1)
+
+  @@index([vendaId])
+  @@index([previsaoRecebimentoEm])
 }
