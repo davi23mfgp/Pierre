@@ -1,5 +1,5 @@
 /**
- * Motor financeiro do Bean.
+ * Motor financeiro do Tino.
  *
  * Regras da casa:
  * - dinheiro entra e sai daqui em centavos (Int);

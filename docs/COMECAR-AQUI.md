@@ -28,7 +28,7 @@ Com o `npm run dev` de pé, noutro terminal:
 npm run test:fumaca   # deve dar 40 rotas de pé
 ```
 
-Entre com `demo@bean.local` / `demo12345` e abra `/analise`. Se o parecer
+Entre com `demo@tino.local` / `demo12345` e abra `/analise`. Se o parecer
 aparecer com DRE, balanço e indicadores, o sistema está inteiro.
 
 ## O que o Davi pediu, na ordem em que pediu
@@ -38,7 +38,7 @@ aparecer com DRE, balanço e indicadores, o sistema está inteiro.
 2. Projeção, organização de dívidas, metas (viagem, aposentadoria).
 3. Ajuda para decidir empréstimo.
 4. Mandar extratos e categorizar contas com facilidade.
-5. Comportar-se como o app Bean.counter — "meu assessor".
+5. Comportar-se como o app Tino — "meu assessor".
 6. Open Finance se der. **Depois desistiu:** não vai usar.
 7. Usar o ERP dele como exemplo de estrutura e de visual.
 8. Análise profissional de contador.

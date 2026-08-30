@@ -1,4 +1,4 @@
-# Publicar o Bean.counter
+# Publicar o Tino
 
 Hoje o app só funciona com o computador ligado e o Postgres portátil rodando.
 Publicar resolve duas coisas: o celular passa a acessar de qualquer lugar, e a
@@ -82,7 +82,7 @@ junto, é uma migração de dados à parte, não um passo de deploy.
   Para dado financeiro que vale anos, vale exportar um dump de tempos em tempos:
 
   ```bash
-  pg_dump "SUA_DIRECT_URL" -Fc -f bean-counter-AAAA-MM-DD.dump
+  pg_dump "SUA_DIRECT_URL" -Fc -f tino-AAAA-MM-DD.dump
   ```
 
 - **Domínio próprio.** A Vercel dá um `*.vercel.app`; domínio próprio é

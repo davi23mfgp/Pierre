@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { comSessao, corpo, ok } from "@/lib/api"
-import { atualizarAlertas } from "@/lib/bean-counter/alertas"
+import { atualizarAlertas } from "@/lib/tino/alertas"
 
 export const dynamic = "force-dynamic"
 

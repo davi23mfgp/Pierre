@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 
 /**
- * Blocos de tela do Bean.
+ * Blocos de tela do Tino.
  *
  * Seguem o mesmo sistema visual do Control.Deal: superfície `surface-1`, borda
  * `hairline`, raio de 26px (`.ios-card`) e acento em `ios-blue`. Manter o mesmo

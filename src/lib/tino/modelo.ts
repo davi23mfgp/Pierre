@@ -1,5 +1,5 @@
 /**
- * Camada de modelo do Bean.
+ * Camada de modelo do Tino.
  *
  * Só é chamada quando o motor de regras não sabe responder. Opcional: sem
  * ANTHROPIC_API_KEY o app continua funcionando inteiro, apenas com respostas
@@ -9,8 +9,8 @@
 import Anthropic from "@anthropic-ai/sdk"
 import type { BetaMessageParam, BetaTextBlock } from "@anthropic-ai/sdk/resources/beta/messages"
 
-import type { Panorama } from "@/lib/bean-counter/panorama"
-import { PERSONA, contextoParaModelo, type RespostaAssistente } from "@/lib/bean-counter/chat"
+import type { Panorama } from "@/lib/tino/panorama"
+import { PERSONA, contextoParaModelo, type RespostaAssistente } from "@/lib/tino/chat"
 
 const MODELO = process.env.ANTHROPIC_MODEL || "claude-opus-5"
 

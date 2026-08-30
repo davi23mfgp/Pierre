@@ -1,5 +1,5 @@
 /**
- * Seleção do provedor e sincronização para dentro do banco do Bean.
+ * Seleção do provedor e sincronização para dentro do banco do Tino.
  */
 
 import { prisma } from "@/lib/prisma"

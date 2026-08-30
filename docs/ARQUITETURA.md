@@ -21,12 +21,12 @@ src/lib/
   importar/               OFX, CSV, PDF, deduplicação
   captura/                leitor de notificação, ponte com celular, Telegram
   open-finance/           contrato + Pluggy + sandbox (fora do menu)
-  bean-counter/
+  tino/
     panorama.ts            a foto financeira completa — fonte única de números
     diagnostico.ts         DRE, balanço, indicadores, parecer
     simulador.ts           cenários e comparação
     plano-pagamento.ts     roteiro de quitação
-    alertas.ts             o que o Bean diria sem ser perguntado
+    alertas.ts             o que o Tino diria sem ser perguntado
     chat.ts                motor de regras do assistente
     modelo.ts              camada opcional de modelo de linguagem
   semear.ts                categorias e regras iniciais de um lar novo

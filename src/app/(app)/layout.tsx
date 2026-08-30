@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { getSessao } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { Navegacao } from "@/components/navegacao"
-import { BeanCounterDock } from "@/components/bean-counter-dock"
+import { TinoDock } from "@/components/tino-dock"
 import { BarraTopo } from "@/components/barra-topo"
 
 export default async function LayoutApp({ children }: { children: React.ReactNode }) {
@@ -21,7 +21,7 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
   if (!lar) redirect("/login?sessao=invalida")
 
   // Painel vazio não diz nada a quem acabou de chegar. Antes de mostrar
-  // qualquer tela, o Bean pergunta o essencial — e o usuário pode pular.
+  // qualquer tela, o Tino pergunta o essencial — e o usuário pode pular.
   if (!lar.onboardingEm) redirect("/bem-vindo")
 
   return (
@@ -29,7 +29,7 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
       <BarraTopo nome={sessao.nome} />
       <Navegacao mei={Boolean(lar.meiPerfil)} />
       <main className="animate-page-enter">{children}</main>
-      <BeanCounterDock />
+      <TinoDock />
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { comSessao, lerCompetencia, ok } from "@/lib/api"
 import { competenciaAtual } from "@/lib/datas"
-import { montarPanorama } from "@/lib/bean-counter/panorama"
+import { montarPanorama } from "@/lib/tino/panorama"
 import { compromissosFuturos, resumoParcelamentos } from "@/lib/parcelamentos"
 
 export const GET = comSessao(async (sessao, requisicao) => {

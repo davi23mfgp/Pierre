@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
  * Conversa inicial.
  *
  * Cada passo pergunta uma coisa só e pode ser pulado. A ordem segue o que o
- * Bean.counter precisa saber para dizer algo útil já no primeiro painel: quanto entra,
+ * Tino precisa saber para dizer algo útil já no primeiro painel: quanto entra,
  * onde está o dinheiro, o que já está comprometido e para onde você quer ir.
  */
 

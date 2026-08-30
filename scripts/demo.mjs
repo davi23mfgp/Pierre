@@ -13,7 +13,7 @@
  *   node scripts/demo.mjs          cria (ou recria) a conta
  *   node scripts/demo.mjs --limpar remove a conta
  *
- * Entrar: demo@bean.local / demo12345
+ * Entrar: demo@tino.local / demo12345
  */
 
 import { PrismaClient } from "@prisma/client"
@@ -21,7 +21,7 @@ import bcrypt from "bcryptjs"
 
 const prisma = new PrismaClient()
 
-const EMAIL = "demo@bean.local"
+const EMAIL = "demo@tino.local"
 const SENHA = "demo12345"
 
 const reais = (valor) => Math.round(valor * 100)

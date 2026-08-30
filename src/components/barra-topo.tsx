@@ -30,7 +30,7 @@ export function BarraTopo({ nome }: { nome: string }) {
   useEffect(() => {
     // Falha ao carregar alerta não pode quebrar a barra inteira: o resto da tela
     // continua útil mesmo sem eles.
-    buscar<Alerta[]>("/api/bean-counter/alertas")
+    buscar<Alerta[]>("/api/tino/alertas")
       .then(setAlertas)
       .catch(() => setAlertas([]))
   }, [])
@@ -46,7 +46,7 @@ export function BarraTopo({ nome }: { nome: string }) {
   return (
     <header className="flex items-center justify-between py-5">
       <div>
-        <p className="text-xs uppercase tracking-widest text-muted-fg">Bean.counter</p>
+        <p className="text-xs uppercase tracking-widest text-muted-fg">Tino</p>
         <h1 className="text-xl font-semibold tracking-tight">Olá, {nome.split(" ")[0]}</h1>
       </div>
 

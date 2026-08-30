@@ -13,12 +13,12 @@ const onest = Onest({
 })
 
 export const metadata: Metadata = {
-  title: "Bean.counter — seu contador pessoal",
+  title: "Tino — seu contador pessoal",
   description:
     "Organize contas, dívidas e metas em um lugar só. Projeção de caixa, plano de pagamento e ajuda para decidir empréstimo. Para pessoa física e MEI.",
   manifest: "/manifest.webmanifest",
   // Instalado na tela inicial do celular, o app abre sem barra de navegador.
-  appleWebApp: { capable: true, title: "Bean.counter", statusBarStyle: "black-translucent" },
+  appleWebApp: { capable: true, title: "Tino", statusBarStyle: "black-translucent" },
   icons: {
     icon: [{ url: "/icones/icone-192.png", sizes: "192x192", type: "image/png" }],
     apple: [{ url: "/icones/icone-192.png", sizes: "192x192" }],

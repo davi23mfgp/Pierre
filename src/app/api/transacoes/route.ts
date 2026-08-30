@@ -93,7 +93,7 @@ export const POST = comSessao(async (sessao, requisicao) => {
   const conta = await prisma.conta.findFirst({ where: { id: contaId, larId: sessao.larId } })
   if (!conta) throw new ErroDeUso("Conta não encontrada.", 404)
 
-  // Sem categoria informada, o Bean sugere pelas regras do lar — o usuário
+  // Sem categoria informada, o Tino sugere pelas regras do lar — o usuário
   // não deveria ter de escolher categoria em todo lançamento manual.
   let categoriaId = dados.categoriaId ?? null
   if (!categoriaId && dados.tipo !== "TRANSFERENCIA") {

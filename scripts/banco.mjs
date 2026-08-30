@@ -1,11 +1,11 @@
 /**
- * Liga e desliga o Postgres local do Bean.counter.
+ * Liga e desliga o Postgres local do Tino.
  *
  * A pasta ainda se chama `pierre-pg` — é o cluster que já existe no disco, com
  * os dados dentro. Renomear obriga a exportar, recriar e restaurar; enquanto
  * isso não for feito, o nome antigo fica.
  *
- * O banco roda a partir de binários portáteis em %LOCALAPPDATA%\bean-counter-pg, sem
+ * O banco roda a partir de binários portáteis em %LOCALAPPDATA%\tino-pg, sem
  * serviço do Windows e sem privilégio de administrador. Como não é serviço, ele
  * não sobe sozinho depois de reiniciar a máquina — daí este script.
  *

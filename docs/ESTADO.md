@@ -26,7 +26,7 @@ computador do Davi e é acessado pelo celular na rede de casa.
 | Empréstimo | `/emprestimos` | CET, veredito, tabela de amortização |
 | Metas | `/metas` | progresso, aporte necessário, data prevista |
 | Contas fixas | `/recorrencias` | alimenta projeção e reserva |
-| Regras | `/regras` | o que o Bean aprendeu, reprocessar histórico |
+| Regras | `/regras` | o que o Tino aprendeu, reprocessar histórico |
 | MEI | `/mei` | limite anual, DAS, lançamento de faturamento e baixa do DAS |
 | Configurações | `/configuracoes` | contas, refazer conversa inicial |
 | Conversa inicial | `/bem-vindo` | 7 perguntas, todas puláveis |
@@ -55,12 +55,13 @@ Em ordem de valor, na minha leitura:
 
 - `davi23mfgp@gmail.com` — a conta real do Davi. **Não apague.** Ele pulou a
   conversa inicial, então está quase vazia.
-- `demo@bean.local` / `demo12345` — demonstração "Casa da Marina", 6 meses de
+- `demo@tino.local` / `demo12345` — demonstração "Casa da Marina", 6 meses de
   histórico. Recriar com `node scripts/demo.mjs`.
 
 ## Renomeação: o que ainda carrega o nome antigo
 
-O produto virou **Bean.counter** em 27/08/2026. Código, telas, rotas, documentos
+O produto virou **Tino** em 30/08/2026 (passou por Bean.counter no caminho,
+descartado por ser descritivo demais para registrar como marca). Código, telas, rotas, documentos
 e o enum `PapelMensagem` já usam o nome novo. Continua antigo, de propósito:
 
 | O quê | Por quê | Como trocar |
@@ -84,4 +85,4 @@ só para quem abrir a máquina de desenvolvimento.
   mas ele pediu foco em cálculo e análise.
 - **Visual do ERP Controllares.** `globals.css` veio de lá. Tokens `ios-*`,
   `surface-1`, `hairline`, `.ios-card`, fonte Onest. Nada de verde estilo
-  Bean.counter — foi corrigido uma vez, não reintroduza.
+  Tino — foi corrigido uma vez, não reintroduza.

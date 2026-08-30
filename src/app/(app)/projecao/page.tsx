@@ -1,7 +1,7 @@
 import { sessaoDaPagina } from "@/lib/pagina"
 import { competenciaAtual, rotuloCompetencia } from "@/lib/datas"
 import { formatarMoeda } from "@/lib/dinheiro"
-import { montarPanorama } from "@/lib/bean-counter/panorama"
+import { montarPanorama } from "@/lib/tino/panorama"
 import { compromissosFuturos } from "@/lib/parcelamentos"
 import { Cartao, Metrica } from "@/components/ui/painel"
 import { GraficoFluxo } from "@/components/graficos"

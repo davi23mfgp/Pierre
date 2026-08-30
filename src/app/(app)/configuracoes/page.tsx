@@ -101,14 +101,14 @@ export default function Configuracoes() {
     <div className="space-y-4">
       <Cartao titulo="Conversa inicial">
         <p className="text-[13px] leading-relaxed text-muted-fg">
-          Responder as perguntas do Bean é o que faz o painel, a projeção e o plano de pagamento saírem do zero.
+          Responder as perguntas do Tino é o que faz o painel, a projeção e o plano de pagamento saírem do zero.
           Nada do que você já cadastrou é apagado: o que responder soma ao que existe.
         </p>
         <button
           onClick={refazerConversa}
           className="mt-3 rounded-full border border-ios-blue/40 bg-ios-blue/10 px-5 py-2.5 text-[13px] text-ios-blue"
         >
-          Responder as perguntas do Bean
+          Responder as perguntas do Tino
         </button>
       </Cartao>
 

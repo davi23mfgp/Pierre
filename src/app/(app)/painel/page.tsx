@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react"
 import { sessaoDaPagina } from "@/lib/pagina"
 import { competenciaAtual, rotuloCompetencia } from "@/lib/datas"
 import { formatarMoeda } from "@/lib/dinheiro"
-import { montarPanorama } from "@/lib/bean-counter/panorama"
+import { montarPanorama } from "@/lib/tino/panorama"
 import { compromissosFuturos, resumoParcelamentos } from "@/lib/parcelamentos"
 import { Barra, Cartao, Metrica, Vazio } from "@/components/ui/painel"
 import { GraficoCategorias, GraficoEvolucao, GraficoParcelas } from "@/components/graficos"
@@ -80,7 +80,7 @@ export default async function Painel() {
             ) : (
               <Vazio
                 titulo="Nenhum gasto neste mês"
-                texto="Anote pelo celular ou importe um extrato para o Bean começar a trabalhar."
+                texto="Anote pelo celular ou importe um extrato para o Tino começar a trabalhar."
               />
             )}
           </div>
@@ -167,7 +167,7 @@ export default async function Painel() {
       )}
 
       <Cartao
-        titulo="O que o Bean faria agora"
+        titulo="O que o Tino faria agora"
         acao={
           <Link href="/plano" className="flex items-center gap-1 text-xs text-ios-green hover:underline">
             abrir plano <ArrowRight className="h-3 w-3" />
@@ -195,7 +195,7 @@ export default async function Painel() {
           )}
           {panorama.mes.naoCategorizadas > 0 && (
             <li>
-              {panorama.mes.naoCategorizadas} lançamento(s) sem categoria. Corrigir uma vez ensina o Bean para
+              {panorama.mes.naoCategorizadas} lançamento(s) sem categoria. Corrigir uma vez ensina o Tino para
               sempre.
             </li>
           )}

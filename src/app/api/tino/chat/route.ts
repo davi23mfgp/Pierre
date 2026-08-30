@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma"
 import { comSessao, corpo, exigir, ok } from "@/lib/api"
 import { competenciaAtual } from "@/lib/datas"
-import { montarPanorama } from "@/lib/bean-counter/panorama"
-import { responderPorRegras } from "@/lib/bean-counter/chat"
-import { modeloDisponivel, responderComModeloStream, type TurnoConversa } from "@/lib/bean-counter/modelo"
+import { montarPanorama } from "@/lib/tino/panorama"
+import { responderPorRegras } from "@/lib/tino/chat"
+import { modeloDisponivel, responderComModeloStream, type TurnoConversa } from "@/lib/tino/modelo"
 
 // O chat lê o panorama inteiro do banco a cada pergunta: resposta financeira
 // vale pelo número atual, não por um cache de minutos atrás.

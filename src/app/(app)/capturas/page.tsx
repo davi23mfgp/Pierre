@@ -159,7 +159,7 @@ export default function Capturas() {
           </button>
         </form>
         <p className="mt-2 text-[12px] text-muted-fg">
-          Escreva como você falaria: <b>uber 18</b>, <b>farmácia 38,90</b>, <b>almoço 45</b>. O Bean adivinha a
+          Escreva como você falaria: <b>uber 18</b>, <b>farmácia 38,90</b>, <b>almoço 45</b>. O Tino adivinha a
           categoria pelo nome.
         </p>
       </Cartao>
@@ -283,7 +283,7 @@ export default function Capturas() {
         </Cartao>
       )}
 
-      <Cartao titulo="Ligar o celular ao Bean">
+      <Cartao titulo="Ligar o celular ao Tino">
         <p className="text-[13px] leading-relaxed text-muted-fg">
           A ideia de o app anotar sozinho as notificações do banco funciona — mas um site não consegue ler notificações
           do celular. Quem lê é um aplicativo de automação no seu aparelho, que repassa o texto para cá. Você escolhe
@@ -342,7 +342,7 @@ export default function Capturas() {
             <ol className="mt-2 space-y-1.5 text-[12px] leading-relaxed text-muted-fg">
               <li>1. Gere a chave abaixo.</li>
               <li>
-                2. No Telegram, abra o bot do Bean e mande
+                2. No Telegram, abra o bot do Tino e mande
                 <code className="mx-1 rounded bg-surface-2 px-1.5 py-0.5">/conectar SUA_CHAVE</code>
               </li>
               <li>3. Pronto: encaminhe o PDF da fatura, ou escreva o gasto direto na conversa.</li>

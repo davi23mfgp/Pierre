@@ -18,13 +18,13 @@ const SUGESTOES = [
 ]
 
 /**
- * Conversa com o Bean, presente em todas as telas.
+ * Conversa com o Tino, presente em todas as telas.
  *
  * A resposta chega em streaming quando vem do modelo e de uma vez quando vem do
  * motor de regras. O componente trata os dois casos pelo Content-Type: JSON é
  * resposta pronta, texto puro é fluxo.
  */
-export function BeanCounterDock() {
+export function TinoDock() {
   const [aberto, setAberto] = useState(false)
   const [turnos, setTurnos] = useState<Turno[]>([])
   const [pergunta, setPergunta] = useState("")
@@ -40,7 +40,7 @@ export function BeanCounterDock() {
     setPensando(true)
 
     try {
-      const resposta = await fetch("/api/bean-counter/chat", {
+      const resposta = await fetch("/api/tino/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pergunta: texto, conversaId: conversaId.current }),
@@ -54,7 +54,7 @@ export function BeanCounterDock() {
         if (dados.conversaId) conversaId.current = dados.conversaId
         setTurnos((atual) => [...atual, { papel: "ASSISTENTE", texto: dados.texto ?? dados.erro }])
       } else if (resposta.body) {
-        // O turno do Bean entra vazio e vai crescendo: assim o texto aparece
+        // O turno do Tino entra vazio e vai crescendo: assim o texto aparece
         // conforme chega, em vez de a tela ficar parada até o fim.
         setTurnos((atual) => [...atual, { papel: "ASSISTENTE", texto: "" }])
         const leitor = resposta.body.getReader()
@@ -87,7 +87,7 @@ export function BeanCounterDock() {
         className="fixed bottom-[76px] right-4 z-40 sm:bottom-5 sm:right-5 flex items-center gap-2 rounded-full border border-ios-blue/30 bg-ios-blue/10 px-4 py-3 text-[13px] font-medium text-ios-blue shadow-apple-float backdrop-blur-xl transition hover:bg-ios-blue/20"
       >
         <Sparkles className="h-4 w-4" />
-        Conversar com o Bean
+        Conversar com o Tino
       </button>
     )
   }
@@ -97,7 +97,7 @@ export function BeanCounterDock() {
       <header className="flex items-center justify-between border-b border-hairline px-4 py-3">
         <div className="flex items-center gap-2 text-sm font-medium">
           <Sparkles className="h-4 w-4 text-ios-green" />
-          Bean.counter
+          Tino
         </div>
         <button onClick={() => setAberto(false)} className="text-muted-fg hover:text-foreground">
           <X className="h-4 w-4" />
@@ -136,7 +136,7 @@ export function BeanCounterDock() {
           </div>
         ))}
 
-        {pensando && <p className="text-[12px] text-muted-fg">Bean.counter está calculando…</p>}
+        {pensando && <p className="text-[12px] text-muted-fg">Tino está calculando…</p>}
         <div ref={fim} />
       </div>
 

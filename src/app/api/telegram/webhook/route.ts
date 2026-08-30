@@ -177,7 +177,7 @@ export async function POST(requisicao: Request) {
   if (/^\/(start|ajuda|help)/i.test(texto)) {
     await responder(
       chatId,
-      "Sou o Bean. Por aqui você pode:\n• anotar um gasto: <b>mercado 52,30</b>\n• encaminhar a notificação de compra do banco\n• mandar o arquivo da fatura (PDF, CSV ou OFX)",
+      "Sou o Tino. Por aqui você pode:\n• anotar um gasto: <b>mercado 52,30</b>\n• encaminhar a notificação de compra do banco\n• mandar o arquivo da fatura (PDF, CSV ou OFX)",
     )
     return NextResponse.json({ ok: true })
   }

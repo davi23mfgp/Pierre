@@ -1,6 +1,6 @@
 {
-  "name": "Bean.counter — seu contador pessoal",
-  "short_name": "Bean.counter",
+  "name": "Tino — seu contador pessoal",
+  "short_name": "Tino",
   "description": "Contas, dívidas, metas e projeção de caixa em um lugar só.",
   "start_url": "/painel",
   "scope": "/",

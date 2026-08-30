@@ -8,7 +8,7 @@ import { Cartao, Metrica, Vazio } from "@/components/ui/painel"
 import { cn } from "@/lib/utils"
 
 /**
- * O que o Bean aprendeu.
+ * O que o Tino aprendeu.
  *
  * A tela existe porque categorização automática sem lugar para inspecionar vira
  * caixa-preta: quando erra, o usuário não sabe onde corrigir e passa a
@@ -112,7 +112,7 @@ export default function Regras() {
   return (
     <div className="space-y-4">
       <Cartao
-        titulo="O que o Bean aprendeu"
+        titulo="O que o Tino aprendeu"
         acao={
           <button onClick={() => setAbrir((atual) => !atual)} className="flex items-center gap-1.5">
             <Plus className="size-3.5" /> nova regra
@@ -126,7 +126,7 @@ export default function Regras() {
         </div>
 
         <p className="mt-3 text-[12px] leading-relaxed text-muted-fg">
-          Toda vez que você corrige a categoria de um lançamento, o Bean cria uma regra aqui. Quanto mais regras, menos
+          Toda vez que você corrige a categoria de um lançamento, o Tino cria uma regra aqui. Quanto mais regras, menos
           trabalho no mês seguinte.
         </p>
 
