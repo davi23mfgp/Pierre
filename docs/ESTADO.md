@@ -69,7 +69,6 @@ Continua antigo, e cada um por um motivo:
 
 | O quê | Por quê | Como trocar |
 |---|---|---|
-| repositório `davi23mfgp/Pierre` | renomear muda a URL para todo mundo, e o projeto na Vercel aponta para ela | Settings → Rename no GitHub, depois `git remote set-url origin` |
 | pasta do projeto `Documents\pierre` | caminho aberto em editor e terminal | renomear e reabrir |
 | `PIERRE` na migration `20260823223045_inicial` | **não trocar.** Editar migration já aplicada quebra o checksum e o `migrate deploy` passa a falhar em toda máquina, produção inclusive. A migration `20260827120000` já renomeia o valor para `ASSISTENTE`. | nada a fazer |
 | a menção à troca de nome no `CLAUDE.md` | é o registro de que a marca mudou de propósito, com data | nada a fazer |

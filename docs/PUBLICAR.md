@@ -38,7 +38,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 
 ## 3. App na Vercel
 
-1. https://vercel.com → **Add New → Project** → importe `davi23mfgp/Pierre` (o repositório ainda tem o nome antigo).
+1. https://vercel.com → **Add New → Project** → importe `davi23mfgp/tino`.
 2. Framework Next.js é detectado sozinho. Não mexa em build command: o
    `npm run build` do projeto já faz `prisma generate && prisma migrate deploy
    && next build`, então o banco novo sai do deploy com o schema aplicado.
