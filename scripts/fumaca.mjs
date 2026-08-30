@@ -40,6 +40,7 @@ const PAGINAS = [
   "/regras",
   "/simulador",
   "/transacoes",
+  "/loja",
   "/bem-vindo",
 ]
 
@@ -65,6 +66,10 @@ const APIS = [
   "/api/panorama",
   "/api/parcelamentos",
   "/api/tino/alertas",
+  "/api/loja",
+  "/api/loja/caixa",
+  "/api/loja/produtos",
+  "/api/loja/vendas",
   "/api/plano-pagamento",
   "/api/recorrencias",
   "/api/regras",
