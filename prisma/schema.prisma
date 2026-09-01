@@ -910,7 +910,8 @@ model ProdutoLoja {
 
   criadoEm DateTime @default(now())
 
-  itens ItemVenda[]
+  itens      ItemVenda[]
+  movimentos MovimentoEstoque[]
 
   @@unique([lojaId, codigoBarras])
   @@index([lojaId, nome])
@@ -1040,4 +1041,43 @@ model PagamentoVenda {
 
   @@index([vendaId])
   @@index([previsaoRecebimentoEm])
+}
+
+/// Movimento de estoque.
+///
+/// O saldo do produto é a soma dos movimentos, nunca um campo gravado. Campo
+/// gravado e soma divergem no primeiro erro de gravação, e aí ninguém sabe em
+/// qual acreditar — o mesmo motivo pelo qual o saldo da conta no Tino pessoal
+/// também é derivado.
+model MovimentoEstoque {
+  id        String      @id @default(cuid())
+  produtoId String
+  produto   ProdutoLoja @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  tipo TipoMovimentoEstoque
+
+  /// Sempre positiva. O sinal vem do tipo, não do número: quantidade negativa
+  /// numa entrada seria uma saída disfarçada, impossível de auditar depois.
+  quantidade Int
+
+  /// Quanto custou a peça nesta entrada. Zero na saída, onde o custo relevante
+  /// é o da entrada correspondente.
+  custoUnitarioCentavos Int @default(0)
+
+  /// Preenchido quando o movimento nasceu de uma venda do balcão.
+  vendaId String?
+
+  motivo   String?
+  criadoEm DateTime @default(now())
+
+  @@index([produtoId, criadoEm])
+  @@index([vendaId])
+}
+
+enum TipoMovimentoEstoque {
+  ENTRADA
+  SAIDA
+  /// Contagem física: o saldo passa a ser o informado, e a diferença fica
+  /// registrada como ajuste em vez de sumir.
+  AJUSTE
 }

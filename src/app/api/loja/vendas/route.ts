@@ -104,6 +104,23 @@ export const POST = comSessao(async (sessao, requisicao) => {
     include: { itens: true, pagamentos: true, cliente: true },
   })
 
+  // Baixa do estoque. Só para item que aponta para produto cadastrado — item
+  // avulso não tem prateleira para descontar, e inventar um produto a partir da
+  // descrição digitada criaria cadastro duplicado a cada venda.
+  const comProduto = venda.itens.filter((item) => item.produtoId)
+  if (comProduto.length > 0) {
+    await prisma.movimentoEstoque.createMany({
+      data: comProduto.map((item) => ({
+        produtoId: item.produtoId as string,
+        tipo: "SAIDA" as const,
+        quantidade: item.quantidade,
+        vendaId: venda.id,
+        motivo: `Venda ${venda.numero}`,
+        criadoEm: vendidoEm,
+      })),
+    })
+  }
+
   // O faturamento do MEI conta a venda, não o recebimento: para o limite anual
   // vale o que foi vendido na competência, mesmo que o cartão caia mês que vem.
   await somarNoFaturamentoMei(sessao.larId, vendidoEm, totalCentavos)

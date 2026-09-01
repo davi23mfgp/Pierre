@@ -70,6 +70,7 @@ const APIS = [
   "/api/loja/caixa",
   "/api/loja/produtos",
   "/api/loja/vendas",
+  "/api/loja/estoque",
   "/api/plano-pagamento",
   "/api/recorrencias",
   "/api/regras",
