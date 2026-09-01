@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import {
   Area,
   AreaChart,
@@ -34,15 +35,70 @@ import { rotuloCompetencia } from "@/lib/datas"
  *   e é a forma mais comum de um gráfico mentir sem mentir.
  */
 
-const AZUL = "oklch(var(--lch-acao))"
-const VERDE = "oklch(var(--lch-positivo))"
-const VERMELHO = "oklch(var(--lch-negativo))"
-const LARANJA = "oklch(var(--lch-atencao))"
-const ROXO = "oklch(var(--lch-destaque))"
-const AMARELO = "oklch(var(--lch-alerta))"
-const TEAL = "oklch(var(--lch-dado))"
+/**
+ * Cores dos gráficos.
+ *
+ * Elas nascem de variáveis CSS, que trocam entre tema claro e escuro. Mas o
+ * Recharts escreve a cor em **atributo de apresentação** do SVG, e o navegador
+ * não expande `var()` ali — a linha sai sem cor nenhuma e o gráfico aparece
+ * vazio, com os eixos no lugar.
+ *
+ * Por isso a cor é resolvida uma vez, no navegador, lendo o valor já computado.
+ * Enquanto isso não acontece (primeiro render, servidor), vale `currentColor`,
+ * que ao menos desenha.
+ */
+const TOKENS = {
+  positivo: "--lch-positivo",
+  negativo: "--lch-negativo",
+  atencao: "--lch-atencao",
+  destaque: "--lch-destaque",
+  alerta: "--lch-alerta",
+  dado: "--lch-dado",
+  neutro: "--lch-acao",
+} as const
 
-export const PALETA = [AZUL, VERDE, LARANJA, ROXO, TEAL, AMARELO, VERMELHO]
+type NomeDaCor = keyof typeof TOKENS
+
+function useCores() {
+  const [cores, setCores] = useState<Record<NomeDaCor, string>>(() =>
+    Object.fromEntries(Object.keys(TOKENS).map((nome) => [nome, "currentColor"])) as Record<NomeDaCor, string>,
+  )
+
+  useEffect(() => {
+    const ler = () => {
+      const estilo = getComputedStyle(document.documentElement)
+      setCores(
+        Object.fromEntries(
+          Object.entries(TOKENS).map(([nome, token]) => {
+            const lch = estilo.getPropertyValue(token).trim()
+            return [nome, lch ? `oklch(${lch})` : "currentColor"]
+          }),
+        ) as Record<NomeDaCor, string>,
+      )
+    }
+
+    ler()
+
+    // O tema troca sem recarregar a página; sem observar a classe do <html> o
+    // gráfico ficaria com a cor do tema anterior até a próxima navegação.
+    const observador = new MutationObserver(ler)
+    observador.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
+    return () => observador.disconnect()
+  }, [])
+
+  return cores
+}
+
+/** Ordem das séries em gráfico de várias fatias. */
+export const ORDEM_DA_PALETA: NomeDaCor[] = [
+  "positivo",
+  "dado",
+  "atencao",
+  "destaque",
+  "alerta",
+  "neutro",
+  "negativo",
+]
 
 const eixo = { fontSize: 11, fill: "currentColor", opacity: 0.55 }
 
@@ -82,6 +138,7 @@ export function GraficoEvolucao({
   dados: { competencia: string; receitasCentavos: number; despesasCentavos: number }[]
   altura?: number
 }) {
+  const cores = useCores()
   const serie = dados.map((linha) => ({
     mes: rotuloCompetencia(linha.competencia, true),
     Entrou: linha.receitasCentavos,
@@ -93,19 +150,19 @@ export function GraficoEvolucao({
       <AreaChart data={serie} margin={{ top: 4, right: 4, bottom: 0, left: -12 }}>
         <defs>
           <linearGradient id="entrou" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={VERDE} stopOpacity={0.35} />
-            <stop offset="100%" stopColor={VERDE} stopOpacity={0} />
+            <stop offset="0%" stopColor={cores.positivo} stopOpacity={0.35} />
+            <stop offset="100%" stopColor={cores.positivo} stopOpacity={0} />
           </linearGradient>
           <linearGradient id="saiu" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={VERMELHO} stopOpacity={0.3} />
-            <stop offset="100%" stopColor={VERMELHO} stopOpacity={0} />
+            <stop offset="0%" stopColor={cores.negativo} stopOpacity={0.3} />
+            <stop offset="100%" stopColor={cores.negativo} stopOpacity={0} />
           </linearGradient>
         </defs>
         <XAxis dataKey="mes" tick={eixo} axisLine={false} tickLine={false} />
         <YAxis tick={eixo} axisLine={false} tickLine={false} tickFormatter={(v) => formatarMoedaCurta(Number(v))} />
         <Tooltip content={<Dica />} />
-        <Area type="monotone" dataKey="Entrou" stroke={VERDE} strokeWidth={2} fill="url(#entrou)" />
-        <Area type="monotone" dataKey="Saiu" stroke={VERMELHO} strokeWidth={2} fill="url(#saiu)" />
+        <Area type="monotone" dataKey="Entrou" stroke={cores.positivo} strokeWidth={2} fill="url(#entrou)" />
+        <Area type="monotone" dataKey="Saiu" stroke={cores.negativo} strokeWidth={2} fill="url(#saiu)" />
       </AreaChart>
     </ResponsiveContainer>
   )
@@ -122,6 +179,8 @@ export function GraficoCategorias({
   dados: { nome: string; totalCentavos: number }[]
   altura?: number
 }) {
+  const cores = useCores()
+  const paleta = ORDEM_DA_PALETA.map((nome) => cores[nome])
   // Sete fatias já é o limite do que se lê num relance; o resto vira "outras"
   // em vez de virar uma roda de fatias finas sem nome legível.
   const principais = dados.slice(0, 6)
@@ -139,7 +198,7 @@ export function GraficoCategorias({
         <PieChart>
           <Pie data={serie} dataKey="value" nameKey="name" innerRadius="58%" outerRadius="88%" paddingAngle={2} stroke="none">
             {serie.map((_, indice) => (
-              <Cell key={indice} fill={PALETA[indice % PALETA.length]} />
+              <Cell key={indice} fill={paleta[indice % paleta.length]} />
             ))}
           </Pie>
           <Tooltip content={<Dica />} />
@@ -149,7 +208,7 @@ export function GraficoCategorias({
       <ul className="w-full space-y-1.5">
         {serie.map((linha, indice) => (
           <li key={linha.name} className="flex items-center gap-2 text-[13px]">
-            <span className="size-2.5 shrink-0 rounded-full" style={{ background: PALETA[indice % PALETA.length] }} />
+            <span className="size-2.5 shrink-0 rounded-full" style={{ background: paleta[indice % paleta.length] }} />
             <span className="min-w-0 flex-1 truncate">{linha.name}</span>
             <span className="text-muted-fg">{total > 0 ? `${Math.round((linha.value / total) * 100)}%` : "0%"}</span>
             <span className="w-24 text-right">{formatarMoeda(linha.value)}</span>
@@ -174,6 +233,7 @@ export function GraficoFluxo({
   /// Série do cenário atual, para o simulador desenhar o antes por baixo.
   comparar?: { competencia: string; saldoAcumuladoCentavos: number }[]
 }) {
+  const cores = useCores()
   const serie = dados.map((linha, indice) => ({
     mes: rotuloCompetencia(linha.competencia, true),
     Simulado: linha.saldoAcumuladoCentavos,
@@ -185,8 +245,8 @@ export function GraficoFluxo({
       <AreaChart data={serie} margin={{ top: 4, right: 4, bottom: 0, left: -12 }}>
         <defs>
           <linearGradient id="fluxo" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={AZUL} stopOpacity={0.35} />
-            <stop offset="100%" stopColor={AZUL} stopOpacity={0} />
+            <stop offset="0%" stopColor={cores.neutro} stopOpacity={0.35} />
+            <stop offset="100%" stopColor={cores.neutro} stopOpacity={0} />
           </linearGradient>
         </defs>
         <XAxis dataKey="mes" tick={eixo} axisLine={false} tickLine={false} interval="preserveStartEnd" />
@@ -194,13 +254,13 @@ export function GraficoFluxo({
         <Tooltip content={<Dica />} />
         {/* A linha do zero é a informação mais importante do gráfico: é ela que
             mostra em que mês o dinheiro acaba. */}
-        <ReferenceLine y={0} stroke={VERMELHO} strokeDasharray="4 4" strokeOpacity={0.6} />
+        <ReferenceLine y={0} stroke={cores.negativo} strokeDasharray="4 4" strokeOpacity={0.6} />
         {comparar && <Line type="monotone" dataKey="Hoje" stroke="currentColor" strokeOpacity={0.35} strokeWidth={1.5} dot={false} />}
         <Area
           type="monotone"
           dataKey="Simulado"
           name={comparar ? "Simulado" : "Saldo"}
-          stroke={AZUL}
+          stroke={cores.neutro}
           strokeWidth={2}
           fill="url(#fluxo)"
         />
@@ -220,6 +280,7 @@ export function GraficoParcelas({
   dados: { competencia: string; totalCentavos: number }[]
   altura?: number
 }) {
+  const cores = useCores()
   const serie = dados.map((linha) => ({
     mes: rotuloCompetencia(linha.competencia, true),
     Parcelas: linha.totalCentavos,
@@ -231,7 +292,7 @@ export function GraficoParcelas({
         <XAxis dataKey="mes" tick={eixo} axisLine={false} tickLine={false} />
         <YAxis tick={eixo} axisLine={false} tickLine={false} tickFormatter={(v) => formatarMoedaCurta(Number(v))} />
         <Tooltip content={<Dica />} cursor={{ fill: "currentColor", opacity: 0.04 }} />
-        <Bar dataKey="Parcelas" fill={LARANJA} radius={[6, 6, 0, 0]} />
+        <Bar dataKey="Parcelas" fill={cores.atencao} radius={[6, 6, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   )
@@ -252,8 +313,9 @@ export function GraficoAnel({
   valor: string
   altura?: number
 }) {
+  const cores = useCores()
   const limitado = Math.max(0, Math.min(100, percentual))
-  const cor = percentual > 100 ? VERMELHO : percentual >= 80 ? LARANJA : VERDE
+  const cor = percentual > 100 ? cores.negativo : percentual >= 80 ? cores.atencao : cores.positivo
 
   return (
     <div className="relative">
@@ -273,6 +335,121 @@ export function GraficoAnel({
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-[20px] font-semibold leading-none tracking-tight">{valor}</span>
         <span className="mt-1 text-[11px] uppercase tracking-widest text-muted-fg">{rotulo}</span>
+      </div>
+    </div>
+  )
+}
+
+// ============================================================
+// EFEITO DO CORTE
+// ============================================================
+
+/**
+ * Duas linhas: o caixa como está e o caixa com o corte.
+ *
+ * A comparação é o ponto — uma linha sozinha não responde "adianta cortar".
+ * A linha do jeito que está é tracejada e discreta: ela é o passado que se quer
+ * mudar, não o plano.
+ *
+ * A régua no zero fica sempre visível, mesmo quando as duas linhas estão no
+ * azul. É a fronteira que a pessoa precisa enxergar antes de chegar nela.
+ */
+export function GraficoDoCorte({
+  dados,
+  altura = 260,
+}: {
+  dados: { mes: number; semCorteCentavos: number; comCorteCentavos: number }[]
+  altura?: number
+}) {
+  const cores = useCores()
+  return (
+    <ResponsiveContainer width="100%" height={altura}>
+      <AreaChart data={dados} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+        <defs>
+          <linearGradient id="areaCorte" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={cores.positivo} stopOpacity={0.28} />
+            <stop offset="100%" stopColor={cores.positivo} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+
+        <XAxis
+          dataKey="mes"
+          tick={eixo}
+          tickLine={false}
+          axisLine={false}
+          tickFormatter={(mes: number) => `${mes}m`}
+          interval="preserveStartEnd"
+        />
+        <YAxis tick={eixo} tickLine={false} axisLine={false} width={62} tickFormatter={formatarMoedaCurta} />
+        <ReferenceLine y={0} stroke="currentColor" strokeOpacity={0.35} />
+        <Tooltip
+          content={<Dica />}
+          labelFormatter={(mes) => `daqui a ${mes} ${Number(mes) === 1 ? "mês" : "meses"}`}
+        />
+
+        <Area
+          type="monotone"
+          dataKey="semCorteCentavos"
+          name="do jeito que está"
+          stroke={cores.negativo}
+          strokeWidth={1.5}
+          strokeDasharray="4 4"
+          fill="none"
+        />
+        <Area
+          type="monotone"
+          dataKey="comCorteCentavos"
+          name="cortando"
+          stroke={cores.positivo}
+          strokeWidth={2.5}
+          fill="url(#areaCorte)"
+        />
+      </AreaChart>
+    </ResponsiveContainer>
+  )
+}
+
+/**
+ * Divisão da renda em fatias.
+ *
+ * Rosca, e não pizza cheia: o buraco no meio guarda o total, que é a primeira
+ * coisa que a pessoa procura ao ver a divisão do próprio salário.
+ */
+export function GraficoDaDivisao({
+  fatias,
+  total,
+  altura = 240,
+}: {
+  fatias: { rotulo: string; valorCentavos: number }[]
+  total: string
+  altura?: number
+}) {
+  const cores = useCores()
+  const paleta = ORDEM_DA_PALETA.map((nome) => cores[nome])
+  return (
+    <div className="relative">
+      <ResponsiveContainer width="100%" height={altura}>
+        <PieChart>
+          <Pie
+            data={fatias}
+            dataKey="valorCentavos"
+            nameKey="rotulo"
+            innerRadius="62%"
+            outerRadius="100%"
+            paddingAngle={2}
+            stroke="none"
+          >
+            {fatias.map((_, indice) => (
+              <Cell key={indice} fill={paleta[indice % paleta.length]} />
+            ))}
+          </Pie>
+          <Tooltip content={<Dica />} />
+        </PieChart>
+      </ResponsiveContainer>
+
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+        <span className="numero text-[19px] font-semibold leading-none">{total}</span>
+        <span className="mt-1 text-[11px] uppercase tracking-widest text-muted-fg">por mês</span>
       </div>
     </div>
   )

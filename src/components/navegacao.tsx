@@ -16,6 +16,7 @@ import {
   Receipt,
   Repeat,
   ShoppingBag,
+  Sprout,
   Store,
   Tags,
   Target,
@@ -70,6 +71,7 @@ const PLANEJAMENTO: Item[] = [
   { rota: "/projecao", rotulo: "Projeção", Icone: LineChart },
   { rota: "/simulador", rotulo: "Simulador", Icone: Wand2 },
   { rota: "/emprestimos", rotulo: "Empréstimo", Icone: CreditCard },
+  { rota: "/investir", rotulo: "Longo prazo", Icone: Sprout },
 ]
 
 /** Ajustes que se faz uma vez e esquece. */
