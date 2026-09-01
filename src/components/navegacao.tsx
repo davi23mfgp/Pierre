@@ -11,6 +11,8 @@ import {
   PieChart,
   Receipt,
   Repeat,
+  Package,
+  ShoppingBag,
   Store,
   Tags,
   Target,
@@ -93,7 +95,16 @@ const NO_POLEGAR = [
 
 export function Navegacao({ mei }: { mei?: boolean }) {
   const caminho = usePathname()
-  const planejamento = mei ? [...PLANEJAMENTO, { rota: "/mei", rotulo: "MEI", Icone: Store }] : PLANEJAMENTO
+  // As telas da loja só aparecem para quem é MEI: quem usa o Tino para as
+  // contas de casa não tem balcão nem prateleira, e o menu já é longo.
+  const planejamento = mei
+    ? [
+        ...PLANEJAMENTO,
+        { rota: "/mei", rotulo: "MEI", Icone: Store },
+        { rota: "/loja", rotulo: "Balcão", Icone: ShoppingBag },
+        { rota: "/loja/estoque", rotulo: "Prateleira", Icone: Package },
+      ]
+    : PLANEJAMENTO
 
   return (
     <>

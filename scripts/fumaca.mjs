@@ -41,6 +41,7 @@ const PAGINAS = [
   "/simulador",
   "/transacoes",
   "/loja",
+  "/loja/estoque",
   "/bem-vindo",
 ]
 
