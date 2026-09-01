@@ -186,6 +186,19 @@
   }
 }
 
+/* A área de conteúdo desloca conforme a coluna da esquerda. Fica em CSS, e não
+   em prop, para o menu poder recolher sem re-renderizar a tela inteira. */
+@media (min-width: 768px) {
+  .area-do-app {
+    padding-left: 248px;
+    transition: padding-left 0.2s ease;
+  }
+
+  html[data-menu="recolhido"] .area-do-app {
+    padding-left: 68px;
+  }
+}
+
 @layer utilities {
   .animate-page-enter {
     animation: entrada 0.32s cubic-bezier(0.32, 0.72, 0, 1) backwards;
