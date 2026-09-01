@@ -63,8 +63,8 @@ function Fileira({ itens, caminho }: { itens: typeof DIARIO; caminho: string }) 
             className={cn(
               "flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-3.5 py-2 text-[13px] transition-colors",
               ativo
-                ? "border-ios-blue/40 bg-ios-blue/10 text-ios-blue"
-                : "border-hairline text-muted-fg hover:text-foreground",
+                ? "border-acao/40 bg-acao/10 text-acao"
+                : "border-pauta text-muted-fg hover:text-foreground",
             )}
           >
             <Icone className="size-4" />
@@ -100,7 +100,7 @@ export function Navegacao({ mei }: { mei?: boolean }) {
       {/* Duas fileiras de pílulas comiam um terço da tela do celular antes de
           qualquer número aparecer. No telefone elas somem e a navegação vai
           para a barra inferior, ao alcance do polegar. */}
-      <nav className="sticky top-0 z-30 -mx-4 mb-6 hidden space-y-1.5 border-b border-hairline bg-background/80 px-4 py-3 backdrop-blur-xl sm:block">
+      <nav className="sticky top-0 z-30 -mx-4 mb-6 hidden space-y-1.5 border-b border-pauta bg-background/80 px-4 py-3 backdrop-blur-xl sm:block">
         <Fileira itens={DIARIO} caminho={caminho} />
         <Fileira itens={planejamento} caminho={caminho} />
       </nav>
@@ -109,7 +109,7 @@ export function Navegacao({ mei }: { mei?: boolean }) {
         <Fileira itens={[...DIARIO, ...planejamento]} caminho={caminho} />
       </nav>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-hairline bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl sm:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-pauta bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl sm:hidden">
         <div className="flex items-stretch justify-around">
           {NO_POLEGAR.map(({ rota, rotulo, Icone }) => {
             const ativo = caminho === rota || caminho.startsWith(`${rota}/`)
@@ -119,7 +119,7 @@ export function Navegacao({ mei }: { mei?: boolean }) {
                 href={rota}
                 className={cn(
                   "flex flex-1 flex-col items-center gap-1 py-2.5 text-[10px] transition-colors",
-                  ativo ? "text-ios-blue" : "text-muted-fg",
+                  ativo ? "text-acao" : "text-muted-fg",
                 )}
               >
                 <Icone className="size-5" />

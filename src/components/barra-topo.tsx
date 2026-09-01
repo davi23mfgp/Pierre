@@ -17,9 +17,9 @@ interface Alerta {
 }
 
 const COR: Record<Alerta["severidade"], string> = {
-  CRITICO: "border-ios-red/40 bg-ios-red/10 text-red-200",
-  ATENCAO: "border-ios-orange/40 bg-ios-orange/10 text-ios-orange",
-  INFO: "border-hairline bg-surface-2 text-foreground",
+  CRITICO: "border-negativo/40 bg-negativo/10 text-red-200",
+  ATENCAO: "border-atencao/40 bg-atencao/10 text-atencao",
+  INFO: "border-pauta bg-papel-2 text-foreground",
 }
 
 export function BarraTopo({ nome }: { nome: string }) {
@@ -54,7 +54,7 @@ export function BarraTopo({ nome }: { nome: string }) {
         <div className="relative">
           <button
             onClick={() => setAberto((atual) => !atual)}
-            className="relative rounded-full border border-hairline p-2.5 transition hover:border-ios-blue/40"
+            className="relative rounded-full border border-pauta p-2.5 transition hover:border-acao/40"
             aria-label="Alertas"
           >
             <Bell className="h-4 w-4" />
@@ -62,7 +62,7 @@ export function BarraTopo({ nome }: { nome: string }) {
               <span
                 className={cn(
                   "absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold",
-                  criticos > 0 ? "bg-ios-red text-white" : "bg-ios-orange text-primary-foreground",
+                  criticos > 0 ? "bg-negativo text-white" : "bg-atencao text-primary-foreground",
                 )}
               >
                 {alertas.length}
@@ -71,7 +71,7 @@ export function BarraTopo({ nome }: { nome: string }) {
           </button>
 
           {aberto && (
-            <div className="absolute right-0 top-12 z-50 w-[min(380px,90vw)] space-y-2 rounded-2xl border border-hairline bg-card p-3 shadow-apple-float">
+            <div className="absolute right-0 top-12 z-50 w-[min(380px,90vw)] space-y-2 rounded-2xl border border-pauta bg-card p-3 shadow-alta">
               {alertas.length === 0 && (
                 <p className="px-2 py-6 text-center text-sm text-muted-fg">
                   Nada urgente por aqui. Continue assim.
@@ -102,7 +102,7 @@ export function BarraTopo({ nome }: { nome: string }) {
 
         <Link
           href="/configuracoes"
-          className="rounded-full border border-hairline p-2.5 transition hover:border-ios-blue/40"
+          className="rounded-full border border-pauta p-2.5 transition hover:border-acao/40"
           aria-label="Configurações"
         >
           <Settings className="h-4 w-4" />
@@ -110,7 +110,7 @@ export function BarraTopo({ nome }: { nome: string }) {
 
         <button
           onClick={sair}
-          className="rounded-full border border-hairline p-2.5 transition hover:border-ios-red/40"
+          className="rounded-full border border-pauta p-2.5 transition hover:border-negativo/40"
           aria-label="Sair"
         >
           <LogOut className="h-4 w-4" />

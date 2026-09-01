@@ -106,14 +106,14 @@ export default function Configuracoes() {
         </p>
         <button
           onClick={refazerConversa}
-          className="mt-3 rounded-full border border-ios-blue/40 bg-ios-blue/10 px-5 py-2.5 text-[13px] text-ios-blue"
+          className="mt-3 rounded-full border border-acao/40 bg-acao/10 px-5 py-2.5 text-[13px] text-acao"
         >
           Responder as perguntas do Tino
         </button>
       </Cartao>
 
       <Cartao titulo="Contas e cartões">
-        <div className="divide-y divide-hairline">
+        <div className="divide-y divide-pauta">
           {contas.map((conta) => (
             <div key={conta.id} className="flex items-center justify-between py-3">
               <div>
@@ -124,7 +124,7 @@ export default function Configuracoes() {
                   {conta.limiteCentavos ? ` · limite ${formatarMoeda(conta.limiteCentavos)}` : ""}
                 </p>
               </div>
-              <span className={`text-sm ${conta.saldoCentavos < 0 ? "text-ios-red" : ""}`}>
+              <span className={`text-sm ${conta.saldoCentavos < 0 ? "text-negativo" : ""}`}>
                 {formatarMoeda(conta.saldoCentavos)}
               </span>
             </div>
@@ -138,12 +138,12 @@ export default function Configuracoes() {
             onChange={(evento) => setNova({ ...nova, nome: evento.target.value })}
             placeholder="nome da conta"
             required
-            className="rounded-2xl border border-hairline bg-background px-4 py-2.5 text-sm"
+            className="rounded-2xl border border-pauta bg-background px-4 py-2.5 text-sm"
           />
           <select
             value={nova.tipo}
             onChange={(evento) => setNova({ ...nova, tipo: evento.target.value })}
-            className="rounded-2xl border border-hairline bg-background px-4 py-2.5 text-sm"
+            className="rounded-2xl border border-pauta bg-background px-4 py-2.5 text-sm"
           >
             {TIPOS_CONTA.map((tipo) => (
               <option key={tipo.valor} value={tipo.valor}>
@@ -155,13 +155,13 @@ export default function Configuracoes() {
             value={nova.instituicao}
             onChange={(evento) => setNova({ ...nova, instituicao: evento.target.value })}
             placeholder="banco"
-            className="rounded-2xl border border-hairline bg-background px-4 py-2.5 text-sm"
+            className="rounded-2xl border border-pauta bg-background px-4 py-2.5 text-sm"
           />
           <input
             value={nova.saldo}
             onChange={(evento) => setNova({ ...nova, saldo: evento.target.value })}
             placeholder="saldo atual (ex.: -6.582,74)"
-            className="rounded-2xl border border-hairline bg-background px-4 py-2.5 text-sm"
+            className="rounded-2xl border border-pauta bg-background px-4 py-2.5 text-sm"
           />
           {nova.tipo === "CARTAO_CREDITO" && (
             <>
@@ -169,13 +169,13 @@ export default function Configuracoes() {
                 value={nova.limite}
                 onChange={(evento) => setNova({ ...nova, limite: evento.target.value })}
                 placeholder="limite total"
-                className="rounded-2xl border border-hairline bg-background px-4 py-2.5 text-sm"
+                className="rounded-2xl border border-pauta bg-background px-4 py-2.5 text-sm"
               />
               <input
                 value={nova.venc}
                 onChange={(evento) => setNova({ ...nova, venc: evento.target.value })}
                 placeholder="dia do vencimento"
-                className="rounded-2xl border border-hairline bg-background px-4 py-2.5 text-sm"
+                className="rounded-2xl border border-pauta bg-background px-4 py-2.5 text-sm"
               />
             </>
           )}
@@ -187,7 +187,7 @@ export default function Configuracoes() {
 
       <Cartao titulo="Conexão com o banco (Open Finance)">
         {openFinance?.sandbox && (
-          <p className="mb-3 rounded-2xl border border-ios-orange/40 bg-ios-orange/10 p-3 text-xs text-ios-orange">
+          <p className="mb-3 rounded-2xl border border-atencao/40 bg-atencao/10 p-3 text-xs text-atencao">
             Modo de demonstração: os dados desta conexão são fictícios, gerados localmente. Para conectar bancos de
             verdade é preciso contratar um agregador autorizado pelo Banco Central (Pluggy, Belvo ou equivalente) e
             preencher as credenciais no arquivo <code>.env</code>.
@@ -201,7 +201,7 @@ export default function Configuracoes() {
 
         <div className="mt-4 space-y-2">
           {openFinance?.conexoes.map((conexao) => (
-            <div key={conexao.id} className="flex items-center justify-between rounded-2xl border border-hairline p-3">
+            <div key={conexao.id} className="flex items-center justify-between rounded-2xl border border-pauta p-3">
               <div>
                 <p className="text-sm">{conexao.instituicao}</p>
                 <p className="text-[12px] text-muted-fg">
@@ -213,7 +213,7 @@ export default function Configuracoes() {
               <div className="flex gap-2">
                 <button
                   onClick={() => sincronizar(conexao.id)}
-                  className="rounded-full border border-hairline px-3 py-1.5 text-xs hover:border-ios-blue/40"
+                  className="rounded-full border border-pauta px-3 py-1.5 text-xs hover:border-acao/40"
                 >
                   sincronizar
                 </button>
@@ -222,7 +222,7 @@ export default function Configuracoes() {
                     await buscar(`/api/open-finance?conexaoId=${conexao.id}`, { method: "DELETE" })
                     recarregar()
                   }}
-                  className="rounded-full border border-hairline px-3 py-1.5 text-xs hover:border-ios-red/40"
+                  className="rounded-full border border-pauta px-3 py-1.5 text-xs hover:border-negativo/40"
                 >
                   revogar
                 </button>
@@ -233,7 +233,7 @@ export default function Configuracoes() {
 
         <button
           onClick={conectarBanco}
-          className="mt-4 rounded-full border border-ios-blue/40 bg-ios-blue/10 px-5 py-2.5 text-sm text-ios-blue"
+          className="mt-4 rounded-full border border-acao/40 bg-acao/10 px-5 py-2.5 text-sm text-acao"
         >
           Conectar um banco
         </button>

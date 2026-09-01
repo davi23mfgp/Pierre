@@ -73,7 +73,7 @@ export default function Transacoes() {
           <select
             value={competencia}
             onChange={(evento) => setCompetencia(evento.target.value)}
-            className="rounded-full border border-hairline bg-background px-4 py-2 text-sm"
+            className="rounded-full border border-pauta bg-background px-4 py-2 text-sm"
           >
             {ultimasCompetencias(18).reverse().map((mes) => (
               <option key={mes} value={mes}>
@@ -86,10 +86,10 @@ export default function Transacoes() {
             value={busca}
             onChange={(evento) => setBusca(evento.target.value)}
             placeholder="Buscar transações…"
-            className="flex-1 rounded-full border border-hairline bg-background px-4 py-2 text-sm outline-none focus:border-ios-blue/50"
+            className="flex-1 rounded-full border border-pauta bg-background px-4 py-2 text-sm outline-none focus:border-acao/50"
           />
 
-          <label className="flex items-center gap-2 rounded-full border border-hairline px-4 py-2 text-sm">
+          <label className="flex items-center gap-2 rounded-full border border-pauta px-4 py-2 text-sm">
             <input
               type="checkbox"
               checked={semCategoria}
@@ -114,7 +114,7 @@ export default function Transacoes() {
           <Vazio titulo="Nenhum lançamento neste filtro" texto="Troque o mês ou importe um extrato." />
         )}
 
-        <div className="divide-y divide-hairline">
+        <div className="divide-y divide-pauta">
           {transacoes.map((transacao) => (
             <div key={transacao.id} className="flex flex-wrap items-center gap-3 py-3">
               <div className="min-w-0 flex-1">
@@ -129,8 +129,8 @@ export default function Transacoes() {
                 onChange={(evento) => recategorizar(transacao.id, evento.target.value)}
                 className={`rounded-full border px-3 py-1.5 text-xs ${
                   transacao.categoriaId
-                    ? "border-hairline bg-background"
-                    : "border-ios-orange/50 bg-ios-orange/10 text-amber-200"
+                    ? "border-pauta bg-background"
+                    : "border-atencao/50 bg-atencao/10 text-amber-200"
                 }`}
               >
                 <option value="">sem categoria</option>
@@ -143,7 +143,7 @@ export default function Transacoes() {
 
               <span
                 className={`w-28 text-right text-sm font-medium ${
-                  transacao.tipo === "RECEITA" ? "text-ios-green" : ""
+                  transacao.tipo === "RECEITA" ? "text-positivo" : ""
                 }`}
               >
                 {transacao.tipo === "RECEITA" ? "+" : "-"}

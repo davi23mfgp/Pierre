@@ -42,7 +42,7 @@ interface Orcamento {
   gastoTotalCentavos: number
 }
 
-const campo = "w-28 rounded-xl border border-hairline bg-background px-3 py-1.5 text-right text-[13px] tabular-nums outline-none focus:border-ios-blue/50"
+const campo = "w-28 rounded-xl border border-pauta bg-background px-3 py-1.5 text-right text-[13px] tabular-nums outline-none focus:border-acao/50"
 
 export default function OrcamentoPagina() {
   const [competencia, setCompetencia] = useState(competenciaAtual())
@@ -136,7 +136,7 @@ export default function OrcamentoPagina() {
           <select
             value={competencia}
             onChange={(evento) => setCompetencia(evento.target.value)}
-            className="rounded-full border border-hairline bg-background px-3 py-1.5 text-[12px]"
+            className="rounded-full border border-pauta bg-background px-3 py-1.5 text-[12px]"
           >
             {ultimasCompetencias(6)
               .concat([1, 2, 3].map((n) => competenciaMaisMeses(competenciaAtual(), n)))
@@ -173,7 +173,7 @@ export default function OrcamentoPagina() {
           <button
             onClick={sugerir}
             disabled={ocupado}
-            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-2 text-[12px] transition hover:border-ios-blue/40 hover:text-ios-blue disabled:opacity-40"
+            className="flex items-center gap-1.5 rounded-full border border-pauta px-4 py-2 text-[12px] transition hover:border-acao/40 hover:text-acao disabled:opacity-40"
           >
             <Sparkles className="size-3.5" />
             sugerir pelo meu histórico
@@ -184,7 +184,7 @@ export default function OrcamentoPagina() {
             <select
               value={repetir}
               onChange={(evento) => setRepetir(Number(evento.target.value))}
-              className="rounded-full border border-hairline bg-background px-2.5 py-1.5 text-[12px]"
+              className="rounded-full border border-pauta bg-background px-2.5 py-1.5 text-[12px]"
             >
               {[0, 2, 5, 11].map((n) => (
                 <option key={n} value={n}>
@@ -203,7 +203,7 @@ export default function OrcamentoPagina() {
           </button>
         </div>
 
-        {mensagem && <p className="mt-3 text-[12px] text-ios-blue">{mensagem}</p>}
+        {mensagem && <p className="mt-3 text-[12px] text-acao">{mensagem}</p>}
       </Cartao>
 
       <Cartao titulo="Limites por categoria">
@@ -216,10 +216,10 @@ export default function OrcamentoPagina() {
 
         <div className="space-y-2">
           {dados?.linhas.map((linha) => (
-            <div key={linha.categoriaId} className="rounded-2xl border border-hairline p-3">
+            <div key={linha.categoriaId} className="rounded-2xl border border-pauta p-3">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="min-w-0 flex-1 truncate text-[14px]">{linha.categoria.nome}</span>
-                <span className={cn("text-[13px] tabular-nums", linha.estourou ? "text-ios-red" : "text-muted-fg")}>
+                <span className={cn("text-[13px] tabular-nums", linha.estourou ? "text-negativo" : "text-muted-fg")}>
                   {formatarMoeda(linha.gastoCentavos)}
                 </span>
                 <span className="text-[12px] text-muted-fg">de</span>
@@ -235,7 +235,7 @@ export default function OrcamentoPagina() {
                   onClick={() =>
                     setRascunho((atual) => ({ ...atual, [linha.categoriaId]: "0" }))
                   }
-                  className="text-muted-fg transition hover:text-ios-red"
+                  className="text-muted-fg transition hover:text-negativo"
                   title="zerar limite"
                 >
                   <Trash2 className="size-4" />
@@ -263,10 +263,10 @@ export default function OrcamentoPagina() {
               {dados.semOrcamento.map((linha) => (
                 <div
                   key={linha.categoria.id}
-                  className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-hairline p-3"
+                  className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-pauta p-3"
                 >
                   <span className="min-w-0 flex-1 truncate text-[14px]">{linha.categoria.nome}</span>
-                  <span className="text-[13px] tabular-nums text-ios-orange">
+                  <span className="text-[13px] tabular-nums text-atencao">
                     {formatarMoeda(linha.gastoCentavos)}
                   </span>
                   <input

@@ -83,7 +83,7 @@ export function MapaDeCalor({
                     className={cn(
                       "flex h-7 items-center justify-center rounded-md text-[10px] tabular-nums transition-colors",
                       dia.totalCentavos === 0 ? "bg-foreground/[0.04] text-muted-fg" : "text-white",
-                      eHoje && "ring-1 ring-inset ring-ios-blue",
+                      eHoje && "ring-1 ring-inset ring-acao",
                     )}
                     style={
                       dia.totalCentavos > 0
@@ -91,7 +91,7 @@ export function MapaDeCalor({
                             // Um só matiz, variando só a opacidade: cores
                             // diferentes por faixa dariam a impressão de
                             // categorias, e aqui a única variável é intensidade.
-                            backgroundColor: `oklch(var(--lch-ios-red) / ${0.18 + intensidade * 0.72})`,
+                            backgroundColor: `oklch(var(--lch-negativo) / ${0.18 + intensidade * 0.72})`,
                           }
                         : undefined
                     }
@@ -112,7 +112,7 @@ export function MapaDeCalor({
             <span
               key={nivel}
               className="size-3 rounded-[3px]"
-              style={{ backgroundColor: `oklch(var(--lch-ios-red) / ${0.18 + nivel * 0.72})` }}
+              style={{ backgroundColor: `oklch(var(--lch-negativo) / ${0.18 + nivel * 0.72})` }}
             />
           ))}
           mais
@@ -124,7 +124,7 @@ export function MapaDeCalor({
           </span>
           {maiorGasto && maiorGasto.totalCentavos > 0 && (
             <span>
-              maior: <span className="text-ios-red">{formatarMoeda(maiorGasto.totalCentavos)}</span> no dia{" "}
+              maior: <span className="text-negativo">{formatarMoeda(maiorGasto.totalCentavos)}</span> no dia{" "}
               {maiorGasto.dia}
             </span>
           )}

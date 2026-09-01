@@ -92,7 +92,7 @@ export default async function Parcelamentos() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-ios-orange">{formatarMoeda(restante)}</p>
+                  <p className="font-semibold text-atencao">{formatarMoeda(restante)}</p>
                   <p className="text-[12px] text-muted-fg">restante</p>
                 </div>
               </div>
@@ -108,7 +108,7 @@ export default async function Parcelamentos() {
                     <li
                       key={parcela.id}
                       className={`flex items-center justify-between rounded-lg px-2 py-1.5 text-xs ${
-                        parcela.paga ? "bg-ios-blue/10 text-ios-blue" : "bg-surface-2"
+                        parcela.paga ? "bg-acao/10 text-acao" : "bg-papel-2"
                       }`}
                     >
                       <span>

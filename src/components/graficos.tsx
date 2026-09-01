@@ -34,13 +34,13 @@ import { rotuloCompetencia } from "@/lib/datas"
  *   e é a forma mais comum de um gráfico mentir sem mentir.
  */
 
-const AZUL = "oklch(var(--lch-ios-blue))"
-const VERDE = "oklch(var(--lch-ios-green))"
-const VERMELHO = "oklch(var(--lch-ios-red))"
-const LARANJA = "oklch(var(--lch-ios-orange))"
-const ROXO = "oklch(var(--lch-ios-purple))"
-const AMARELO = "oklch(var(--lch-ios-yellow))"
-const TEAL = "oklch(var(--lch-ios-teal))"
+const AZUL = "oklch(var(--lch-acao))"
+const VERDE = "oklch(var(--lch-positivo))"
+const VERMELHO = "oklch(var(--lch-negativo))"
+const LARANJA = "oklch(var(--lch-atencao))"
+const ROXO = "oklch(var(--lch-destaque))"
+const AMARELO = "oklch(var(--lch-alerta))"
+const TEAL = "oklch(var(--lch-dado))"
 
 export const PALETA = [AZUL, VERDE, LARANJA, ROXO, TEAL, AMARELO, VERMELHO]
 
@@ -58,7 +58,7 @@ function Dica({
   if (!active || !payload?.length) return null
 
   return (
-    <div className="rounded-xl border border-hairline bg-surface-1 px-3 py-2 shadow-apple-float">
+    <div className="rounded-xl border border-pauta bg-papel-1 px-3 py-2 shadow-alta">
       {label && <p className="mb-1 text-[11px] uppercase tracking-widest text-muted-fg">{label}</p>}
       {payload.map((linha, indice) => (
         <p key={indice} className="flex items-center gap-2 text-[12px]">

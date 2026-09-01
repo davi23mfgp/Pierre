@@ -45,7 +45,7 @@ const PERIODOS = [
   { valor: "ANUAL", rotulo: "uma vez por ano" },
 ]
 
-const campo = "w-full rounded-2xl border border-hairline bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-ios-blue/50"
+const campo = "w-full rounded-2xl border border-pauta bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-acao/50"
 
 const VAZIO = {
   descricao: "",
@@ -257,7 +257,7 @@ export default function Recorrencias() {
                     key={recorrencia.id}
                     className={cn(
                       "flex flex-wrap items-center gap-3 rounded-2xl border p-3",
-                      atrasada ? "border-ios-orange/40 bg-ios-orange/5" : "border-hairline",
+                      atrasada ? "border-atencao/40 bg-atencao/5" : "border-pauta",
                     )}
                   >
                     <div className="min-w-0 flex-1">
@@ -272,7 +272,7 @@ export default function Recorrencias() {
 
                     <div className="text-right">
                       <p className="text-[14px] tabular-nums">{formatarMoeda(recorrencia.valorCentavos)}</p>
-                      <p className={cn("text-[11px]", atrasada ? "text-ios-orange" : "text-muted-fg")}>
+                      <p className={cn("text-[11px]", atrasada ? "text-atencao" : "text-muted-fg")}>
                         {atrasada ? "venceu" : "vence"} {formatarData(proxima)}
                       </p>
                     </div>
@@ -280,14 +280,14 @@ export default function Recorrencias() {
                     <button
                       onClick={() => lancar(recorrencia)}
                       disabled={ocupado}
-                      className="rounded-full border border-hairline px-3 py-1.5 text-[11px] transition hover:border-ios-green/40 hover:text-ios-green disabled:opacity-40"
+                      className="rounded-full border border-pauta px-3 py-1.5 text-[11px] transition hover:border-positivo/40 hover:text-positivo disabled:opacity-40"
                       title="lançar a ocorrência deste período"
                     >
                       <Check className="size-3.5" />
                     </button>
                     <button
                       onClick={() => remover(recorrencia.id)}
-                      className="text-muted-fg transition hover:text-ios-red"
+                      className="text-muted-fg transition hover:text-negativo"
                     >
                       <Trash2 className="size-4" />
                     </button>

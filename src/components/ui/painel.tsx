@@ -3,10 +3,10 @@ import { cn } from "@/lib/utils"
 /**
  * Blocos de tela do Tino.
  *
- * Seguem o mesmo sistema visual do Control.Deal: superfície `surface-1`, borda
- * `hairline`, raio de 26px (`.ios-card`) e acento em `ios-blue`. Manter o mesmo
- * idioma dos outros produtos evita que o usuário precise reaprender onde
- * cada coisa fica.
+ * A `.ficha` é o cartão do livro-caixa: papel, uma linha de pauta no topo e
+ * nada mais. Todo valor sai em fonte de largura fixa com algarismo tabular —
+ * sem isso a coluna de números dança conforme o dígito e conferir extrato vira
+ * caça ao erro.
  */
 
 export function Cartao({
@@ -21,11 +21,11 @@ export function Cartao({
   acao?: React.ReactNode
 }) {
   return (
-    <section className={cn("ios-card p-5", className)}>
+    <section className={cn("ficha p-5", className)}>
       {(titulo || acao) && (
         <header className="mb-4 flex items-center justify-between gap-3">
           {titulo && <h2 className="text-[15px] font-semibold text-foreground">{titulo}</h2>}
-          {acao && <div className="shrink-0 text-[13px] text-ios-blue">{acao}</div>}
+          {acao && <div className="shrink-0 text-[13px] text-acao">{acao}</div>}
         </header>
       )}
       {children}
@@ -38,9 +38,9 @@ type Tom = "neutro" | "positivo" | "negativo" | "atencao"
 /** Cor semântica. Cinza para número neutro: só o que exige atenção ganha cor. */
 export const TOM: Record<Tom, string> = {
   neutro: "text-foreground",
-  positivo: "text-ios-green",
-  negativo: "text-ios-red",
-  atencao: "text-ios-orange",
+  positivo: "text-positivo",
+  negativo: "text-negativo",
+  atencao: "text-atencao",
 }
 
 export function Metrica({
@@ -55,9 +55,9 @@ export function Metrica({
   tom?: Tom
 }) {
   return (
-    <div className="rounded-2xl border border-hairline bg-surface-2 px-4 py-3.5">
+    <div className="rounded-2xl border border-pauta bg-papel-2 px-4 py-3.5">
       <p className="text-[11px] uppercase tracking-widest text-muted-fg">{rotulo}</p>
-      <p className={cn("mt-1.5 text-[26px] font-semibold leading-none tracking-tight", TOM[tom])}>{valor}</p>
+      <p className={cn("numero mt-1.5 text-[25px] font-semibold leading-none", TOM[tom])}>{valor}</p>
       {detalhe && <p className="mt-1.5 text-[12px] leading-snug text-muted-fg">{detalhe}</p>}
     </div>
   )
@@ -68,10 +68,10 @@ export function Barra({ percentual, tom }: { percentual: number; tom?: "verde" |
   const limitado = Math.max(0, Math.min(100, percentual))
   const cor =
     tom === "vermelho" || percentual > 100
-      ? "bg-ios-red"
+      ? "bg-negativo"
       : tom === "ambar" || percentual >= 80
-        ? "bg-ios-orange"
-        : "bg-ios-green"
+        ? "bg-atencao"
+        : "bg-positivo"
 
   return (
     <div className="h-2 w-full overflow-hidden rounded-full bg-foreground/[0.08]">
@@ -82,7 +82,7 @@ export function Barra({ percentual, tom }: { percentual: number; tom?: "verde" |
 
 export function Vazio({ titulo, texto }: { titulo: string; texto?: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-hairline px-4 py-10 text-center">
+    <div className="rounded-2xl border border-dashed border-pauta px-4 py-10 text-center">
       <p className="text-[14px] font-medium text-foreground">{titulo}</p>
       {texto && <p className="mx-auto mt-1 max-w-sm text-[12px] leading-relaxed text-muted-fg">{texto}</p>}
     </div>
@@ -98,9 +98,9 @@ export function Aviso({
   tom?: "atencao" | "critico" | "info"
 }) {
   const estilo = {
-    critico: "border-ios-red/40 bg-ios-red/10 text-ios-red",
-    atencao: "border-ios-orange/40 bg-ios-orange/10 text-ios-orange",
-    info: "border-hairline bg-surface-2 text-muted-fg",
+    critico: "border-negativo/40 bg-negativo/10 text-negativo",
+    atencao: "border-atencao/40 bg-atencao/10 text-atencao",
+    info: "border-pauta bg-papel-2 text-muted-fg",
   }[tom]
 
   return <p className={cn("rounded-2xl border p-3 text-[13px] leading-relaxed", estilo)}>{children}</p>

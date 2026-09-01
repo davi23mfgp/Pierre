@@ -19,14 +19,14 @@ export function showToast(title: string, opts?: { description?: string; variant?
 
 const ICON = { success: Check, error: AlertTriangle, info: Info }
 const ACCENT: Record<ToastVariant, string> = {
-  success: "text-ios-green",
-  error: "text-ios-red",
-  info: "text-ios-blue",
+  success: "text-positivo",
+  error: "text-negativo",
+  info: "text-acao",
 }
 
 /**
  * Toaster — container global. Montar uma vez no layout.
- * Aparece no topo-centro, bg surface-1 + hairline, rounded-[14px], 3s.
+ * Aparece no topo-centro, bg papel-1 + pauta, rounded-[14px], 3s.
  */
 export function Toaster() {
   const [toasts, setToasts] = useState<ToastItem[]>([])
@@ -50,7 +50,7 @@ export function Toaster() {
           <div key={t.id}
             className={cn(
               "pointer-events-auto flex items-start gap-2.5 max-w-[90vw] w-fit",
-              "bg-surface-1 border border-hairline rounded-[14px] shadow-lg shadow-black/30",
+              "bg-papel-1 border border-pauta rounded-[14px] shadow-lg shadow-black/30",
               "px-4 py-3 spring-slide-up",
             )}>
             <Icon className={cn("w-4 h-4 mt-0.5 flex-shrink-0", ACCENT[t.variant])} strokeWidth={2.2} />

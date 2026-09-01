@@ -52,7 +52,7 @@ interface Categoria {
   nome: string
 }
 
-const campo = "rounded-xl border border-hairline bg-background px-3 py-2 text-[13px] outline-none focus:border-ios-blue/50"
+const campo = "rounded-xl border border-pauta bg-background px-3 py-2 text-[13px] outline-none focus:border-acao/50"
 
 export default function Capturas() {
   const [capturas, setCapturas] = useState<Captura[]>([])
@@ -148,7 +148,7 @@ export default function Capturas() {
             value={rapido}
             onChange={(evento) => setRapido(evento.target.value)}
             placeholder="mercado 52,30"
-            className="flex-1 rounded-2xl border border-hairline bg-background px-4 py-3 text-[14px] outline-none focus:border-ios-blue/50"
+            className="flex-1 rounded-2xl border border-pauta bg-background px-4 py-3 text-[14px] outline-none focus:border-acao/50"
           />
           <button
             type="submit"
@@ -177,7 +177,7 @@ export default function Capturas() {
                 key={captura.id}
                 className={cn(
                   "rounded-2xl border p-3",
-                  captura.confianca >= 70 ? "border-hairline" : "border-ios-orange/40 bg-ios-orange/5",
+                  captura.confianca >= 70 ? "border-pauta" : "border-atencao/40 bg-atencao/5",
                 )}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -222,7 +222,7 @@ export default function Capturas() {
                         ),
                       )
                     }
-                    className={cn(campo, !captura.categoriaId && "border-ios-orange/50 text-ios-orange")}
+                    className={cn(campo, !captura.categoriaId && "border-atencao/50 text-atencao")}
                   >
                     <option value="">sem categoria</option>
                     {categorias.map((categoria) => (
@@ -235,7 +235,7 @@ export default function Capturas() {
                   <div className="ml-auto flex gap-2">
                     <button
                       onClick={() => descartar(captura.id)}
-                      className="rounded-full border border-hairline p-2 text-muted-fg transition hover:border-ios-red/40 hover:text-ios-red"
+                      className="rounded-full border border-pauta p-2 text-muted-fg transition hover:border-negativo/40 hover:text-negativo"
                       title="descartar"
                     >
                       <X className="size-4" />
@@ -269,11 +269,11 @@ export default function Capturas() {
         <Cartao titulo="Não consegui ler">
           <div className="space-y-2">
             {naoEntendidas.map((captura) => (
-              <div key={captura.id} className="flex items-start justify-between gap-3 rounded-2xl border border-hairline p-3">
+              <div key={captura.id} className="flex items-start justify-between gap-3 rounded-2xl border border-pauta p-3">
                 <p className="min-w-0 flex-1 text-[12px] text-muted-fg">{captura.textoBruto}</p>
                 <button
                   onClick={() => descartar(captura.id)}
-                  className="shrink-0 text-muted-fg transition hover:text-ios-red"
+                  className="shrink-0 text-muted-fg transition hover:text-negativo"
                 >
                   <X className="size-4" />
                 </button>
@@ -291,8 +291,8 @@ export default function Capturas() {
         </p>
 
         {chaveNova && (
-          <div className="mt-4 rounded-2xl border border-ios-blue/40 bg-ios-blue/10 p-3">
-            <p className="text-[12px] text-ios-blue">
+          <div className="mt-4 rounded-2xl border border-acao/40 bg-acao/10 p-3">
+            <p className="text-[12px] text-acao">
               Esta chave aparece uma única vez. Copie agora — depois só dá para gerar outra.
             </p>
             <div className="mt-2 flex items-center gap-2">
@@ -302,16 +302,16 @@ export default function Capturas() {
                   navigator.clipboard.writeText(chaveNova)
                   setCopiado(true)
                 }}
-                className="rounded-xl border border-hairline p-2 transition hover:border-ios-blue/40"
+                className="rounded-xl border border-pauta p-2 transition hover:border-acao/40"
               >
-                {copiado ? <Check className="size-4 text-ios-green" /> : <Copy className="size-4" />}
+                {copiado ? <Check className="size-4 text-positivo" /> : <Copy className="size-4" />}
               </button>
             </div>
           </div>
         )}
 
         <div className="mt-4 grid gap-3 lg:grid-cols-2">
-          <div className="rounded-2xl border border-hairline p-4">
+          <div className="rounded-2xl border border-pauta p-4">
             <p className="flex items-center gap-2 text-[14px] font-medium">
               <Smartphone className="size-4" /> Notificações do banco (Android)
             </p>
@@ -320,22 +320,22 @@ export default function Capturas() {
               <li>2. Gatilho: <b>Notificação recebida</b>, filtrando o app do seu banco.</li>
               <li>
                 3. Ação: <b>Requisição HTTP POST</b> para
-                <code className="mx-1 rounded bg-surface-2 px-1.5 py-0.5">{endereco}/api/capturar</code>
-                com corpo JSON <code className="rounded bg-surface-2 px-1.5 py-0.5">{`{"titulo":"[app]","texto":"[texto]"}`}</code>
+                <code className="mx-1 rounded bg-papel-2 px-1.5 py-0.5">{endereco}/api/capturar</code>
+                com corpo JSON <code className="rounded bg-papel-2 px-1.5 py-0.5">{`{"titulo":"[app]","texto":"[texto]"}`}</code>
               </li>
               <li>
-                4. Cabeçalho <code className="rounded bg-surface-2 px-1.5 py-0.5">Authorization: Bearer SUA_CHAVE</code>.
+                4. Cabeçalho <code className="rounded bg-papel-2 px-1.5 py-0.5">Authorization: Bearer SUA_CHAVE</code>.
               </li>
             </ol>
             <button
               onClick={() => criarChave("NOTIFICACAO")}
-              className="mt-3 flex items-center gap-1.5 rounded-full border border-ios-blue/40 bg-ios-blue/10 px-4 py-2 text-[12px] text-ios-blue"
+              className="mt-3 flex items-center gap-1.5 rounded-full border border-acao/40 bg-acao/10 px-4 py-2 text-[12px] text-acao"
             >
               <Plus className="size-3.5" /> gerar chave do celular
             </button>
           </div>
 
-          <div className="rounded-2xl border border-hairline p-4">
+          <div className="rounded-2xl border border-pauta p-4">
             <p className="flex items-center gap-2 text-[14px] font-medium">
               <Send className="size-4" /> Telegram (mandar faturas)
             </p>
@@ -343,7 +343,7 @@ export default function Capturas() {
               <li>1. Gere a chave abaixo.</li>
               <li>
                 2. No Telegram, abra o bot do Tino e mande
-                <code className="mx-1 rounded bg-surface-2 px-1.5 py-0.5">/conectar SUA_CHAVE</code>
+                <code className="mx-1 rounded bg-papel-2 px-1.5 py-0.5">/conectar SUA_CHAVE</code>
               </li>
               <li>3. Pronto: encaminhe o PDF da fatura, ou escreva o gasto direto na conversa.</li>
             </ol>
@@ -353,7 +353,7 @@ export default function Capturas() {
             </p>
             <button
               onClick={() => criarChave("TELEGRAM")}
-              className="mt-3 flex items-center gap-1.5 rounded-full border border-ios-blue/40 bg-ios-blue/10 px-4 py-2 text-[12px] text-ios-blue"
+              className="mt-3 flex items-center gap-1.5 rounded-full border border-acao/40 bg-acao/10 px-4 py-2 text-[12px] text-acao"
             >
               <Plus className="size-3.5" /> gerar chave do Telegram
             </button>
@@ -363,7 +363,7 @@ export default function Capturas() {
         {chaves.length > 0 && (
           <div className="mt-4 space-y-2">
             {chaves.map((chave) => (
-              <div key={chave.id} className="flex items-center justify-between rounded-2xl border border-hairline p-3">
+              <div key={chave.id} className="flex items-center justify-between rounded-2xl border border-pauta p-3">
                 <div>
                   <p className="text-[13px]">
                     {chave.nome} <span className="text-muted-fg">···{chave.sufixo}</span>
@@ -379,7 +379,7 @@ export default function Capturas() {
                       await buscar(`/api/capturas?chaveId=${chave.id}`, { method: "DELETE" })
                       carregar()
                     }}
-                    className="rounded-full border border-hairline px-3 py-1.5 text-[11px] text-muted-fg transition hover:border-ios-red/40 hover:text-ios-red"
+                    className="rounded-full border border-pauta px-3 py-1.5 text-[11px] text-muted-fg transition hover:border-negativo/40 hover:text-negativo"
                   >
                     revogar
                   </button>

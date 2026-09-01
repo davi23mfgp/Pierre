@@ -22,7 +22,7 @@ export function CabecalhoPagina({
   acao?: ReactNode
 }) {
   return (
-    <div className="ios-card flex items-center justify-between gap-4 p-4 sm:p-5">
+    <div className="ficha flex items-center justify-between gap-4 p-4 sm:p-5">
       <div className="flex min-w-0 items-center gap-3.5">
         <div className="grid size-11 shrink-0 place-items-center rounded-full bg-foreground/[0.08] ring-1 ring-inset ring-border">
           <Icone className="size-[20px] text-foreground" strokeWidth={1.8} />

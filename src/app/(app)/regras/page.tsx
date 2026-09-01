@@ -29,7 +29,7 @@ interface Regra {
   categoria: { nome: string; cor: string; icone: string }
 }
 
-const campo = "w-full rounded-2xl border border-hairline bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-ios-blue/50"
+const campo = "w-full rounded-2xl border border-pauta bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-acao/50"
 
 export default function Regras() {
   const [regras, setRegras] = useState<Regra[]>([])
@@ -134,7 +134,7 @@ export default function Regras() {
           <button
             onClick={reprocessar}
             disabled={ocupado}
-            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-2 text-[12px] transition hover:border-ios-blue/40 hover:text-ios-blue disabled:opacity-40"
+            className="flex items-center gap-1.5 rounded-full border border-pauta px-4 py-2 text-[12px] transition hover:border-acao/40 hover:text-acao disabled:opacity-40"
           >
             <RefreshCw className={cn("size-3.5", ocupado && "animate-spin")} />
             aplicar nas transações antigas
@@ -151,12 +151,12 @@ export default function Regras() {
         </div>
 
         {incluirCategorizados && (
-          <p className="mt-2 rounded-2xl border border-ios-orange/40 bg-ios-orange/10 p-3 text-[12px] text-ios-orange">
+          <p className="mt-2 rounded-2xl border border-atencao/40 bg-atencao/10 p-3 text-[12px] text-atencao">
             Isso sobrescreve categorias que você escolheu à mão.
           </p>
         )}
 
-        {mensagem && <p className="mt-3 text-[12px] text-ios-blue">{mensagem}</p>}
+        {mensagem && <p className="mt-3 text-[12px] text-acao">{mensagem}</p>}
 
         {abrir && (
           <form onSubmit={criar} className="mt-4 grid gap-2 sm:grid-cols-3">
@@ -208,12 +208,12 @@ export default function Regras() {
               key={regra.id}
               className={cn(
                 "flex flex-wrap items-center gap-3 rounded-2xl border p-3",
-                regra.ativa ? "border-hairline" : "border-hairline opacity-50",
+                regra.ativa ? "border-pauta" : "border-pauta opacity-50",
               )}
             >
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[14px]">
-                  <code className="rounded bg-surface-2 px-1.5 py-0.5 text-[12px]">{regra.padrao}</code>
+                  <code className="rounded bg-papel-2 px-1.5 py-0.5 text-[12px]">{regra.padrao}</code>
                   <span className="mx-2 text-muted-fg">vira</span>
                   {regra.categoria.nome}
                 </p>
@@ -227,11 +227,11 @@ export default function Regras() {
 
               <button
                 onClick={() => alternar(regra)}
-                className="rounded-full border border-hairline px-3 py-1.5 text-[11px] text-muted-fg transition hover:text-foreground"
+                className="rounded-full border border-pauta px-3 py-1.5 text-[11px] text-muted-fg transition hover:text-foreground"
               >
                 {regra.ativa ? "desligar" : "ligar"}
               </button>
-              <button onClick={() => remover(regra.id)} className="text-muted-fg transition hover:text-ios-red">
+              <button onClick={() => remover(regra.id)} className="text-muted-fg transition hover:text-negativo">
                 <Trash2 className="size-4" />
               </button>
             </div>

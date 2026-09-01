@@ -1,9 +1,12 @@
 "use client"
 
-import { useRef, useState } from "react"
-import { Sparkles, X } from "lucide-react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { buscar } from "@/lib/cliente"
+import { estadoPorAlertas, FRASE, TinoMascote } from "@/components/tino-mascote"
+import type { EstadoTino } from "@/components/tino-mascote"
 
 interface Turno {
   papel: "USUARIO" | "ASSISTENTE"
@@ -26,11 +29,32 @@ const SUGESTOES = [
  */
 export function TinoDock() {
   const [aberto, setAberto] = useState(false)
+  const [estado, setEstado] = useState<EstadoTino>("tranquilo")
   const [turnos, setTurnos] = useState<Turno[]>([])
   const [pergunta, setPergunta] = useState("")
   const [pensando, setPensando] = useState(false)
   const conversaId = useRef<string | null>(null)
   const fim = useRef<HTMLDivElement>(null)
+
+  /**
+   * A cara do Tino vem dos alertas abertos, não de humor aleatório.
+   *
+   * Se falhar a busca, ele fica como está em vez de assumir "tranquilo": um
+   * mascote sorrindo por falta de dado mentiria sobre a situação, que é o
+   * defeito que esta base mais evita.
+   */
+  const lerEstado = useCallback(async () => {
+    try {
+      const alertas = await buscar<{ severidade: string }[]>("/api/tino/alertas")
+      setEstado(estadoPorAlertas(alertas))
+    } catch {
+      /* mantém o estado anterior */
+    }
+  }, [])
+
+  useEffect(() => {
+    lerEstado()
+  }, [lerEstado])
 
   async function perguntar(texto: string) {
     if (!texto.trim() || pensando) return
@@ -84,20 +108,23 @@ export function TinoDock() {
     return (
       <button
         onClick={() => setAberto(true)}
-        className="fixed bottom-[76px] right-4 z-40 sm:bottom-5 sm:right-5 flex items-center gap-2 rounded-full border border-ios-blue/30 bg-ios-blue/10 px-4 py-3 text-[13px] font-medium text-ios-blue shadow-apple-float backdrop-blur-xl transition hover:bg-ios-blue/20"
+        className="fixed bottom-[76px] right-4 z-40 flex items-center gap-2 rounded-full border border-pauta bg-papel-1 py-2 pl-2 pr-4 text-[13px] font-medium shadow-alta transition hover:border-positivo/40 sm:bottom-5 sm:right-5"
       >
-        <Sparkles className="h-4 w-4" />
-        Conversar com o Tino
+        <TinoMascote estado={estado} className="h-9 w-9" />
+        Falar com o Tino
       </button>
     )
   }
 
   return (
-    <div className="fixed bottom-0 right-0 z-40 flex h-[min(560px,80vh)] w-full flex-col border-l border-t border-hairline bg-surface-1 backdrop-blur-xl sm:bottom-6 sm:right-6 sm:h-[560px] sm:w-[420px] sm:rounded-3xl sm:border">
-      <header className="flex items-center justify-between border-b border-hairline px-4 py-3">
-        <div className="flex items-center gap-2 text-sm font-medium">
-          <Sparkles className="h-4 w-4 text-ios-green" />
-          Tino
+    <div className="fixed bottom-0 right-0 z-40 flex h-[min(560px,80vh)] w-full flex-col border-l border-t border-pauta bg-papel-1 backdrop-blur-xl sm:bottom-6 sm:right-6 sm:h-[560px] sm:w-[420px] sm:rounded-3xl sm:border">
+      <header className="flex items-center justify-between border-b border-pauta px-4 py-3">
+        <div className="flex items-center gap-2.5">
+          <TinoMascote estado={estado} animado={false} className="h-8 w-8" />
+          <div className="leading-tight">
+            <p className="text-sm font-medium">Tino</p>
+            <p className="text-[11px] text-muted-fg">{FRASE[estado]}</p>
+          </div>
         </div>
         <button onClick={() => setAberto(false)} className="text-muted-fg hover:text-foreground">
           <X className="h-4 w-4" />
@@ -114,7 +141,7 @@ export function TinoDock() {
               <button
                 key={sugestao}
                 onClick={() => perguntar(sugestao)}
-                className="block w-full rounded-2xl border border-hairline px-3 py-2 text-left text-sm transition hover:border-ios-blue/40 hover:text-ios-blue"
+                className="block w-full rounded-2xl border border-pauta px-3 py-2 text-left text-sm transition hover:border-acao/40 hover:text-acao"
               >
                 {sugestao}
               </button>
@@ -128,8 +155,8 @@ export function TinoDock() {
             className={cn(
               "max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm leading-relaxed",
               turno.papel === "USUARIO"
-                ? "ml-auto bg-ios-blue/15 text-ios-blue"
-                : "bg-surface-2 text-foreground",
+                ? "ml-auto bg-acao/15 text-acao"
+                : "bg-papel-2 text-foreground",
             )}
           >
             {turno.texto || "…"}
@@ -145,13 +172,13 @@ export function TinoDock() {
           evento.preventDefault()
           perguntar(pergunta)
         }}
-        className="border-t border-hairline p-3"
+        className="border-t border-pauta p-3"
       >
         <input
           value={pergunta}
           onChange={(evento) => setPergunta(evento.target.value)}
           placeholder="Pergunte sobre suas finanças…"
-          className="w-full rounded-full border border-hairline bg-background px-4 py-2.5 text-sm outline-none focus:border-ios-blue/50"
+          className="w-full rounded-full border border-pauta bg-background px-4 py-2.5 text-sm outline-none focus:border-acao/50"
         />
       </form>
     </div>

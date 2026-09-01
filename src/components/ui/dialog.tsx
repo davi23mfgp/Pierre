@@ -53,7 +53,7 @@ const DialogContent = React.forwardRef<
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute right-4 top-4 z-10 grid place-items-center h-8 w-8 rounded-full bg-white/[0.08] text-muted-fg opacity-80 hover:opacity-100 hover:bg-white/[0.14] transition-all focus:outline-none focus:ring-2 focus:ring-ios-blue/30">
+        <DialogPrimitive.Close className="absolute right-4 top-4 z-10 grid place-items-center h-8 w-8 rounded-full bg-white/[0.08] text-muted-fg opacity-80 hover:opacity-100 hover:bg-white/[0.14] transition-all focus:outline-none focus:ring-2 focus:ring-acao/30">
           <X className="h-4 w-4" />
           <span className="sr-only">Fechar</span>
         </DialogPrimitive.Close>
@@ -64,7 +64,7 @@ const DialogContent = React.forwardRef<
 DialogContent.displayName = DialogPrimitive.Content.displayName
 
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col gap-1 px-5 pt-5 pb-4 sm:px-6 sm:pt-6 border-b border-hairline", className)} {...props} />
+  <div className={cn("flex flex-col gap-1 px-5 pt-5 pb-4 sm:px-6 sm:pt-6 border-b border-pauta", className)} {...props} />
 )
 
 const DialogBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
@@ -73,7 +73,7 @@ const DialogBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement
 DialogHeader.displayName = "DialogHeader"
 
 const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end px-5 py-4 sm:px-6 border-t border-hairline mt-auto", className)} {...props} />
+  <div className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end px-5 py-4 sm:px-6 border-t border-pauta mt-auto", className)} {...props} />
 )
 DialogFooter.displayName = "DialogFooter"
 

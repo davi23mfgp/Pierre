@@ -10,6 +10,7 @@ import { Barra, Cartao, Metrica, Vazio } from "@/components/ui/painel"
 import { GraficoCategorias, GraficoEvolucao, GraficoParcelas } from "@/components/graficos"
 import { MapaDeCalor } from "@/components/mapa-de-calor"
 import { CategoriasComparadas } from "@/components/categorias-comparadas"
+import { TinoAcompanha } from "@/components/tino-acompanha"
 
 export const dynamic = "force-dynamic"
 
@@ -30,11 +31,15 @@ export default async function Painel() {
 
   return (
     <div className="space-y-4">
+      {/* O Tino abre a tela porque o que exige decisão vem antes do que só
+          informa. Saldo bonito com fatura estourando é meia verdade. */}
+      <TinoAcompanha />
+
       <div className="grid gap-4 lg:grid-cols-2">
         <Cartao titulo={`Saldo em ${rotuloCompetencia(competencia)}`}>
           <p
-            className={`text-4xl font-bold tracking-tight ${
-              panorama.saldoTotalCentavos < 0 ? "text-ios-red" : "text-ios-green"
+            className={`numero text-4xl font-bold ${
+              panorama.saldoTotalCentavos < 0 ? "text-negativo" : "text-positivo"
             }`}
           >
             {formatarMoeda(panorama.saldoTotalCentavos)}
@@ -49,7 +54,7 @@ export default async function Painel() {
             {contasLiquidas.map((conta) => (
               <div key={conta.id} className="flex items-center justify-between text-sm">
                 <span className="text-muted-fg">{conta.nome}</span>
-                <span className={conta.saldoCentavos < 0 ? "text-ios-red" : ""}>
+                <span className={conta.saldoCentavos < 0 ? "text-negativo" : ""}>
                   {formatarMoeda(conta.saldoCentavos)}
                 </span>
               </div>
@@ -91,12 +96,12 @@ export default async function Painel() {
         <Cartao
           titulo="Parcelamentos"
           acao={
-            <Link href="/parcelamentos" className="text-xs text-ios-green hover:underline">
+            <Link href="/parcelamentos" className="text-xs text-positivo hover:underline">
               ver todos
             </Link>
           }
         >
-          <p className="text-3xl font-semibold tracking-tight text-ios-orange">
+          <p className="text-3xl font-semibold tracking-tight text-atencao">
             {formatarMoeda(parcelamentos.restanteCentavos)}
           </p>
           <p className="mt-1 text-[12px] text-muted-fg">
@@ -169,7 +174,7 @@ export default async function Painel() {
       <Cartao
         titulo="O que o Tino faria agora"
         acao={
-          <Link href="/plano" className="flex items-center gap-1 text-xs text-ios-green hover:underline">
+          <Link href="/plano" className="flex items-center gap-1 text-xs text-positivo hover:underline">
             abrir plano <ArrowRight className="h-3 w-3" />
           </Link>
         }

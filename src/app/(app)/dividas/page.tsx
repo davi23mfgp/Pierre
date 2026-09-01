@@ -63,7 +63,7 @@ const TIPOS = [
   { valor: "OUTRO", rotulo: "Outro" },
 ]
 
-const campo = "rounded-2xl border border-hairline bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-ios-blue/50"
+const campo = "rounded-2xl border border-pauta bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-acao/50"
 
 const VAZIO = { credor: "", tipo: "EMPRESTIMO_PESSOAL", saldo: "", juros: "", parcela: "", parcelasTotal: "", pagas: "0", dia: "10" }
 
@@ -145,7 +145,7 @@ export default function Dividas() {
             />
           </label>
           {dados?.plano && extra && (
-            <span className="text-[12px] text-ios-green">
+            <span className="text-[12px] text-positivo">
               fica livre em {dados.plano.meses} meses
             </span>
           )}
@@ -223,15 +223,15 @@ export default function Dividas() {
       {comparativo && abertas.length > 1 && (
         <Cartao titulo="Qual estratégia sai mais barata">
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-ios-blue/40 bg-ios-blue/10 p-4">
-              <p className="text-[13px] font-medium text-ios-blue">Avalanche — maior juro primeiro</p>
+            <div className="rounded-2xl border border-acao/40 bg-acao/10 p-4">
+              <p className="text-[13px] font-medium text-acao">Avalanche — maior juro primeiro</p>
               <p className="mt-1.5 text-[20px] font-semibold">{comparativo.avalanche.meses} meses</p>
               <p className="text-[12px] text-muted-fg">
                 {formatarMoeda(comparativo.avalanche.totalJurosCentavos)} de juros
               </p>
             </div>
 
-            <div className="rounded-2xl border border-hairline p-4">
+            <div className="rounded-2xl border border-pauta p-4">
               <p className="text-[13px] font-medium">Bola de neve — menor saldo primeiro</p>
               <p className="mt-1.5 text-[20px] font-semibold">{comparativo.bolaDeNeve.meses} meses</p>
               <p className="text-[12px] text-muted-fg">
@@ -262,7 +262,7 @@ export default function Dividas() {
             {dados.ordem.map((divida, indice) => {
               const quitacao = dados.plano?.quitacoes.find((linha) => linha.id === divida.id)
               return (
-                <li key={divida.id} className="flex items-center gap-3 rounded-2xl border border-hairline p-3">
+                <li key={divida.id} className="flex items-center gap-3 rounded-2xl border border-pauta p-3">
                   <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-foreground/[0.08] text-[12px] font-semibold">
                     {indice + 1}
                   </span>
@@ -292,7 +292,7 @@ export default function Dividas() {
           {abertas.map((divida) => {
             const progresso = divida.parcelasTotal ? (divida.parcelasPagas / divida.parcelasTotal) * 100 : 0
             return (
-              <div key={divida.id} className="rounded-2xl border border-hairline p-3.5">
+              <div key={divida.id} className="rounded-2xl border border-pauta p-3.5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="truncate text-[14px] font-medium">{divida.credor}</p>
@@ -308,7 +308,7 @@ export default function Dividas() {
                       {formatarMoeda(divida.saldoDevedorCentavos)}
                     </p>
                     {divida.jurosMensalBps > 0 && (
-                      <p className={cn("text-[11px]", divida.jurosMensalBps >= 500 ? "text-ios-red" : "text-muted-fg")}>
+                      <p className={cn("text-[11px]", divida.jurosMensalBps >= 500 ? "text-negativo" : "text-muted-fg")}>
                         {formatarPercentual(divida.jurosMensalBps)} ao mês
                       </p>
                     )}
@@ -328,7 +328,7 @@ export default function Dividas() {
         </div>
 
         {quitadas.length > 0 && (
-          <p className="mt-4 text-[12px] text-ios-green">{quitadas.length} dívida(s) já quitada(s).</p>
+          <p className="mt-4 text-[12px] text-positivo">{quitadas.length} dívida(s) já quitada(s).</p>
         )}
       </Cartao>
     </div>

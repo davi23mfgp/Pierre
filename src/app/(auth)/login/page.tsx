@@ -43,7 +43,7 @@ export default function Login() {
             placeholder="seu@email.com"
             autoComplete="email"
             required
-            className="w-full rounded-2xl border border-hairline bg-background px-4 py-3 text-sm outline-none focus:border-ios-blue/50"
+            className="w-full rounded-2xl border border-pauta bg-background px-4 py-3 text-sm outline-none focus:border-acao/50"
           />
           <input
             type="password"
@@ -52,10 +52,10 @@ export default function Login() {
             placeholder="sua senha"
             autoComplete="current-password"
             required
-            className="w-full rounded-2xl border border-hairline bg-background px-4 py-3 text-sm outline-none focus:border-ios-blue/50"
+            className="w-full rounded-2xl border border-pauta bg-background px-4 py-3 text-sm outline-none focus:border-acao/50"
           />
 
-          {erro && <p className="text-sm text-ios-red">{erro}</p>}
+          {erro && <p className="text-sm text-negativo">{erro}</p>}
 
           <button
             type="submit"
@@ -68,7 +68,7 @@ export default function Login() {
 
         <p className="mt-6 text-center text-sm text-muted-fg">
           Ainda não tem conta?{" "}
-          <Link href="/cadastro" className="text-ios-blue hover:underline">
+          <Link href="/cadastro" className="text-acao hover:underline">
             Criar agora
           </Link>
         </p>

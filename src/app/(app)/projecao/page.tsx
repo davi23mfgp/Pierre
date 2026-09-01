@@ -55,7 +55,7 @@ export default async function Projecao() {
         </div>
 
         {primeiroNegativo && (
-          <p className="mt-4 rounded-2xl border border-ios-red/40 bg-ios-red/10 p-3 text-sm text-ios-red">
+          <p className="mt-4 rounded-2xl border border-negativo/40 bg-negativo/10 p-3 text-sm text-negativo">
             No ritmo atual, o caixa fica negativo em {rotuloCompetencia(primeiroNegativo.competencia)} (
             {formatarMoeda(primeiroNegativo.acumuladoCentavos)}). Ainda dá tempo de mudar isso cortando gasto ou
             adiando compra parcelada.
@@ -80,29 +80,29 @@ export default async function Projecao() {
       <Cartao titulo="Mês a mês">
         <div className="space-y-3">
           {comAcumulado.map((linha) => (
-            <div key={linha.competencia} className="rounded-2xl border border-hairline p-3">
+            <div key={linha.competencia} className="rounded-2xl border border-pauta p-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">{rotuloCompetencia(linha.competencia)}</span>
                 <span
                   className={`text-sm font-semibold ${
-                    linha.acumuladoCentavos < 0 ? "text-ios-red" : "text-ios-green"
+                    linha.acumuladoCentavos < 0 ? "text-negativo" : "text-positivo"
                   }`}
                 >
                   {formatarMoeda(linha.acumuladoCentavos)}
                 </span>
               </div>
 
-              <div className="mt-2 flex h-2 overflow-hidden rounded-full bg-surface-2">
+              <div className="mt-2 flex h-2 overflow-hidden rounded-full bg-papel-2">
                 <div
                   className="h-full bg-primary"
                   style={{ width: `${(linha.receitasCentavos / maiorSaida) * 50}%` }}
                 />
                 <div
-                  className="h-full bg-ios-red/70"
+                  className="h-full bg-negativo/70"
                   style={{ width: `${(linha.despesasCentavos / maiorSaida) * 50}%` }}
                 />
                 <div
-                  className="h-full bg-ios-orange/70"
+                  className="h-full bg-atencao/70"
                   style={{ width: `${(linha.parcelasCentavos / maiorSaida) * 50}%` }}
                 />
               </div>
@@ -111,7 +111,7 @@ export default async function Projecao() {
                 <span>entra {formatarMoeda(linha.receitasCentavos)}</span>
                 <span>sai {formatarMoeda(linha.despesasCentavos)}</span>
                 {linha.parcelasCentavos > 0 && <span>parcelas {formatarMoeda(linha.parcelasCentavos)}</span>}
-                <span className={linha.saldoComParcelas < 0 ? "text-ios-red" : "text-ios-green"}>
+                <span className={linha.saldoComParcelas < 0 ? "text-negativo" : "text-positivo"}>
                   resultado {formatarMoeda(linha.saldoComParcelas)}
                 </span>
               </div>

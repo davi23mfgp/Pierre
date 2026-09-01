@@ -39,7 +39,7 @@ export function CategoriasComparadas({ linhas, limite = 8 }: { linhas: Linha[]; 
         const estavel = linha.variacaoBps !== null && Math.abs(linha.variacaoBps) < 300
 
         const Icone = estavel ? Minus : subiu ? TrendingUp : TrendingDown
-        const tom = estavel ? "text-muted-fg" : subiu ? "text-ios-red" : "text-ios-green"
+        const tom = estavel ? "text-muted-fg" : subiu ? "text-negativo" : "text-positivo"
 
         return (
           <div key={linha.categoriaId ?? linha.nome}>
@@ -68,7 +68,7 @@ export function CategoriasComparadas({ linhas, limite = 8 }: { linhas: Linha[]; 
             <div className="mt-1.5 space-y-1">
               <div className="h-2 overflow-hidden rounded-full bg-foreground/[0.06]">
                 <div
-                  className={cn("h-full rounded-full transition-all", subiu && !estavel ? "bg-ios-red" : "bg-ios-blue")}
+                  className={cn("h-full rounded-full transition-all", subiu && !estavel ? "bg-negativo" : "bg-acao")}
                   style={{ width: `${(linha.totalCentavos / maior) * 100}%` }}
                 />
               </div>

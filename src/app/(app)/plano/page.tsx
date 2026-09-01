@@ -100,7 +100,7 @@ export default async function Plano() {
             </div>
 
             {plano.avisos.map((aviso) => (
-              <p key={aviso} className="mt-4 rounded-2xl border border-ios-orange/40 bg-ios-orange/10 p-3 text-sm text-ios-orange">
+              <p key={aviso} className="mt-4 rounded-2xl border border-atencao/40 bg-atencao/10 p-3 text-sm text-atencao">
                 {aviso}
               </p>
             ))}
@@ -115,7 +115,7 @@ export default async function Plano() {
               {plano.ordem.map((alvo, indice) => (
                 <li key={alvo.id} className="flex items-start justify-between gap-3 text-sm">
                   <span className="flex items-start gap-2">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-surface-2 text-[11px]">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-papel-2 text-[11px]">
                       {indice + 1}
                     </span>
                     <span>
@@ -136,10 +136,10 @@ export default async function Plano() {
           <Cartao titulo="Roteiro mês a mês">
             <div className="max-h-[420px] space-y-3 overflow-y-auto pr-1">
               {plano.passos.map((passo) => (
-                <div key={passo.competencia} className="rounded-2xl border border-hairline p-3">
+                <div key={passo.competencia} className="rounded-2xl border border-pauta p-3">
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-medium">{rotuloCompetencia(passo.competencia)}</span>
-                    <span className={passo.sobraCentavos < 0 ? "text-ios-red" : "text-ios-green"}>
+                    <span className={passo.sobraCentavos < 0 ? "text-negativo" : "text-positivo"}>
                       sobra {formatarMoeda(passo.sobraCentavos)}
                     </span>
                   </div>

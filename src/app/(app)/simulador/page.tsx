@@ -95,7 +95,7 @@ const MODELOS: { tipo: TipoAjuste; titulo: string; texto: string }[] = [
   { tipo: "RECEITA_UNICA", titulo: "Entrada única", texto: "13º, bônus, venda" },
 ]
 
-const campo = "w-full rounded-2xl border border-hairline bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-ios-blue/50"
+const campo = "w-full rounded-2xl border border-pauta bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-acao/50"
 
 export default function Simulador() {
   const [comparacao, setComparacao] = useState<Comparacao | null>(null)
@@ -224,7 +224,7 @@ export default function Simulador() {
               setMeses(janela)
               rodar(hipoteses, janela)
             }}
-            className="rounded-full border border-hairline bg-background px-3 py-1.5 text-[12px]"
+            className="rounded-full border border-pauta bg-background px-3 py-1.5 text-[12px]"
           >
             {[12, 24, 36, 60].map((opcao) => (
               <option key={opcao} value={opcao}>
@@ -242,7 +242,7 @@ export default function Simulador() {
         </p>
 
         {comparacao && comparacao.entrada.rendaMensalCentavos === 0 && (
-          <p className="mt-3 rounded-2xl border border-ios-orange/40 bg-ios-orange/10 p-3 text-[13px] text-ios-orange">
+          <p className="mt-3 rounded-2xl border border-atencao/40 bg-atencao/10 p-3 text-[13px] text-atencao">
             Ainda não sei sua renda nem seus gastos, então a simulação parte do zero. Responda a conversa inicial em
             Configurações ou importe um extrato para os números ficarem seus.
           </p>
@@ -253,7 +253,7 @@ export default function Simulador() {
             <button
               key={modelo.tipo}
               onClick={() => adicionar(modelo.tipo)}
-              className="flex items-center gap-1.5 rounded-full border border-hairline px-3.5 py-2 text-[12px] transition hover:border-ios-blue/40 hover:text-ios-blue"
+              className="flex items-center gap-1.5 rounded-full border border-pauta px-3.5 py-2 text-[12px] transition hover:border-acao/40 hover:text-acao"
             >
               <Plus className="size-3.5" />
               {modelo.titulo}
@@ -266,7 +266,7 @@ export default function Simulador() {
         <Cartao titulo="Suas hipóteses">
           <div className="space-y-3">
             {hipoteses.map((hipotese) => (
-              <div key={hipotese.id} className="rounded-2xl border border-hairline bg-surface-2 p-3">
+              <div key={hipotese.id} className="rounded-2xl border border-pauta bg-papel-2 p-3">
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <input
                     value={hipotese.rotulo}
@@ -275,7 +275,7 @@ export default function Simulador() {
                   />
                   <button
                     onClick={() => setHipoteses((atual) => atual.filter((item) => item.id !== hipotese.id))}
-                    className="text-muted-fg transition hover:text-ios-red"
+                    className="text-muted-fg transition hover:text-negativo"
                   >
                     <Trash2 className="size-4" />
                   </button>
@@ -361,7 +361,7 @@ export default function Simulador() {
                 setHipoteses([])
                 rodar([], meses)
               }}
-              className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-2.5 text-[13px] text-muted-fg transition hover:text-foreground"
+              className="flex items-center gap-1.5 rounded-full border border-pauta px-4 py-2.5 text-[13px] text-muted-fg transition hover:text-foreground"
             >
               <RotateCcw className="size-3.5" />
               limpar
@@ -370,7 +370,7 @@ export default function Simulador() {
         </Cartao>
       )}
 
-      {erro && <Cartao><p className="text-[13px] text-ios-red">{erro}</p></Cartao>}
+      {erro && <Cartao><p className="text-[13px] text-negativo">{erro}</p></Cartao>}
 
       {comparacao && cenario && base && (
         <>
@@ -418,7 +418,7 @@ export default function Simulador() {
             )}
 
             {cenario.primeiroMesNegativo && (
-              <p className="mt-4 rounded-2xl border border-ios-red/40 bg-ios-red/10 p-3 text-[13px] text-ios-red">
+              <p className="mt-4 rounded-2xl border border-negativo/40 bg-negativo/10 p-3 text-[13px] text-negativo">
                 O caixa fica negativo em {rotuloCompetencia(cenario.primeiroMesNegativo)} — é quando a conta entra no
                 cheque especial.
               </p>
@@ -445,10 +445,10 @@ export default function Simulador() {
                 const negativo = mes.saldoAcumuladoCentavos < 0
 
                 return (
-                  <div key={mes.competencia} className="rounded-2xl border border-hairline p-3">
+                  <div key={mes.competencia} className="rounded-2xl border border-pauta p-3">
                     <div className="flex items-baseline justify-between gap-3">
                       <span className="text-[13px] font-medium">{rotuloCompetencia(mes.competencia)}</span>
-                      <span className={cn("text-[15px] font-semibold", negativo ? "text-ios-red" : "text-foreground")}>
+                      <span className={cn("text-[15px] font-semibold", negativo ? "text-negativo" : "text-foreground")}>
                         {formatarMoeda(mes.saldoAcumuladoCentavos)}
                       </span>
                     </div>
@@ -456,7 +456,7 @@ export default function Simulador() {
                     <div className="mt-2 space-y-1">
                       <div className="h-2 w-full overflow-hidden rounded-full bg-foreground/[0.06]">
                         <div
-                          className={cn("h-full rounded-full transition-all", negativo ? "bg-ios-red" : "bg-ios-blue")}
+                          className={cn("h-full rounded-full transition-all", negativo ? "bg-negativo" : "bg-acao")}
                           style={{ width: `${Math.min(100, largura)}%` }}
                         />
                       </div>
@@ -479,7 +479,7 @@ export default function Simulador() {
                         <span>dívida {formatarMoedaCurta(mes.parcelasDividaCentavos + mes.pagamentoExtraCentavos)}</span>
                       )}
                       {mes.jurosCentavos > 0 && (
-                        <span className="text-ios-orange">juros {formatarMoedaCurta(mes.jurosCentavos)}</span>
+                        <span className="text-atencao">juros {formatarMoedaCurta(mes.jurosCentavos)}</span>
                       )}
                       {mes.dividaRestanteCentavos > 0 && (
                         <span>deve {formatarMoedaCurta(mes.dividaRestanteCentavos)}</span>
@@ -487,7 +487,7 @@ export default function Simulador() {
                     </div>
 
                     {mes.eventos.length > 0 && (
-                      <p className="mt-2 text-[11px] text-ios-blue">{mes.eventos.join(" · ")}</p>
+                      <p className="mt-2 text-[11px] text-acao">{mes.eventos.join(" · ")}</p>
                     )}
                   </div>
                 )

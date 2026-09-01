@@ -3,8 +3,8 @@ import { cn } from "@/lib/utils"
 type DotColor = "blue" | "green" | "purple" | "yellow" | "orange" | "red" | "teal"
 
 const DOT: Record<DotColor, string> = {
-  blue: "bg-ios-blue", green: "bg-ios-green", purple: "bg-ios-purple",
-  yellow: "bg-ios-yellow", orange: "bg-ios-orange", red: "bg-ios-red", teal: "bg-ios-teal",
+  blue: "bg-acao", green: "bg-positivo", purple: "bg-destaque",
+  yellow: "bg-alerta", orange: "bg-atencao", red: "bg-negativo", teal: "bg-dado",
 }
 
 interface MetricCardProps {

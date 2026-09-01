@@ -134,7 +134,7 @@ export default function Importar() {
             <select
               value={contaId}
               onChange={(evento) => setContaId(evento.target.value)}
-              className="w-full rounded-2xl border border-hairline bg-background px-4 py-2.5 text-sm"
+              className="w-full rounded-2xl border border-pauta bg-background px-4 py-2.5 text-sm"
             >
               {contas.map((conta) => (
                 <option key={conta.id} value={conta.id}>
@@ -150,23 +150,23 @@ export default function Importar() {
               type="file"
               accept=".ofx,.qfx,.csv,.txt,.pdf"
               onChange={(evento) => setArquivo(evento.target.files?.[0] ?? null)}
-              className="w-full rounded-2xl border border-hairline bg-background px-4 py-2 text-sm file:mr-3 file:rounded-full file:border-0 file:bg-surface-2 file:px-3 file:py-1.5 file:text-xs"
+              className="w-full rounded-2xl border border-pauta bg-background px-4 py-2 text-sm file:mr-3 file:rounded-full file:border-0 file:bg-papel-2 file:px-3 file:py-1.5 file:text-xs"
             />
           </label>
         </div>
 
         {pedirSenha && (
-          <div className="mt-3 space-y-2 rounded-2xl border border-ios-orange/40 bg-ios-orange/10 p-3">
-            <p className="text-sm text-ios-orange">{pedirSenha.erro}</p>
+          <div className="mt-3 space-y-2 rounded-2xl border border-atencao/40 bg-atencao/10 p-3">
+            <p className="text-sm text-atencao">{pedirSenha.erro}</p>
             <input
               type="password"
               value={senhaPdf}
               onChange={(evento) => setSenhaPdf(evento.target.value)}
               placeholder="senha do arquivo"
               autoComplete="off"
-              className="w-full rounded-2xl border border-hairline bg-background px-4 py-2.5 text-sm outline-none focus:border-ios-blue/50"
+              className="w-full rounded-2xl border border-pauta bg-background px-4 py-2.5 text-sm outline-none focus:border-acao/50"
             />
-            <p className="text-xs text-ios-orange/80">
+            <p className="text-xs text-atencao/80">
               A senha é usada só para abrir o arquivo agora e não fica guardada em lugar nenhum.
             </p>
           </div>
@@ -185,7 +185,7 @@ export default function Importar() {
           {ocupado ? "Lendo…" : "Analisar arquivo"}
         </button>
 
-        {mensagem && <p className="mt-3 text-sm text-ios-green">{mensagem}</p>}
+        {mensagem && <p className="mt-3 text-sm text-positivo">{mensagem}</p>}
       </Cartao>
 
       {previa && (
@@ -202,12 +202,12 @@ export default function Importar() {
           </div>
 
           {previa.avisos.map((aviso) => (
-            <p key={aviso} className="mt-3 rounded-xl border border-ios-orange/40 bg-ios-orange/10 p-2.5 text-xs text-ios-orange">
+            <p key={aviso} className="mt-3 rounded-xl border border-atencao/40 bg-atencao/10 p-2.5 text-xs text-atencao">
               {aviso}
             </p>
           ))}
 
-          <div className="mt-4 max-h-[400px] divide-y divide-hairline overflow-y-auto">
+          <div className="mt-4 max-h-[400px] divide-y divide-pauta overflow-y-auto">
             {previa.lancamentos.map((lancamento) => (
               <div
                 key={lancamento.hashImport}
@@ -219,13 +219,13 @@ export default function Importar() {
                 <span className="min-w-0 flex-1 truncate">
                   {lancamento.descricaoSugerida}
                   {lancamento.categoriaNome && (
-                    <span className="ml-2 rounded-full bg-surface-2 px-2 py-0.5 text-[10px]">
+                    <span className="ml-2 rounded-full bg-papel-2 px-2 py-0.5 text-[10px]">
                       {lancamento.categoriaNome}
                     </span>
                   )}
                   {lancamento.duplicada && <span className="ml-2 text-[10px] text-muted-fg">já importado</span>}
                 </span>
-                <span className={lancamento.tipo === "RECEITA" ? "text-ios-green" : ""}>
+                <span className={lancamento.tipo === "RECEITA" ? "text-positivo" : ""}>
                   {lancamento.tipo === "RECEITA" ? "+" : "-"}
                   {formatarMoeda(lancamento.valorCentavos)}
                 </span>

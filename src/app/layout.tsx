@@ -1,14 +1,36 @@
 import type { Metadata, Viewport } from "next"
-import { Onest } from "next/font/google"
+import { Bricolage_Grotesque, IBM_Plex_Mono, Public_Sans } from "next/font/google"
 
 import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
 
-// Mesma família do Control.Deal. Sem carregá-la, o fallback do Windows cai numa
-// serifada e a tela deixa de parecer o mesmo produto.
-const onest = Onest({
+/**
+ * Três fontes, três trabalhos.
+ *
+ * A display carrega a personalidade e aparece pouco: título e o número grande
+ * do saldo. A de corpo é neutra de propósito, porque texto de app financeiro é
+ * lido com pressa e não deve chamar atenção para si.
+ *
+ * A terceira existe por motivo funcional, não estético: dinheiro precisa de
+ * algarismo tabular. Sem largura fixa por dígito, a coluna de valores dança
+ * conforme o número e conferir extrato vira caça ao erro.
+ */
+const display = Bricolage_Grotesque({
   subsets: ["latin"],
-  variable: "--font-onest",
+  variable: "--font-display",
+  display: "swap",
+})
+
+const corpo = Public_Sans({
+  subsets: ["latin"],
+  variable: "--font-corpo",
+  display: "swap",
+})
+
+const numero = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-numero",
   display: "swap",
 })
 
@@ -27,8 +49,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8f8f8" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b0b0c" },
+    { media: "(prefers-color-scheme: light)", color: "#f4f5f8" },
+    { media: "(prefers-color-scheme: dark)", color: "#1b1d24" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -41,7 +63,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${onest.variable} min-h-screen bg-background font-sans antialiased`}>
+      <body
+        className={`${display.variable} ${corpo.variable} ${numero.variable} min-h-screen bg-background font-sans antialiased`}
+      >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
         </ThemeProvider>

@@ -13,9 +13,9 @@ import { cn } from "@/lib/utils"
 export const dynamic = "force-dynamic"
 
 const COR_FAIXA: Record<Faixa, string> = {
-  BOM: "text-ios-green",
-  ATENCAO: "text-ios-orange",
-  CRITICO: "text-ios-red",
+  BOM: "text-positivo",
+  ATENCAO: "text-atencao",
+  CRITICO: "text-negativo",
   SEM_DADO: "text-muted-fg",
 }
 
@@ -27,10 +27,10 @@ const ROTULO_FAIXA: Record<Faixa, string> = {
 }
 
 const ROTULO_SITUACAO = {
-  SAUDAVEL: { texto: "Saudável", tom: "text-ios-green" },
-  ATENCAO: { texto: "Atenção", tom: "text-ios-orange" },
-  APERTADO: { texto: "Apertado", tom: "text-ios-orange" },
-  CRITICO: { texto: "Crítico", tom: "text-ios-red" },
+  SAUDAVEL: { texto: "Saudável", tom: "text-positivo" },
+  ATENCAO: { texto: "Atenção", tom: "text-atencao" },
+  APERTADO: { texto: "Apertado", tom: "text-atencao" },
+  CRITICO: { texto: "Crítico", tom: "text-negativo" },
 }
 
 const NOME_GRUPO: Record<string, string> = {
@@ -100,7 +100,7 @@ export default async function Analise() {
       <Cartao titulo="Indicadores">
         <div className="grid gap-3 lg:grid-cols-2">
           {diagnostico.indicadores.map((indicador) => (
-            <div key={indicador.chave} className="rounded-2xl border border-hairline bg-surface-2 p-4">
+            <div key={indicador.chave} className="rounded-2xl border border-pauta bg-papel-2 p-4">
               <div className="flex items-baseline justify-between gap-3">
                 <p className="text-[13px] font-medium">{indicador.nome}</p>
                 <div className="text-right">
@@ -124,7 +124,7 @@ export default async function Analise() {
       <Cartao titulo="O que fazer, nesta ordem">
         <ol className="space-y-3">
           {diagnostico.prioridades.map((prioridade) => (
-            <li key={prioridade.ordem} className="flex gap-3 rounded-2xl border border-hairline p-3.5">
+            <li key={prioridade.ordem} className="flex gap-3 rounded-2xl border border-pauta p-3.5">
               <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-foreground/[0.08] text-[12px] font-semibold">
                 {prioridade.ordem}
               </span>
@@ -133,7 +133,7 @@ export default async function Analise() {
                 <p className="mt-1 text-[12px] leading-relaxed text-muted-fg">{prioridade.porque}</p>
                 <p className="mt-1.5 text-[13px] leading-relaxed">{prioridade.acao}</p>
                 {prioridade.impactoMensalCentavos ? (
-                  <p className="mt-1.5 text-[12px] text-ios-green">
+                  <p className="mt-1.5 text-[12px] text-positivo">
                     Efeito estimado: {formatarMoeda(prioridade.impactoMensalCentavos)} por mês.
                   </p>
                 ) : null}
@@ -150,7 +150,7 @@ export default async function Analise() {
             <Linha rotulo="Receitas" valor={dre.receitasCentavos} tom="positivo" forte />
             <Linha rotulo="(–) Despesas" valor={-dre.despesasCentavos} tom="negativo" />
 
-            <div className="my-2 border-t border-hairline" />
+            <div className="my-2 border-t border-pauta" />
 
             <Linha
               rotulo="= Resultado do mês"
@@ -205,7 +205,7 @@ export default async function Analise() {
             <Linha rotulo="Longo prazo" valor={-balanco.passivoLongoPrazoCentavos} tom="negativo" />
             <Linha rotulo="Total" valor={-balanco.passivoTotalCentavos} tom="negativo" forte />
 
-            <div className="my-2 border-t border-hairline" />
+            <div className="my-2 border-t border-pauta" />
 
             <Linha
               rotulo="Patrimônio líquido"
@@ -224,7 +224,7 @@ export default async function Analise() {
             <div className="mt-4 space-y-3">
               {diagnostico.riscos.length > 0 && (
                 <div>
-                  <p className="text-[11px] uppercase tracking-widest text-ios-red">Riscos</p>
+                  <p className="text-[11px] uppercase tracking-widest text-negativo">Riscos</p>
                   <ul className="mt-1.5 space-y-1.5">
                     {diagnostico.riscos.map((risco) => (
                       <li key={risco} className="text-[12px] leading-relaxed text-muted-fg">
@@ -237,7 +237,7 @@ export default async function Analise() {
 
               {diagnostico.pontosFortes.length > 0 && (
                 <div>
-                  <p className="text-[11px] uppercase tracking-widest text-ios-green">Pontos fortes</p>
+                  <p className="text-[11px] uppercase tracking-widest text-positivo">Pontos fortes</p>
                   <ul className="mt-1.5 space-y-1.5">
                     {diagnostico.pontosFortes.map((ponto) => (
                       <li key={ponto} className="text-[12px] leading-relaxed text-muted-fg">
@@ -300,7 +300,7 @@ function Linha({
   tom?: "neutro" | "positivo" | "negativo"
   forte?: boolean
 }) {
-  const cor = tom === "positivo" ? "text-ios-green" : tom === "negativo" ? "text-ios-red" : "text-foreground"
+  const cor = tom === "positivo" ? "text-positivo" : tom === "negativo" ? "text-negativo" : "text-foreground"
 
   return (
     <div className={cn("flex items-baseline justify-between gap-3 py-1", forte && "font-semibold")}>

@@ -47,7 +47,7 @@ export default async function Cartoes() {
   return (
     <div className="space-y-4">
       <Cartao titulo="Fatura atual">
-        <p className="text-4xl font-bold tracking-tight">{formatarMoeda(faturaTotal)}</p>
+        <p className="numero text-4xl font-bold">{formatarMoeda(faturaTotal)}</p>
         <p className="mt-1 text-sm text-muted-fg">
           Somando {detalhados.length} cartão(ões). Parcelas futuras não entram aqui — elas aparecem no mês em que caem.
         </p>
@@ -65,7 +65,7 @@ export default async function Cartoes() {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-semibold">{formatarMoeda(faturaAberta)}</p>
+                <p className="numero text-2xl font-semibold">{formatarMoeda(faturaAberta)}</p>
                 <p className="text-[12px] text-muted-fg">fatura em aberto</p>
               </div>
             </div>
@@ -77,7 +77,7 @@ export default async function Cartoes() {
                   <span className="text-muted-fg">
                     usado {formatarMoeda(usado)} de {formatarMoeda(cartao.limiteCentavos)}
                   </span>
-                  <span className="text-ios-green">disponível {formatarMoeda(disponivel)}</span>
+                  <span className="text-positivo">disponível {formatarMoeda(disponivel)}</span>
                 </div>
               </div>
             ) : (
@@ -85,7 +85,7 @@ export default async function Cartoes() {
             )}
 
             {parcelasFuturas > 0 && (
-              <p className="mt-3 rounded-xl border border-ios-orange/30 bg-ios-orange/10 p-2.5 text-xs text-ios-orange">
+              <p className="mt-3 rounded-xl border border-atencao/30 bg-atencao/10 p-2.5 text-xs text-atencao">
                 {formatarMoeda(parcelasFuturas)} em parcelas já compradas ainda vão cair nas próximas faturas.
               </p>
             )}

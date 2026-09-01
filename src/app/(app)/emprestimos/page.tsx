@@ -49,12 +49,12 @@ interface Simulacao {
 }
 
 const VEREDITO = {
-  APROVAR: { texto: "Cabe no seu orçamento", tom: "text-ios-green", borda: "border-ios-green/40 bg-ios-green/10" },
-  CUIDADO: { texto: "Dá, mas aperta", tom: "text-ios-orange", borda: "border-ios-orange/40 bg-ios-orange/10" },
-  EVITAR: { texto: "Não recomendo", tom: "text-ios-red", borda: "border-ios-red/40 bg-ios-red/10" },
+  APROVAR: { texto: "Cabe no seu orçamento", tom: "text-positivo", borda: "border-positivo/40 bg-positivo/10" },
+  CUIDADO: { texto: "Dá, mas aperta", tom: "text-atencao", borda: "border-atencao/40 bg-atencao/10" },
+  EVITAR: { texto: "Não recomendo", tom: "text-negativo", borda: "border-negativo/40 bg-negativo/10" },
 }
 
-const campo = "w-full rounded-2xl border border-hairline bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-ios-blue/50"
+const campo = "w-full rounded-2xl border border-pauta bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-acao/50"
 
 export default function Emprestimos() {
   const [valor, setValor] = useState("")
@@ -143,14 +143,14 @@ export default function Emprestimos() {
             <button
               onClick={() => simular(true)}
               disabled={ocupado}
-              className="rounded-full border border-hairline px-4 py-2.5 text-[13px] text-muted-fg transition hover:text-foreground"
+              className="rounded-full border border-pauta px-4 py-2.5 text-[13px] text-muted-fg transition hover:text-foreground"
             >
               guardar para comparar
             </button>
           )}
         </div>
 
-        {erro && <p className="mt-3 text-[13px] text-ios-red">{erro}</p>}
+        {erro && <p className="mt-3 text-[13px] text-negativo">{erro}</p>}
       </Cartao>
 
       {analise && parecer && (
@@ -190,7 +190,7 @@ export default function Emprestimos() {
             </p>
 
             {analise.alternativas.length > 0 && (
-              <div className="mt-4 rounded-2xl border border-hairline p-3.5">
+              <div className="mt-4 rounded-2xl border border-pauta p-3.5">
                 <p className="text-[11px] uppercase tracking-widest text-muted-fg">Antes de assinar</p>
                 <ul className="mt-2 space-y-1.5">
                   {analise.alternativas.map((alternativa) => (
@@ -221,11 +221,11 @@ export default function Emprestimos() {
                     {/* Math.max evita divisão por zero: prestação zerada
                         renderizaria width "NaN%" e quebraria a barra. */}
                     <div
-                      className="h-full bg-ios-orange"
+                      className="h-full bg-atencao"
                       style={{ width: `${(linha.jurosCentavos / Math.max(1, linha.prestacaoCentavos)) * 100}%` }}
                     />
                     <div
-                      className="h-full bg-ios-green"
+                      className="h-full bg-positivo"
                       style={{ width: `${(linha.amortizacaoCentavos / Math.max(1, linha.prestacaoCentavos)) * 100}%` }}
                     />
                   </div>
@@ -248,7 +248,7 @@ export default function Emprestimos() {
         <Cartao titulo="Propostas guardadas">
           <div className="space-y-2">
             {salvas.map((simulacao) => (
-              <div key={simulacao.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-hairline p-3">
+              <div key={simulacao.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-pauta p-3">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[14px]">{simulacao.titulo}</p>
                   <p className="text-[11px] text-muted-fg">

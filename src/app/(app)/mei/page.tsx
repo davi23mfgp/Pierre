@@ -52,24 +52,24 @@ interface Resposta {
 }
 
 const AVISO_RISCO: Record<string, { texto: string; tom: string }> = {
-  OK: { texto: "Faturamento dentro do limite.", tom: "border-hairline bg-surface-2" },
+  OK: { texto: "Faturamento dentro do limite.", tom: "border-pauta bg-papel-2" },
   ATENCAO: {
     texto: "No ritmo atual o limite anual pode estourar. Vale segurar o faturamento ou já se preparar para migrar de regime.",
-    tom: "border-ios-orange/40 bg-ios-orange/10 text-ios-orange",
+    tom: "border-atencao/40 bg-atencao/10 text-atencao",
   },
   ESTOURO_ATE_20: {
     texto:
       "O limite foi ultrapassado em até 20%. O imposto sobre o excedente é recolhido e o desenquadramento passa a valer em janeiro do ano seguinte. Confirme os detalhes com seu contador.",
-    tom: "border-ios-red/40 bg-ios-red/10 text-ios-red",
+    tom: "border-negativo/40 bg-negativo/10 text-negativo",
   },
   ESTOURO_ACIMA_20: {
     texto:
       "O limite foi ultrapassado em mais de 20%. Nesse patamar o desenquadramento é retroativo ao início do ano. Procure um contador com urgência.",
-    tom: "border-ios-red/50 bg-ios-red/15 text-ios-red",
+    tom: "border-negativo/50 bg-negativo/15 text-negativo",
   },
 }
 
-const campo = "rounded-2xl border border-hairline bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-ios-blue/50"
+const campo = "rounded-2xl border border-pauta bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-acao/50"
 
 const VAZIO = { competencia: competenciaAtual(), comercio: "", servicos: "", dasPago: false, dasValor: "", observacao: "" }
 
@@ -169,7 +169,7 @@ export default function Mei() {
   return (
     <div className="space-y-4">
       <Cartao titulo={`Faturamento ${ano}`}>
-        <p className="text-4xl font-bold tracking-tight">{formatarMoeda(situacao?.faturamentoAnoCentavos ?? 0)}</p>
+        <p className="numero text-4xl font-bold">{formatarMoeda(situacao?.faturamentoAnoCentavos ?? 0)}</p>
         <p className="mt-1 text-sm text-muted-fg">
           de {formatarMoeda(perfil?.limiteAnualEfetivoCentavos ?? 0)} de limite
           {perfil?.limiteProporcional && " (proporcional aos meses de atividade neste primeiro ano)"}
@@ -200,15 +200,15 @@ export default function Mei() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Cartao titulo="DAS">
-          <p className="text-2xl font-semibold">{formatarMoeda(perfil?.dasMensalCentavos ?? 0)}</p>
+          <p className="numero text-2xl font-semibold">{formatarMoeda(perfil?.dasMensalCentavos ?? 0)}</p>
           <p className="mt-1 text-sm text-muted-fg">
             por mês, vencendo todo dia {perfil?.diaVencimentoDas ?? "—"}.
           </p>
 
           {emAberto.length > 0 ? (
-            <div className="mt-4 space-y-2 rounded-2xl border border-ios-red/40 bg-ios-red/10 p-3">
-              <p className="text-sm font-medium text-ios-red">{emAberto.length} DAS em aberto</p>
-              <p className="text-xs text-ios-red/80">
+            <div className="mt-4 space-y-2 rounded-2xl border border-negativo/40 bg-negativo/10 p-3">
+              <p className="text-sm font-medium text-negativo">{emAberto.length} DAS em aberto</p>
+              <p className="text-xs text-negativo/80">
                 Atraso gera multa e juros, e o mês não conta para a aposentadoria enquanto não for pago.
               </p>
               {emAberto.map((linha) => (
@@ -217,7 +217,7 @@ export default function Mei() {
                   <button
                     onClick={() => darBaixa(linha)}
                     disabled={ocupado}
-                    className="flex items-center gap-1.5 rounded-full border border-ios-green/40 px-3 py-1 text-[12px] text-ios-green disabled:opacity-50"
+                    className="flex items-center gap-1.5 rounded-full border border-positivo/40 px-3 py-1 text-[12px] text-positivo disabled:opacity-50"
                   >
                     <Check className="size-3.5" /> dar baixa
                   </button>
@@ -225,7 +225,7 @@ export default function Mei() {
               ))}
             </div>
           ) : (
-            <p className="mt-4 text-sm text-ios-green">DAS em dia.</p>
+            <p className="mt-4 text-sm text-positivo">DAS em dia.</p>
           )}
         </Cartao>
 
@@ -256,7 +256,7 @@ export default function Mei() {
         }
       >
         {abrirForm && (
-          <form onSubmit={salvar} className="mb-4 grid gap-3 rounded-2xl border border-hairline bg-surface-2 p-4 sm:grid-cols-2">
+          <form onSubmit={salvar} className="mb-4 grid gap-3 rounded-2xl border border-pauta bg-papel-2 p-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1.5 text-[12px] text-muted-fg">
               competência
               <input
@@ -326,20 +326,20 @@ export default function Mei() {
               <button
                 type="submit"
                 disabled={ocupado}
-                className="rounded-full bg-ios-blue px-4 py-2 text-[13px] font-medium text-white disabled:opacity-50"
+                className="rounded-full bg-acao px-4 py-2 text-[13px] font-medium text-white disabled:opacity-50"
               >
                 salvar
               </button>
             </div>
 
-            {erro && <p className="text-[13px] text-ios-red sm:col-span-2">{erro}</p>}
+            {erro && <p className="text-[13px] text-negativo sm:col-span-2">{erro}</p>}
           </form>
         )}
 
         {competencias.length === 0 ? (
           <Vazio titulo="Nenhuma competência lançada" texto="Registre o faturamento de cada mês para o acompanhamento do limite." />
         ) : (
-          <div className="divide-y divide-hairline">
+          <div className="divide-y divide-pauta">
             {[...competencias]
               .sort((a, b) => b.competencia.localeCompare(a.competencia))
               .map((linha) => {
@@ -352,7 +352,7 @@ export default function Mei() {
                   >
                     <span>{rotuloCompetencia(linha.competencia)}</span>
                     <span className="text-muted-fg">{formatarMoeda(total)}</span>
-                    <span className={linha.dasPago ? "text-ios-green" : "text-ios-orange"}>
+                    <span className={linha.dasPago ? "text-positivo" : "text-atencao"}>
                       {linha.dasPago ? "DAS pago" : "DAS pendente"}
                     </span>
                   </button>

@@ -36,7 +36,7 @@ export default async function Metas() {
           último, o longo prazo. Aporte só entra depois que o mês fecha no positivo.
         </p>
         {concluidas > 0 && (
-          <p className="mt-2 text-xs text-ios-green">{concluidas} meta(s) já concluída(s).</p>
+          <p className="mt-2 text-xs text-positivo">{concluidas} meta(s) já concluída(s).</p>
         )}
       </Cartao>
 
@@ -81,7 +81,7 @@ export default async function Metas() {
                   {meta.rendimentoAnualBps > 0 && ` · rendendo ${(meta.rendimentoAnualBps / 100).toFixed(1)}% a.a.`}
                 </p>
                 {meta.dataAlvo && (
-                  <p className={projecao.noPrazo ? "text-ios-green" : "text-ios-orange"}>
+                  <p className={projecao.noPrazo ? "text-positivo" : "text-atencao"}>
                     Alvo: {formatarData(meta.dataAlvo)} —{" "}
                     {projecao.noPrazo
                       ? "está no prazo"

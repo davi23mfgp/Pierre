@@ -3,1069 +3,232 @@
 @tailwind utilities;
 
 /* ============================================================
-   DESIGN SYSTEM — CONTROLDEAL  (Estilo Apple / iOS / macOS)
-   Bloco 1 · Fundação
+   Tino — identidade visual
+   ------------------------------------------------------------
+   A referência não é app de banco: é o livro-caixa e a bobina do
+   cupom. Papel, pauta, tinta e carimbo. O produto fala de dinheiro
+   miúdo, conferido peça por peça, e a tela devia parecer isso.
+
+   As cores usam o vocabulário que o brasileiro já fala: quem tem
+   sobra está "no azul", quem tem buraco está "no vermelho". Por
+   isso positivo é azul e não verde — e porque verde de fintech já
+   é o que todo mundo faz.
+
+   A ação (botão, link) é a própria tinta: quase preta. Deixa a cor
+   sobrar para o que informa, em vez de gastar em decoração.
    ============================================================ */
 
 @layer base {
   :root {
-    /* ── Paleta Apple — Light ── */
-    --background:    0 0% 97.5%;
-    --foreground:    240 5% 11%;        /* #1d1d1f — preto Apple  */
+    /* --- papel e tinta --- */
+    --background: oklch(0.968 0.004 255);
+    --foreground: oklch(0.22 0.028 258);
 
-    --card:          0 0% 100%;
-    --card-foreground: 240 5% 11%;
+    --papel-1: oklch(1 0 0);
+    --papel-2: oklch(0.978 0.004 255);
+    --papel-3: oklch(0.948 0.006 255);
 
-    --popover:       0 0% 100%;
-    --popover-foreground: 240 5% 11%;
+    /* A linha do livro-caixa: separa sem gritar. */
+    --pauta: oklch(0.22 0.028 258 / 12%);
+    --muted-fg: oklch(0.485 0.018 258);
 
-    /* Sem cor de marca. O acento é o próprio preto — é o que a referência faz:
-       tudo monocromático, e o contraste (não o matiz) é quem cria hierarquia. */
-    --primary:       0 0% 16%;
+    /* --- cores que informam --- */
+    --lch-acao: 0.29 0.045 262;
+    --lch-positivo: 0.49 0.13 248;
+    --lch-negativo: 0.52 0.18 26;
+    --lch-atencao: 0.6 0.13 66;
+    --lch-alerta: 0.68 0.13 88;
+    --lch-destaque: 0.45 0.15 292;
+    --lch-dado: 0.48 0.085 212;
+
+    /* --- shadcn --- */
+    --card: 0 0% 100%;
+    --card-foreground: 258 22% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 258 22% 14%;
+    --primary: 258 30% 18%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary:     0 0% 94%;
-    --secondary-foreground: 0 0% 18%;
-
-    --muted:         0 0% 94.5%;
-    /* Cinza secundário do modo claro. O #86868b da Apple dá só 3.4:1 sobre
-       branco — some no vidro, que é ainda mais claro que o fundo. Escurecido
-       até passar de 4.5:1 (mínimo legível) sem perder o ar discreto. */
-    --muted-foreground: 0 0% 42%;
-
-    --accent:        0 0% 92%;
-    --accent-foreground: 0 0% 16%;
-
-    /* Único token que guarda matiz: erro em cinza vira aviso invisível. */
-    --destructive:   0 60% 44%;
+    --secondary: 255 14% 94%;
+    --secondary-foreground: 258 20% 22%;
+    --muted: 255 14% 95%;
+    --muted-foreground: 258 8% 45%;
+    --accent: 255 16% 92%;
+    --accent-foreground: 258 24% 18%;
+    --destructive: 12 68% 46%;
     --destructive-foreground: 0 0% 100%;
+    --border: 255 12% 87%;
+    --input: 255 12% 84%;
+    --ring: 248 45% 45%;
 
-    --border:        0 0% 86%;
-    --input:         0 0% 84%;
-    --ring:          0 0% 16%;
+    --radius: 12px;
 
-    /* ── Sidebar Light ── */
-    --sidebar:              0 0% 100%;
-    --sidebar-foreground:   0 0% 18%;
-    --sidebar-border:       0 0% 92%;
-    --sidebar-accent:       0 0% 94%;
-    --sidebar-accent-foreground: 0 0% 14%;
-
-    /* ── Raio de borda — escala Control.Deal ── */
-    --radius-sm:   10px;
-    --radius:      14px;      /* base — botões / inputs */
-    --radius-md:   16px;
-    --radius-lg:   20px;
-    --radius-xl:   24px;
-    --radius-2xl:  28px;
-    --radius-full: 9999px;
-    --radius-card: 1rem;      /* 16px — cards (legado) */
-    --radius-modal: 1.5rem;   /* 24px — modais / sheets (legado) */
-
-    /* ── Sombras Apple ── */
-    --shadow-card:    0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.05);
-    --shadow-raised:  0 4px 12px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.08);
-    --shadow-float:   0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);
-
-    /* ══════════════════════════════════════════════════════════
-       DNA Control.Deal — tokens oklch (consumidos direto via var())
-       Absolutos: mesmos valores em light e dark (base dark-first).
-       ══════════════════════════════════════════════════════════ */
-    /* Neutros puros (croma 0): o 0.005-0.01 de croma em 260 deixava tudo
-       levemente azulado, o que somado ao azul do acento dava o ar arroxeado. */
-    --surface-1:  oklch(0.155 0 0);
-    --surface-2:  oklch(0.19 0 0);
-    --surface-3:  oklch(0.24 0 0);
-    --hairline:   oklch(1 0 0 / 10%);
-    --muted-fg:   oklch(0.68 0 0);
-
-    /* Os ios-* deixaram de ser matizes e viraram degraus de cinza: o que
-       distingue uma coluna do kanban da outra passa a ser a luminância. Como
-       cinza claro some no branco, a luminância troca por tema (ver .dark).
-       O vermelho é a única exceção — erro precisa ser reconhecível de relance. */
-    --l-ios-blue:   0.40;
-    --l-ios-green:  0.46;
-    --l-ios-yellow: 0.56;
-    --l-ios-orange: 0.50;
-    --l-ios-purple: 0.34;
-    --l-ios-teal:   0.43;
-    --ios-blue:   oklch(var(--l-ios-blue) 0 0);
-    --ios-green:  oklch(var(--l-ios-green) 0 0);
-    --ios-yellow: oklch(var(--l-ios-yellow) 0 0);
-    --ios-orange: oklch(var(--l-ios-orange) 0 0);
-    --l-ios-red:  0.50;
-    --ios-red:    oklch(var(--l-ios-red) 0.13 25);
-    --ios-purple: oklch(var(--l-ios-purple) 0 0);
-    --ios-teal:   oklch(var(--l-ios-teal) 0 0);
-
-    /* Os mesmos valores no formato "L C H" solto, que é o que o Tailwind usa
-       nas classes bg-ios-*, text-ios-* e border-ios-*.
-
-       Estas variáveis existiam SÓ dentro de .dark. No tema claro,
-       `oklch(var(--lch-ios-blue) / 1)` era cor inválida e o navegador
-       descartava a declaração — o círculo do Assistente CORE ficava
-       transparente com ícone branco em cima do fundo branco, invisível. Valia
-       para todo bg-ios-* e text-ios-* da interface clara, não só para ele.
-
-       Chroma 0 em quase todos porque no claro estes tokens são degraus de
-       cinza, e cinza claro some no branco. O vermelho é a exceção: erro
-       precisa ser reconhecível de relance. */
-    --lch-ios-blue:   var(--l-ios-blue) 0 0;
-    --lch-ios-green:  var(--l-ios-green) 0 0;
-    --lch-ios-yellow: var(--l-ios-yellow) 0 0;
-    --lch-ios-orange: var(--l-ios-orange) 0 0;
-    --lch-ios-purple: var(--l-ios-purple) 0 0;
-    --lch-ios-teal:   var(--l-ios-teal) 0 0;
-    --lch-ios-red:    var(--l-ios-red) 0.13 25;
-
-    /* Status — usados SÓ como texto ou fundo a 15%, nunca bloco chapado. */
-    --success: 152 55% 32%;
-    --warning: 38 80% 38%;
-    --danger:  4 70% 45%;
-
-    /* Séries de gráfico: o azul da marca + escala de cinza neutra. Assim um
-       gráfico com 5 séries não vira arco-íris. */
-    /* Série 1 é a da marca; as outras descem em cinza. Um gráfico de cinco
-       séries não pode virar arco-íris, mas a principal precisa se destacar. */
-    --chart-1: 245 72% 55%;
-    --chart-2: 0 0% 40%;
-    --chart-3: 0 0% 58%;
-    --chart-4: 0 0% 73%;
-    --chart-5: 0 0% 86%;
-  }
-
-  /* ── Modo claro: surfaces/hairline/muted viram claros (sem isso a sidebar
-     e cards ficavam escuros no white mode). ios-* servem nos dois modos. ── */
-  html:not(.dark) {
-    --surface-1: oklch(1 0 0);
-    --surface-2: oklch(0.975 0 0);
-    --surface-3: oklch(0.945 0 0);
-    --hairline:  oklch(0 0 0 / 9%);
-    --muted-fg:  oklch(0.5 0 0);
+    /* Sombra de papel sobre papel: curta e sem borrão. */
+    --sombra-ficha: 0 1px 2px oklch(0.22 0.03 258 / 6%), 0 6px 18px oklch(0.22 0.03 258 / 5%);
+    --sombra-alta: 0 8px 28px oklch(0.22 0.03 258 / 12%), 0 2px 6px oklch(0.22 0.03 258 / 8%);
   }
 
   .dark {
-    /* ── Paleta escura MONOCROMÁTICA ──────────────────────────────────────
-       Cinza neutro puro (matiz 0), não o cinza azulado de antes: era o que
-       dava o ar "roxeado". Fundo deixou de ser preto absoluto — preto puro
-       achata tudo e o vidro não tem o que refletir. */
-    --background:    0 0% 4.5%;         /* #0b0b0b */
-    --foreground:    0 0% 98.5%;
+    /* Grafite azulado, não preto: preto puro em tela OLED some com a
+       hierarquia — cartão e fundo viram a mesma coisa. */
+    --background: oklch(0.171 0.012 258);
+    --foreground: oklch(0.962 0.004 258);
 
-    --card:          0 0% 8.5%;         /* #161616 */
-    --card-foreground: 0 0% 98.5%;
+    --papel-1: oklch(0.207 0.014 258);
+    --papel-2: oklch(0.238 0.015 258);
+    --papel-3: oklch(0.272 0.016 258);
 
-    --popover:       0 0% 10%;
-    --popover-foreground: 0 0% 98.5%;
+    --pauta: oklch(1 0 0 / 11%);
+    --muted-fg: oklch(0.7 0.015 258);
 
-    /* No escuro o acento é o branco — mesma lógica invertida. */
-    --primary:       0 0% 98.5%;
-    --primary-foreground: 0 0% 14%;
+    --lch-acao: 0.95 0.01 258;
+    --lch-positivo: 0.76 0.13 246;
+    --lch-negativo: 0.7 0.17 26;
+    --lch-atencao: 0.78 0.14 70;
+    --lch-alerta: 0.86 0.14 90;
+    --lch-destaque: 0.73 0.14 294;
+    --lch-dado: 0.75 0.09 212;
 
-    --secondary:     0 0% 17%;
-    --secondary-foreground: 0 0% 98.5%;
+    --card: 258 16% 13%;
+    --card-foreground: 0 0% 96%;
+    --popover: 258 16% 15%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 0 0% 96%;
+    --primary-foreground: 258 22% 14%;
+    --secondary: 258 12% 22%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 258 12% 21%;
+    --muted-foreground: 258 8% 70%;
+    --accent: 258 12% 24%;
+    --accent-foreground: 0 0% 96%;
+    --destructive: 12 70% 62%;
+    --destructive-foreground: 258 22% 14%;
+    --border: 258 10% 27%;
+    --input: 258 10% 30%;
+    --ring: 246 60% 70%;
 
-    --muted:         0 0% 16%;
-    --muted-foreground: 0 0% 72%;
-
-    --accent:        0 0% 17%;
-    --accent-foreground: 0 0% 98.5%;
-
-    --destructive:   0 62% 62%;
-    --destructive-foreground: 0 0% 14%;
-
-    --border:        0 0% 21%;
-    --input:         0 0% 24%;
-    --ring:          0 0% 98.5%;
-
-    /* ── Sidebar Dark ── */
-    --sidebar:              0 0% 7%;
-    --sidebar-foreground:   0 0% 95%;
-    --sidebar-border:       0 0% 20%;
-    --sidebar-accent:       0 0% 19%;
-    --sidebar-accent-foreground: 0 0% 98.5%;
-
-    /* No escuro a cor precisa de luminância alta para separar do fundo quase
-       preto — as mesmas matizes, bem mais claras. */
-    --lch-ios-blue:   0.72 0.16 250;
-    --lch-ios-green:  0.80 0.16 155;
-    --lch-ios-yellow: 0.86 0.15 92;
-    --lch-ios-orange: 0.77 0.16 55;
-    --lch-ios-red:    0.70 0.19 25;
-    --lch-ios-purple: 0.72 0.17 300;
-    --lch-ios-teal:   0.79 0.13 200;
-
-    /* ── Sombras Dark ── */
-    --shadow-card:    0 1px 3px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.2);
-    --shadow-raised:  0 4px 16px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.3);
-    --shadow-float:   0 8px 32px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
-
-    --success: 152 55% 62%;
-    --warning: 38 85% 62%;
-    --danger:  4 75% 66%;
-
-    --chart-1: 250 90% 70%;
-    --chart-2: 0 0% 78%;
-    --chart-3: 0 0% 60%;
-    --chart-4: 0 0% 44%;
-    --chart-5: 0 0% 30%;
+    --sombra-ficha: 0 1px 2px oklch(0 0 0 / 40%), 0 8px 24px oklch(0 0 0 / 30%);
+    --sombra-alta: 0 10px 32px oklch(0 0 0 / 55%), 0 2px 8px oklch(0 0 0 / 35%);
   }
-}
 
-/* ── Reset base ── */
-@layer base {
-  * { @apply border-border; }
-  html { @apply scroll-smooth; }
+  * {
+    @apply border-border;
+  }
+
   body {
-    @apply bg-background text-foreground antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-corpo), ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Algarismo de largura fixa em toda a interface. Numa lista de valores, o
+       "1" estreito desalinha a coluna inteira e conferir extrato passa a exigir
+       esforço que o papel não exigia. */
+    font-variant-numeric: tabular-nums;
   }
 
-  /* Títulos — tracking-tight, estilo Apple */
-  h1, h2, h3, h4, h5, h6 { @apply tracking-tight; }
+  /* Dinheiro em fonte de largura fixa e algarismo tabular.
+     Sem isso a coluna de valores dança conforme o dígito, e conferir
+     extrato vira caça ao erro. É a régua do livro-caixa. */
+  .numero,
+  [data-numero] {
+    font-family: var(--font-numero), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+    letter-spacing: -0.01em;
+  }
 
-  /* Remove spinner em inputs numéricos globalmente */
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-  input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+  h1,
+  h2,
+  .display {
+    font-family: var(--font-display), var(--font-corpo), sans-serif;
+    letter-spacing: -0.022em;
+  }
 
-  /* Select nativo — visual consistente */
-  select {
-    @apply bg-muted border border-border text-foreground rounded-xl px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring;
+  ::selection {
+    background: oklch(var(--lch-positivo) / 22%);
+  }
+
+  :focus-visible {
+    outline: 2px solid oklch(var(--lch-positivo));
+    outline-offset: 2px;
   }
 }
 
-/* ── Utilitários de design system ── */
+@layer components {
+  /* A ficha: o cartão do livro-caixa.
+     A pauta no topo é o único enfeite do sistema — e é o que dá à tela
+     a cara de papel pautado em vez de painel de aplicativo. */
+  .ficha {
+    position: relative;
+    background: var(--papel-1);
+    border: 1px solid var(--pauta);
+    border-radius: 14px;
+    box-shadow: var(--sombra-ficha);
+    overflow: hidden;
+  }
+
+  .ficha::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: linear-gradient(90deg, oklch(var(--lch-positivo) / 55%), transparent 62%);
+  }
+
+  .toque {
+    transition:
+      transform 0.14s cubic-bezier(0.32, 0.72, 0, 1),
+      background-color 0.14s ease;
+  }
+
+  .toque:active {
+    transform: scale(0.97);
+  }
+}
+
 @layer utilities {
-  /* Sombras Apple */
-  .shadow-apple-card    { box-shadow: var(--shadow-card); }
-  .shadow-apple-raised  { box-shadow: var(--shadow-raised); }
-  .shadow-apple-float   { box-shadow: var(--shadow-float); }
-
-  /* Glassmorphism */
-  .glass-light {
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-  }
-  .glass-dark {
-    background: rgba(28, 28, 30, 0.72);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-  }
-  .glass {
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  .animate-page-enter {
+    animation: entrada 0.32s cubic-bezier(0.32, 0.72, 0, 1) backwards;
   }
 
-  /* Transições físicas Apple */
-  .transition-apple {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .transition-apple-fast {
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .transition-apple-slow {
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
-  /* Hover de cards clicáveis */
-  .card-hover {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-raised);
-  }
-
-  /* Efeito de pressionar botão */
-  .btn-press {
-    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .btn-press:hover  { transform: scale(1.02); }
-  .btn-press:active { transform: scale(0.97); }
-
-  /* Shimmer skeleton */
-  .skeleton-shimmer {
-    background: linear-gradient(
-      90deg,
-      hsl(var(--muted)) 25%,
-      hsl(var(--secondary)) 50%,
-      hsl(var(--muted)) 75%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
-  @keyframes shimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-
-  /* Fade + slide de entrada de página */
-  .page-enter {
-    animation: pageEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  }
-  @keyframes pageEnter {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Pill ativo (tabs estilo iOS) */
-  .tab-pill-active {
-    @apply bg-white dark:bg-white/10 rounded-lg shadow-sm;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Foco elegante */
-  .focus-apple {
-    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-1;
-  }
-
-  /* Scrollbar invisível */
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-  /* Borda translúcida Apple */
-  .border-apple { border: 1px solid rgba(0,0,0,0.06); }
-  .dark .border-apple { border: 1px solid rgba(255,255,255,0.08); }
-}
-
-/* ── Animação de entrada de página ── */
-/* backwards (não both): aplica estado inicial antes de animar, mas NÃO segura transform no fim.
-   Transform residual criaria containing-block e quebraria position:fixed dos filhos (botão Salvar). */
-.animate-page-enter { animation: springSlideUp 0.38s cubic-bezier(0.34, 1.4, 0.64, 1) backwards; }
-
-/* ══════════════════════════════════════════════
-   MOBILE — Bloco 6 Apple Design
-   ══════════════════════════════════════════════ */
-
-/* Previne zoom automático em inputs iOS */
-@media (max-width: 767px) {
-  input, textarea, select {
-    font-size: 16px !important;
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
   }
 }
 
-/* Safe area para iPhone com notch */
-.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-.safe-top    { padding-top: env(safe-area-inset-top); }
-
-/* Card mobile com toque responsivo */
-.mobile-card {
-  background: hsl(var(--card));
-  border-radius: 1rem;
-  box-shadow: var(--shadow-card);
-  padding: 1.25rem;
-  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-.mobile-card:active {
-  transform: scale(0.98);
-  box-shadow: none;
-}
-
-/* Borda esquerda colorida de status (3px) */
-.status-border-green  { border-left: 3px solid #34c759; }
-.status-border-yellow { border-left: 3px solid #ff9f0a; }
-.status-border-red    { border-left: 3px solid #ff3b30; }
-.status-border-blue   { border-left: 3px solid var(--ios-blue); }
-.status-border-gray   { border-left: 3px solid #8e8e93; }
-
-/* Bottom sheet iOS — animação spring */
-@keyframes sheetEnter {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
-}
-@keyframes sheetExit {
-  from { transform: translateY(0); }
-  to   { transform: translateY(100%); }
-}
-.sheet-enter { animation: sheetEnter 300ms cubic-bezier(0.32, 0.72, 0, 1) forwards; }
-.sheet-exit  { animation: sheetExit  250ms cubic-bezier(0.4, 0, 1, 1)     forwards; }
-
-/* Swipe action (revela botões ao deslizar) */
-.swipe-container { position: relative; overflow: hidden; }
-.swipe-actions {
-  position: absolute; right: 0; top: 0; bottom: 0;
-  display: flex; align-items: stretch;
-  transform: translateX(100%);
-  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-.swipe-container.swiped .swipe-actions { transform: translateX(0); }
-
-/* Checkbox grande estilo iOS */
-.ios-checkbox {
-  width: 28px; height: 28px;
-  border-radius: 8px;
-  border: 2px solid hsl(var(--border));
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-.ios-checkbox.checked {
-  background: hsl(var(--primary));
-  border-color: hsl(var(--primary));
-  animation: checkBounce 250ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-@keyframes checkBounce {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(0.85); }
-  100% { transform: scale(1); }
-}
-
-/* Pills de Kanban com scroll horizontal */
-.kanban-pills {
-  display: flex; gap: 8px;
-  overflow-x: auto; padding: 4px 20px;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-.kanban-pills::-webkit-scrollbar { display: none; }
-.kanban-pill {
-  flex-shrink: 0;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 14px; font-weight: 500;
-  background: hsl(var(--muted));
-  color: hsl(var(--muted-foreground));
-  transition: all 200ms ease;
-  white-space: nowrap;
-}
-.kanban-pill.active {
-  background: white;
-  color: hsl(var(--foreground));
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-}
-.dark .kanban-pill.active {
-  background: hsl(var(--card));
-}
-
-/* Barra de progresso wizard */
-.wizard-progress {
-  height: 3px;
-  background: hsl(var(--muted));
-  border-radius: 99px;
-  overflow: hidden;
-}
-.wizard-progress-bar {
-  height: 100%;
-  background: hsl(var(--primary));
-  border-radius: 99px;
-  transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Indicador de online pulsante */
-@keyframes onlinePulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
-}
-.online-dot { animation: onlinePulse 2s ease-in-out infinite; }
-
-/* FAB contextual */
-.fab-contextual {
-  position: fixed;
-  bottom: 24px; right: 20px;
-  height: 52px;
-  padding: 0 20px;
-  border-radius: 16px;
-  background: hsl(var(--primary));
-  color: white;
-  font-size: 15px; font-weight: 600;
-  display: flex; align-items: center; gap: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 40;
-}
-.fab-contextual:active { transform: scale(0.96); }
-.fab-contextual.hidden-fab { transform: translateY(80px); opacity: 0; pointer-events: none; }
-
-/* ── Overrides globais para componentes Shadcn ── */
-@layer base {
-  /* Inputs mais altos, mais arredondados */
-  input[type="text"], input[type="email"], input[type="password"],
-  input[type="number"], input[type="search"], textarea, select {
-    min-height: 44px;
-    border-radius: var(--radius);
+@keyframes entrada {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
   }
-
-  /* Remove setas dos inputs numéricos em TODOS os browsers */
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  input[type="number"] { -moz-appearance: textfield; }
-
-  /* Scrollbar fina e elegante */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 999px;
-  }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
-  html:not(.dark) ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); }
-}
-
-/* ── Compatibilidade com classes hardcoded dark (legado) ── */
-html:not(.dark) .bg-zinc-950 { background-color: #fafafa !important; }
-html:not(.dark) .bg-zinc-900 { background-color: #f5f5f7 !important; }
-html:not(.dark) .bg-zinc-800 { background-color: #eeeeef !important; }
-html:not(.dark) .bg-zinc-800\/50 { background-color: rgba(238,238,239,0.5) !important; }
-html:not(.dark) .bg-zinc-800\/40 { background-color: rgba(238,238,239,0.4) !important; }
-html:not(.dark) .bg-zinc-800\/20 { background-color: rgba(238,238,239,0.2) !important; }
-html:not(.dark) .bg-zinc-800\/60 { background-color: rgba(238,238,239,0.6) !important; }
-html:not(.dark) .bg-zinc-700    { background-color: #e5e5ea !important; }
-html:not(.dark) .bg-zinc-700\/50 { background-color: rgba(229,229,234,0.5) !important; }
-html:not(.dark) .bg-zinc-600    { background-color: #d1d1d6 !important; }
-
-html:not(.dark) .text-white      { color: #1d1d1f !important; }
-html:not(.dark) .text-zinc-100  { color: #2c2c2e !important; }
-html:not(.dark) .text-zinc-200  { color: #3a3a3c !important; }
-html:not(.dark) .text-zinc-300  { color: #48484a !important; }
-html:not(.dark) .text-zinc-400  { color: #636366 !important; }
-html:not(.dark) .text-zinc-500  { color: #86868b !important; }
-html:not(.dark) .text-zinc-600  { color: #86868b !important; }
-
-html:not(.dark) .border-white\/10 { border-color: rgba(0,0,0,0.06) !important; }
-html:not(.dark) .border-white\/5  { border-color: rgba(0,0,0,0.04) !important; }
-html:not(.dark) .border-white\/20 { border-color: rgba(0,0,0,0.08) !important; }
-html:not(.dark) .border-zinc-700 { border-color: #e5e5ea !important; }
-html:not(.dark) .border-zinc-800 { border-color: #eeeeef !important; }
-html:not(.dark) .border-zinc-600 { border-color: #d1d1d6 !important; }
-
-html:not(.dark) .divide-zinc-700 > * + * { border-color: #e5e5ea !important; }
-html:not(.dark) .divide-zinc-800 > * + * { border-color: #eeeeef !important; }
-
-html:not(.dark) .placeholder\:text-zinc-500::placeholder { color: #86868b !important; }
-html:not(.dark) .placeholder\:text-zinc-600::placeholder { color: #aeaeb2 !important; }
-
-/* Sidebar light — mantém escura pra contraste */
-html:not(.dark) nav .bg-zinc-900  { background-color: #1d1d1f !important; }
-html:not(.dark) nav .text-white    { color: #f5f5f7 !important; }
-html:not(.dark) nav .text-zinc-400 { color: #86868b !important; }
-html:not(.dark) nav .text-zinc-300 { color: #aeaeb2 !important; }
-html:not(.dark) nav .border-white\/10 { border-color: rgba(255,255,255,0.08) !important; }
-
-/* ══════════════════════════════════════════════
-   BLOCO 9 — iOS 26 Liquid Glass + Spring Physics
-   ══════════════════════════════════════════════ */
-
-/* PWA standalone: remover bounce/overscroll do browser */
-@media (display-mode: standalone) {
-  html, body { overscroll-behavior: none; }
-  body { -webkit-user-select: none; user-select: none; }
-  input, textarea, [contenteditable] { -webkit-user-select: auto; user-select: auto; }
-}
-
-/* Touch tap highlight — remove default flash no iOS */
-* { -webkit-tap-highlight-color: transparent; }
-a, button, [role="button"] { touch-action: manipulation; }
-
-/* ── Liquid Glass — iOS 26 Material ── */
-/* liquid-glass / liquid-glass-elevated: nomes antigos, já usados em diálogos e
-   cartões pelo app. Passam a apontar para a MESMA receita de vidro do resto do
-   sistema — antes eram uma segunda receita, com valores próprios, e as
-   superfícies não combinavam entre si. Mantidos como apelidos para não ter de
-   reescrever cada componente. */
-.liquid-glass,
-.liquid-glass-elevated {
-  background-image: var(--vidro-veu);
-  background-color: var(--vidro-fundo);
-  backdrop-filter: var(--vidro-blur);
-  border: 1px solid var(--vidro-borda);
-  box-shadow:
-    inset 0 1px 0 0 var(--vidro-brilho-top),
-    var(--vidro-sombra);
-}
-
-/* A versão "elevated" é a mesma coisa, só que mais opaca e com sombra maior:
-   é a camada que fica por cima de todo o resto (diálogos). */
-.liquid-glass-elevated {
-  background-color: color-mix(in srgb, var(--vidro-fundo) 100%, hsl(var(--card)) 28%);
-  box-shadow:
-    inset 0 1px 0 0 var(--vidro-brilho-top),
-    var(--vidro-sombra),
-    0 48px 80px -32px hsl(0 0% 0% / 0.35);
-}
-
-/* Refraction highlight — borda de luz superior em cards flutuantes */
-.glass-refraction::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.25) 0%,
-    rgba(255,255,255,0.05) 40%,
-    transparent 60%
-  );
-  pointer-events: none;
-}
-.dark .glass-refraction::before {
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.08) 0%,
-    transparent 40%
-  );
-}
-
-/* ── Spring Physics Keyframes ── */
-
-/* Pop: escala como mola ao aparecer */
-@keyframes springPop {
-  0%   { transform: scale(0.85); opacity: 0; }
-  55%  { transform: scale(1.04); opacity: 1; }
-  75%  { transform: scale(0.98); }
-  100% { transform: scale(1); opacity: 1; }
-}
-.spring-pop { animation: springPop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
-
-/* Slide-up com mola */
-@keyframes springSlideUp {
-  0%   { transform: translateY(20px) scale(0.97); opacity: 0; }
-  60%  { transform: translateY(-4px) scale(1.01); opacity: 1; }
-  80%  { transform: translateY(2px) scale(0.995); }
-  100% { transform: translateY(0) scale(1); opacity: 1; }
-}
-.spring-slide-up { animation: springSlideUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
-
-/* Fade + scale delicado (chips, badges) */
-@keyframes springFade {
-  0%   { opacity: 0; transform: scale(0.92) translateY(4px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-.spring-fade { animation: springFade 0.3s cubic-bezier(0.34, 1.46, 0.64, 1) both; }
-
-/* Bounce horizontal (notificações, chips laterais) */
-@keyframes springBounceIn {
-  0%   { transform: translateX(-12px); opacity: 0; }
-  55%  { transform: translateX(4px); opacity: 1; }
-  80%  { transform: translateX(-2px); }
-  100% { transform: translateX(0); opacity: 1; }
-}
-.spring-bounce-in { animation: springBounceIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
-
-/* Stagger helper — use com style={{ animationDelay: `${i*60}ms` }} */
-.spring-pop-stagger { animation: springPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
-
-/* Pressionar com física (botões primários) */
-.spring-press {
-  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.spring-press:active {
-  transform: scale(0.94);
-}
-.spring-press:hover:not(:active) {
-  transform: scale(1.02);
-}
-
-/* ── iOS safe areas (notch/Dynamic Island) ── */
-.safe-area-inset {
-  padding-left:   env(safe-area-inset-left);
-  padding-right:  env(safe-area-inset-right);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-.pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 0.5rem); }
-.pt-safe { padding-top:    max(env(safe-area-inset-top),    0px); }
-
-/* ── PWA bottom navigation bar (quando app é instalado) ── */
-@media (display-mode: standalone) {
-  /* Adiciona padding seguro para iOS home indicator */
-  .bottom-nav, [data-bottom-nav] {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  /* Esconde indicadores de browser no modo app */
-  .browser-only { display: none !important; }
-}
-
-/* ── Dynamic Island aware — top padding em telas com notch ── */
-@supports (padding: max(0px)) {
-  .notch-aware-top {
-    padding-top: max(env(safe-area-inset-top), 1rem);
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
-/* ── Editor de páginas extras (proposta): visual de documento ── */
-.doc-editor .ProseMirror h2 {
-  font-size: 1.15rem; font-weight: 700; margin: 1.1em 0 .4em;
-}
-.doc-editor .ProseMirror h3 {
-  font-size: 1rem; font-weight: 600; margin: 1em 0 .35em;
-}
-.doc-editor .ProseMirror p { margin: .55em 0; }
-.doc-editor .ProseMirror ul { list-style: disc;    padding-left: 1.3em; margin: .55em 0; }
-.doc-editor .ProseMirror ol { list-style: decimal; padding-left: 1.3em; margin: .55em 0; }
-.doc-editor .ProseMirror li { margin: .2em 0; }
-.doc-editor .ProseMirror strong { font-weight: 600; }
-.doc-editor .ProseMirror blockquote {
-  border-left: 3px solid hsl(var(--border));
-  padding-left: 1em; margin: .8em 0; color: hsl(var(--muted-foreground));
-}
-.doc-editor .ProseMirror img { margin: .8em 0; max-width: 100%; height: auto; }
-
-/* Placeholder do Tiptap (só na primeira linha vazia) */
-.doc-editor .ProseMirror p.is-editor-empty:first-child::before {
-  content: attr(data-placeholder);
-  color: hsl(var(--muted-foreground));
-  float: left; height: 0; pointer-events: none;
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   CELULAR — ajustes que valem para qualquer aparelho
-   ══════════════════════════════════════════════════════════════════════ */
-
-/* O iOS dá zoom automático ao focar um campo com fonte menor que 16px, e a
-   página fica torta depois. Vários campos aqui usam 15px ou menos por design,
-   então a correção é no ponteiro grosso (toque), sem mexer no visual do
-   desktop. `pointer: coarse` pega iPhone e Android, sem depender de largura. */
-@media (pointer: coarse) {
-  input:not([type="checkbox"]):not([type="radio"]),
-  select,
-  textarea {
-    font-size: 16px !important;
+/* O mascote respira devagar quando está tranquilo, e mais rápido quando
+   a situação aperta. Movimento aqui é informação, não enfeite. */
+@keyframes respiro {
+  0%,
+  100% {
+    transform: translateY(0);
   }
-
-  /* Alvo de toque: 44px é o mínimo confortável. Muitos controles são h-7/h-8
-     (28/32px) para caber no desktop; no toque isso vira erro de clique.
-     `min-height` preserva o layout — o elemento só cresce se estiver menor. */
-  button:not(.alvo-livre),
-  [role="button"]:not(.alvo-livre),
-  a[class*="rounded-full"]:not(.alvo-livre),
-  select {
-    min-height: 40px;
-  }
-
-  /* Ícone-botão quadrado continua quadrado ao crescer. */
-  button[class*="w-8"]:not(.alvo-livre),
-  button[class*="w-7"]:not(.alvo-livre) {
-    min-width: 40px;
+  50% {
+    transform: translateY(-2.5%);
   }
 }
-
-/* Rolagem horizontal (abas, filtros, faixas de números) com encaixe e sem
-   barra visível: no celular o dedo para no item, não no meio dele. */
-@media (max-width: 767px) {
-  .rolagem-toque {
-    scroll-snap-type: x proximity;
-    -webkit-overflow-scrolling: touch;
-  }
-  .rolagem-toque > * { scroll-snap-align: start; }
-}
-
-/* Tabela larga no celular: mantém a rolagem dentro do próprio bloco, para a
-   página nunca deslizar de lado inteira. */
-@media (max-width: 767px) {
-  .tabela-rolante { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .tabela-rolante > table { min-width: 640px; }
-}
-
-/* Diálogo em tela cheia no celular: modal centralizado com muito campo fica
-   espremido e o teclado cobre metade. */
-@media (max-width: 640px) {
-  [role="dialog"] .dialogo-cheio {
-    max-height: calc(100dvh - 2rem);
-    overflow-y: auto;
-  }
-}
-
-
-/* ══════════════════════════════════════════════════════════════════════════
-   VIDRO — superfícies espelhadas
-   ═════════════════════════════════════════════════════════════════════════
-   Vidro de verdade não é só transparência: tem um brilho especular na aresta
-   de cima (onde a luz bate), o material escurece de leve para baixo, e a
-   sombra é ampla e suave em vez de dura.
-
-   Feito só com background em camadas + box-shadow inset — de propósito.
-   Pseudo-elemento em .ios-card colidiria com os ::before/::after que os
-   componentes já usam.
-
-   Variáveis para a receita ficar num lugar só e os dois temas divergirem
-   apenas nos valores.
-   ══════════════════════════════════════════════════════════════════════════ */
-:root {
-  /* Modo claro Apple: quase branco, aresta fininha, sombra discreta.
-     Sem brilho forte — no claro o que dá o "fino" é o contraste, não o glow. */
-  --vidro-fundo:      hsl(0 0% 100% / 0.78);
-  --vidro-brilho-top: hsl(0 0% 100% / 0.7);
-  /* Véu curto e fraco: some no primeiro terço. Espelho pesado rouba
-     legibilidade do texto, que é o que tem de aparecer. */
-  --vidro-veu:        none;
-  --vidro-borda:      hsl(0 0% 0% / 0.10);
-  --vidro-sombra:     0 18px 40px -24px hsl(0 0% 0% / 0.28);
-  --vidro-blur:       blur(28px) saturate(180%);
-}
-
-.dark {
-  /* Modo escuro: fundo quase preto, aresta de luz fina no topo e sombra
-     profunda. O cartão fica só 4% mais claro que o fundo — o que o separa é a
-     aresta, não o degrau de cinza. */
-  --vidro-fundo:      hsl(0 0% 8.5% / 0.82);
-  --vidro-brilho-top: hsl(0 0% 100% / 0.06);
-  /* Fio de luz no topo, não um degradê que clareia meio cartão. */
-  --vidro-veu:        none;
-  --vidro-borda:      hsl(0 0% 100% / 0.14);
-  --vidro-sombra:     0 18px 40px -22px hsl(0 0% 0% / 0.8);
-  --vidro-blur:       blur(28px) saturate(180%);
-}
-
-/* A receita, aplicada por todas as superfícies. */
-.ios-card,
-.auth-card {
-  background-image: var(--vidro-veu);
-  background-color: var(--vidro-fundo);
-  backdrop-filter: var(--vidro-blur);
-  border: 1px solid var(--vidro-borda);
-  box-shadow:
-    inset 0 1px 0 0 var(--vidro-brilho-top),  /* aresta iluminada no topo */
-    var(--vidro-sombra);
-}
-
-.ios-card      { border-radius: 26px; }
-.auth-card     { border-radius: 28px; }
-
-/* Placa da marca: BRANCA nos dois temas, igual ao icone do app instalado.
-   O logo oficial tem traco escuro e barras coloridas — sobre vidro escuro o
-   circulo praticamente sumia. Fundo branco e o que a marca pede. */
-.marca-vidro {
-  background: #ffffff;
-  border: 1px solid hsl(0 0% 100% / 0.14);
-  box-shadow:
-    0 1px 0 0 hsl(0 0% 100% / 0.5) inset,
-    0 10px 26px -12px hsl(0 0% 0% / 0.55);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 76px;
-  height: 76px;
-  border-radius: 22px;
-}
-
-/* Painel de conteúdo: vidro só no desktop. No celular ocupa a tela inteira —
-   moldura arredondada em tela pequena só rouba espaço.
-   Precisa ser CSS próprio: .ios-card não é utility do Tailwind, então
-   "md:ios-card" seria ignorado sem avisar. */
-@media (min-width: 768px) {
-  .painel-conteudo {
-    background-image: var(--vidro-veu);
-    background-color: var(--vidro-fundo);
-    backdrop-filter: var(--vidro-blur);
-    border: 1px solid var(--vidro-borda);
-    border-radius: 22px;
-    box-shadow:
-      inset 0 1px 0 0 var(--vidro-brilho-top),
-      var(--vidro-sombra);
-  }
-}
-
-/* Resposta ao toque do padrão iOS. */
-.ios-tap {
-  transition:
-    transform .18s cubic-bezier(.22, 1, .36, 1),
-    background-color .18s ease,
-    box-shadow .18s ease;
-}
-.ios-tap:active { transform: scale(.97); }
 
 @media (prefers-reduced-motion: reduce) {
-  .ios-tap { transition: none; }
-  .ios-tap:active { transform: none; }
-}
-
-/* ── Fundos com brilho ───────────────────────────────────────────────────── */
-
-/* Telas de entrada: aurora marcada — é a primeira tela, pode ter presença. */
-.auth-bg {
-  position: relative;
-  isolation: isolate;
-  background-color: hsl(var(--background));
-}
-.auth-bg::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-  background-image:
-    radial-gradient(60rem 34rem at 12% -10%, hsl(0 0% 0% / 0.10), transparent 60%),
-    radial-gradient(48rem 30rem at 92% 4%,   hsl(0 0% 0% / 0.06), transparent 62%),
-    radial-gradient(52rem 32rem at 78% 108%, hsl(0 0% 0% / 0.08), transparent 60%);
-}
-.dark .auth-bg::before {
-  background-image:
-    radial-gradient(60rem 34rem at 12% -10%, hsl(0 0% 0% / 0.6), transparent 60%),
-    radial-gradient(48rem 30rem at 92% 4%,   hsl(0 0% 0% / 0.45), transparent 62%),
-    radial-gradient(52rem 32rem at 78% 108%, hsl(0 0% 0% / 0.5), transparent 60%);
-}
-/* Malha fina: textura de superfície, esmaecida nas bordas para não virar
-   papel quadriculado. */
-.auth-bg::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    linear-gradient(hsl(var(--foreground) / 0.028) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--foreground) / 0.028) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(70% 60% at 50% 40%, #000 30%, transparent 100%);
-}
-/* No claro a aurora precisa ser bem mais contida, senão vira mancha colorida. */
-html:not(.dark) .auth-bg::before { opacity: 0.55; }
-html:not(.dark) .auth-bg::after  { opacity: 0.45; }
-
-/* Fundo do sistema: discreto — aqui quem manda é o conteúdo. */
-.app-bg {
-  position: relative;
-  background-color: hsl(var(--background));
-}
-.app-bg::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  /* Claro escurece os cantos; escuro clareia. O que importa é o fundo nunca
-     empatar com o cartão — se empatar, o vidro não tem o que destacar. Antes
-     o gradiente clareava um fundo que já era claro demais; agora o fundo é
-     quase preto e o mesmo brilho serve de profundidade. */
-  background-image:
-    radial-gradient(900px 520px at 12% -8%, hsl(0 0% 0% / 0.07), transparent 62%),
-    radial-gradient(760px 480px at 92% 0%,  hsl(0 0% 0% / 0.05), transparent 62%);
-}
-.dark .app-bg::before {
-  background-image:
-    radial-gradient(900px 520px at 12% -8%, hsl(0 0% 100% / 0.05), transparent 62%),
-    radial-gradient(760px 480px at 92% 0%,  hsl(0 0% 100% / 0.03), transparent 62%);
-}
-
-/* ══ Tipografia ═══════════════════════════════════════════════════════════
-   O que dá o ar "moderno" não é trocar de fonte, é o ajuste ótico: título
-   grande fecha o espaçamento, número usa largura fixa para não dançar ao
-   atualizar, e o texto ganha as ligaduras/kerning da fonte. */
-body {
-  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
-  text-rendering: optimizeLegibility;
-}
-
-/* Quanto maior o texto, mais fechado o tracking — regra da Apple. */
-h1 { letter-spacing: -0.022em; }
-h2 { letter-spacing: -0.019em; }
-h3 { letter-spacing: -0.015em; }
-
-/* Números tabulares: KPI não "pula" de largura quando o valor muda. */
-.tabular-nums, .num-kpi { font-variant-numeric: tabular-nums; }
-
-/* Rótulos em caixa alta pedem tracking aberto para continuarem legíveis. */
-.rotulo-secao {
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-/* Camadas flutuantes (menus, popovers, diálogos). Mesmo material, porém mais
-   opaco: aqui há texto pequeno por cima de conteúdo qualquer, e legibilidade
-   ganha da transparência. */
-.vidro-menu {
-  background-image: var(--vidro-veu);
-  background-color: color-mix(in srgb, var(--vidro-fundo) 100%, hsl(var(--card)) 22%);
-  backdrop-filter: var(--vidro-blur);
-  border: 1px solid var(--vidro-borda) !important;
-  box-shadow:
-    inset 0 1px 0 0 var(--vidro-brilho-top),
-    var(--vidro-sombra);
-}
-
-/* ══ Barras de rolagem ═════════════════════════════════════════════════════
-   Padrão macOS: fina, translúcida e discreta — aparece, mas não desenha uma
-   calha cinza no meio do vidro.
-
-   `scrollbar-width: none` no style inline só vale para Firefox; o Chrome
-   ignora e continua mostrando a barra grossa padrão. Por isso a regra
-   ::-webkit-scrollbar aqui — era o que deixava a barra aparente na sidebar. */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--foreground) / 0.18) transparent;
-}
-
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--foreground) / 0.16);
-  border-radius: 99px;
-  /* Borda transparente afina o polegar sem encostar nas laterais. */
-  border: 2px solid transparent;
-  background-clip: content-box;
-}
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--foreground) / 0.3); background-clip: content-box; }
-::-webkit-scrollbar-corner { background: transparent; }
-
-/* Onde o componente pede barra invisível (navegação, faixas de filtro), o
-   inline `scrollbarWidth: none` precisa deste par para valer no Chrome. */
-[style*="scrollbar-width: none"]::-webkit-scrollbar,
-[style*="scrollbarWidth: none"]::-webkit-scrollbar { display: none; }
-
-/* ══ Primitivos de BI ══════════════════════════════════════════════════════
-   Superfícies internas e controles usados nas telas analíticas.
-   Reaproveitam .ios-card e .ios-tap — nada de uma segunda receita de vidro. */
-
-/* Sub-bloco dentro de um cartão: linha de lista, chip, mini-painel. Mais leve
-   que o .ios-card, senão vidro dentro de vidro embaça o texto. */
-.ios-soft {
-  background-color: hsl(var(--foreground) / 0.045);
-  border: 1px solid hsl(var(--foreground) / 0.07);
-  border-radius: 16px;
-  backdrop-filter: blur(14px);
-}
-
-/* Segmented control iOS (trilho de abas). */
-.ios-segment {
-  background-color: hsl(0 0% 0% / 0.24);
-  border: 1px solid hsl(var(--foreground) / 0.08);
-  border-radius: 999px;
-  backdrop-filter: blur(18px);
-}
-html:not(.dark) .ios-segment { background-color: hsl(0 0% 0% / 0.05); }
-
-/* Barra de progresso monocromática. */
-.medidor {
-  height: 6px;
-  border-radius: 999px;
-  background-color: hsl(var(--foreground) / 0.10);
-  overflow: hidden;
-}
-.medidor > span {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background-color: hsl(var(--primary));
-  transition: width .5s cubic-bezier(.22, 1, .36, 1);
-}
-
-/* Trilho rolável sem barra visível (abas). */
-.sem-barra { scrollbar-width: none; -ms-overflow-style: none; }
-.sem-barra::-webkit-scrollbar { display: none; }
-
-/* Fundo padrão da miniatura de produto.
-
-   Foto de produto quase sempre vem recortada em fundo branco ou com
-   transparência. Sobre o cinza do cartão, a transparente fica com halo e a de
-   fundo branco vira um quadrado claro no meio do tema escuro. Fixar o fundo
-   por tema resolve os dois casos: branco no claro, preto no escuro — igual ao
-   que a foto já espera atrás dela. */
-.img-produto {
-  background-color: #ffffff;
-}
-.dark .img-produto {
-  background-color: #0b0b0b;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -70,7 +70,7 @@ const TIPOS_META = [
 ]
 
 const campo =
-  "w-full rounded-2xl border border-hairline bg-background px-4 py-3 text-sm outline-none focus:border-ios-blue/50"
+  "w-full rounded-2xl border border-pauta bg-background px-4 py-3 text-sm outline-none focus:border-acao/50"
 
 export default function BemVindo() {
   const router = useRouter()
@@ -223,7 +223,7 @@ export default function BemVindo() {
       conteudo: (
         <div className="space-y-3">
           {contas.map((conta, indice) => (
-            <div key={indice} className="space-y-2 rounded-2xl border border-hairline p-3">
+            <div key={indice} className="space-y-2 rounded-2xl border border-pauta p-3">
               <div className="grid gap-2 sm:grid-cols-2">
                 <input
                   value={conta.nome}
@@ -266,7 +266,7 @@ export default function BemVindo() {
                   esta conta está no negativo
                 </label>
                 {contas.length > 1 && (
-                  <button onClick={() => remover(setContas, indice)} className="text-muted-fg hover:text-ios-red">
+                  <button onClick={() => remover(setContas, indice)} className="text-muted-fg hover:text-negativo">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 )}
@@ -288,7 +288,7 @@ export default function BemVindo() {
                   </label>
 
                   {conta.saldo && (
-                    <p className="rounded-xl border border-ios-red/30 bg-ios-red/10 p-2.5 text-xs text-ios-red">
+                    <p className="rounded-xl border border-negativo/30 bg-negativo/10 p-2.5 text-xs text-negativo">
                       Vou registrar {formatarMoeda(-Math.abs(paraCentavos(conta.saldo)))} como cheque especial a{" "}
                       {conta.jurosChequeEspecial || "8,0"}% ao mês. Se você não souber a taxa, deixo no teto legal de 8%
                       e você corrige depois em Configurações — é quase sempre o juro mais caro que você paga, então ela
@@ -320,7 +320,7 @@ export default function BemVindo() {
       conteudo: (
         <div className="space-y-3">
           {cartoes.map((cartao, indice) => (
-            <div key={indice} className="space-y-2 rounded-2xl border border-hairline p-3">
+            <div key={indice} className="space-y-2 rounded-2xl border border-pauta p-3">
               <div className="grid gap-2 sm:grid-cols-2">
                 <input
                   value={cartao.nome}
@@ -358,7 +358,7 @@ export default function BemVindo() {
               </div>
 
               <div className="flex justify-end">
-                <button onClick={() => remover(setCartoes, indice)} className="text-muted-fg hover:text-ios-red">
+                <button onClick={() => remover(setCartoes, indice)} className="text-muted-fg hover:text-negativo">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -386,7 +386,7 @@ export default function BemVindo() {
       conteudo: (
         <div className="space-y-3">
           {cartoes.length === 0 && (
-            <p className="rounded-2xl border border-hairline p-3 text-sm text-muted-fg">
+            <p className="rounded-2xl border border-pauta p-3 text-sm text-muted-fg">
               Cadastre um cartão no passo anterior para lançar os parcelamentos dele.
             </p>
           )}
@@ -394,7 +394,7 @@ export default function BemVindo() {
           {cartoes.length > 0 && (
             <>
               {parcelamentos.map((parcelamento, indice) => (
-                <div key={indice} className="space-y-2 rounded-2xl border border-hairline p-3">
+                <div key={indice} className="space-y-2 rounded-2xl border border-pauta p-3">
                   <input
                     value={parcelamento.descricao}
                     onChange={(e) => atualizar(setParcelamentos, indice, { descricao: e.target.value })}
@@ -442,7 +442,7 @@ export default function BemVindo() {
                     </select>
                     <button
                       onClick={() => remover(setParcelamentos, indice)}
-                      className="text-muted-fg hover:text-ios-red"
+                      className="text-muted-fg hover:text-negativo"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -485,7 +485,7 @@ export default function BemVindo() {
       conteudo: (
         <div className="space-y-3">
           {dividas.map((divida, indice) => (
-            <div key={indice} className="space-y-2 rounded-2xl border border-hairline p-3">
+            <div key={indice} className="space-y-2 rounded-2xl border border-pauta p-3">
               <div className="grid gap-2 sm:grid-cols-2">
                 <input
                   value={divida.credor}
@@ -528,7 +528,7 @@ export default function BemVindo() {
               </div>
 
               <div className="flex justify-end">
-                <button onClick={() => remover(setDividas, indice)} className="text-muted-fg hover:text-ios-red">
+                <button onClick={() => remover(setDividas, indice)} className="text-muted-fg hover:text-negativo">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -595,7 +595,7 @@ export default function BemVindo() {
           </div>
 
           {custo && (
-            <p className="rounded-2xl border border-hairline p-3 text-[12px] text-muted-fg">
+            <p className="rounded-2xl border border-pauta p-3 text-[12px] text-muted-fg">
               Pelo gasto que você informou, sua reserva de emergência ideal é{" "}
               {formatarMoeda(paraCentavos(custo) * 6)} (seis meses). Já deixei essa meta criada com esse alvo.
             </p>
@@ -609,7 +609,7 @@ export default function BemVindo() {
         "Se for, eu acompanho o faturamento contra o limite anual, aviso antes de estourar e cobro o DAS em dia.",
       conteudo: (
         <div className="space-y-3">
-          <label className="flex items-start gap-3 rounded-2xl border border-hairline px-4 py-3 text-sm">
+          <label className="flex items-start gap-3 rounded-2xl border border-pauta px-4 py-3 text-sm">
             <input
               type="checkbox"
               checked={mei.ativo}
@@ -668,7 +668,7 @@ export default function BemVindo() {
             key={indice}
             className={cn(
               "h-1 flex-1 rounded-full transition-colors",
-              indice <= passo ? "bg-primary" : "bg-surface-2",
+              indice <= passo ? "bg-primary" : "bg-papel-2",
             )}
           />
         ))}
@@ -682,12 +682,12 @@ export default function BemVindo() {
 
       <div className="mt-6">{atual.conteudo}</div>
 
-      {erro && <p className="mt-4 text-sm text-ios-red">{erro}</p>}
+      {erro && <p className="mt-4 text-sm text-negativo">{erro}</p>}
 
       <div className="mt-8 flex items-center justify-between">
         <button
           onClick={() => (passo === 0 ? pular() : setPasso(passo - 1))}
-          className="flex items-center gap-2 rounded-full border border-hairline px-4 py-2.5 text-sm text-muted-fg hover:text-foreground"
+          className="flex items-center gap-2 rounded-full border border-pauta px-4 py-2.5 text-sm text-muted-fg hover:text-foreground"
         >
           {passo === 0 ? (
             "pular por agora"
@@ -715,7 +715,7 @@ function BotaoAdicionar({ children, onClick }: { children: React.ReactNode; onCl
   return (
     <button
       onClick={onClick}
-      className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-hairline py-3 text-sm text-muted-fg transition hover:border-ios-blue/40 hover:text-ios-blue"
+      className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-pauta py-3 text-sm text-muted-fg transition hover:border-acao/40 hover:text-acao"
     >
       <Plus className="h-4 w-4" />
       {children}

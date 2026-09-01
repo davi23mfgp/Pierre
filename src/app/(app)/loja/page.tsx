@@ -55,7 +55,7 @@ const FORMAS: { valor: FormaPagamento; rotulo: string }[] = [
   { valor: "FIADO", rotulo: "Fiado" },
 ]
 
-const campo = "rounded-2xl border border-hairline bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-ios-blue/50"
+const campo = "rounded-2xl border border-pauta bg-background px-3.5 py-2.5 text-[13px] outline-none focus:border-acao/50"
 
 export default function Loja() {
   const [dados, setDados] = useState<Estado | null>(null)
@@ -192,7 +192,7 @@ export default function Loja() {
                 <button
                   key={produto.id}
                   onClick={() => adicionar(produto)}
-                  className="rounded-2xl border border-hairline bg-surface-2 px-3.5 py-2.5 text-left text-[13px]"
+                  className="rounded-2xl border border-pauta bg-papel-2 px-3.5 py-2.5 text-left text-[13px]"
                 >
                   <span className="block font-medium">{produto.nome}</span>
                   <span className="text-muted-fg">{formatarMoeda(produto.precoCentavos)}</span>
@@ -226,7 +226,7 @@ export default function Loja() {
                 className={campo}
               />
             </label>
-            <button type="submit" className="rounded-full border border-hairline px-4 py-2.5 text-[13px]">
+            <button type="submit" className="rounded-full border border-pauta px-4 py-2.5 text-[13px]">
               incluir
             </button>
           </form>
@@ -236,7 +236,7 @@ export default function Loja() {
           {carrinho.length === 0 ? (
             <Vazio titulo="Nada no balcão" texto="Toque num produto ou lance um item avulso." />
           ) : (
-            <div className="divide-y divide-hairline">
+            <div className="divide-y divide-pauta">
               {carrinho.map((item, indice) => (
                 <div key={`${item.descricao}-${indice}`} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                   <span className="flex-1">
@@ -245,7 +245,7 @@ export default function Loja() {
                   <span className="text-muted-fg">{formatarMoeda(item.quantidade * item.precoUnitarioCentavos)}</span>
                   <button
                     onClick={() => setCarrinho((atual) => atual.filter((_, i) => i !== indice))}
-                    className="text-ios-red"
+                    className="text-negativo"
                     aria-label={`tirar ${item.descricao}`}
                   >
                     <Trash2 className="size-4" />
@@ -255,7 +255,7 @@ export default function Loja() {
             </div>
           )}
 
-          <p className="mt-4 text-4xl font-bold tracking-tight">{formatarMoeda(total)}</p>
+          <p className="numero mt-4 text-4xl font-bold">{formatarMoeda(total)}</p>
 
           <div className="mt-4 flex flex-wrap gap-2">
             {FORMAS.map((opcao) => (
@@ -263,7 +263,7 @@ export default function Loja() {
                 key={opcao.valor}
                 onClick={() => setForma(opcao.valor)}
                 className={`rounded-full border px-3.5 py-2 text-[13px] ${
-                  forma === opcao.valor ? "border-ios-blue text-ios-blue" : "border-hairline text-muted-fg"
+                  forma === opcao.valor ? "border-acao text-acao" : "border-pauta text-muted-fg"
                 }`}
               >
                 {opcao.rotulo}
@@ -292,19 +292,19 @@ export default function Loja() {
           )}
 
           {conferencia.trocoCentavos > 0 && (
-            <p className="mt-3 text-sm text-ios-green">Troco de {formatarMoeda(conferencia.trocoCentavos)}.</p>
+            <p className="mt-3 text-sm text-positivo">Troco de {formatarMoeda(conferencia.trocoCentavos)}.</p>
           )}
 
           <button
             onClick={fechar}
             disabled={ocupado || carrinho.length === 0}
-            className="mt-4 w-full rounded-full bg-ios-blue px-4 py-3 text-[15px] font-medium text-white disabled:opacity-50"
+            className="mt-4 w-full rounded-full bg-acao px-4 py-3 text-[15px] font-medium text-white disabled:opacity-50"
           >
             fechar venda
           </button>
 
-          {erro && <p className="mt-3 text-[13px] text-ios-red">{erro}</p>}
-          {aviso && <p className="mt-3 text-[13px] text-ios-green">{aviso}</p>}
+          {erro && <p className="mt-3 text-[13px] text-negativo">{erro}</p>}
+          {aviso && <p className="mt-3 text-[13px] text-positivo">{aviso}</p>}
         </Cartao>
       </div>
 
@@ -312,7 +312,7 @@ export default function Loja() {
         {!dados || dados.ultimasVendas.length === 0 ? (
           <Vazio titulo="Nenhuma venda ainda" />
         ) : (
-          <div className="divide-y divide-hairline">
+          <div className="divide-y divide-pauta">
             {dados.ultimasVendas.map((venda) => (
               <div key={venda.id} className="flex items-center justify-between py-2.5 text-sm">
                 <span className="text-muted-fg">#{venda.numero}</span>

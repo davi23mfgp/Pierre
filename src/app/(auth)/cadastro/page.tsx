@@ -50,7 +50,7 @@ export default function Cadastro() {
             onChange={(evento) => setNome(evento.target.value)}
             placeholder="seu nome"
             required
-            className="w-full rounded-2xl border border-hairline bg-background px-4 py-3 text-sm outline-none focus:border-ios-blue/50"
+            className="w-full rounded-2xl border border-pauta bg-background px-4 py-3 text-sm outline-none focus:border-acao/50"
           />
           <input
             type="email"
@@ -59,7 +59,7 @@ export default function Cadastro() {
             placeholder="seu@email.com"
             autoComplete="email"
             required
-            className="w-full rounded-2xl border border-hairline bg-background px-4 py-3 text-sm outline-none focus:border-ios-blue/50"
+            className="w-full rounded-2xl border border-pauta bg-background px-4 py-3 text-sm outline-none focus:border-acao/50"
           />
           <input
             type="password"
@@ -69,7 +69,7 @@ export default function Cadastro() {
             autoComplete="new-password"
             minLength={8}
             required
-            className="w-full rounded-2xl border border-hairline bg-background px-4 py-3 text-sm outline-none focus:border-ios-blue/50"
+            className="w-full rounded-2xl border border-pauta bg-background px-4 py-3 text-sm outline-none focus:border-acao/50"
           />
 
           <div className="space-y-2 pt-2">
@@ -82,8 +82,8 @@ export default function Cadastro() {
                 className={cn(
                   "w-full rounded-2xl border px-4 py-3 text-left text-sm transition",
                   tipoLar === tipo.valor
-                    ? "border-ios-blue/50 bg-ios-blue/10"
-                    : "border-hairline hover:border-border",
+                    ? "border-acao/50 bg-acao/10"
+                    : "border-pauta hover:border-border",
                 )}
               >
                 <span className="font-medium">{tipo.rotulo}</span>
@@ -92,7 +92,7 @@ export default function Cadastro() {
             ))}
           </div>
 
-          <label className="flex items-start gap-3 rounded-2xl border border-hairline px-4 py-3 text-sm">
+          <label className="flex items-start gap-3 rounded-2xl border border-pauta px-4 py-3 text-sm">
             <input
               type="checkbox"
               checked={modoMei}
@@ -107,7 +107,7 @@ export default function Cadastro() {
             </span>
           </label>
 
-          {erro && <p className="text-sm text-ios-red">{erro}</p>}
+          {erro && <p className="text-sm text-negativo">{erro}</p>}
 
           <button
             type="submit"
@@ -120,7 +120,7 @@ export default function Cadastro() {
 
         <p className="mt-6 text-center text-sm text-muted-fg">
           Já tem conta?{" "}
-          <Link href="/login" className="text-ios-blue hover:underline">
+          <Link href="/login" className="text-acao hover:underline">
             Entrar
           </Link>
         </p>
