@@ -12,8 +12,9 @@ import { deflateSync } from "node:zlib"
 import { writeFileSync, mkdirSync } from "node:fs"
 import { join } from "node:path"
 
-const FUNDO = [11, 11, 12] // mesmo preto do tema escuro
-const ACENTO = [10, 132, 255] // ios-blue
+// Os mesmos tons do tema escuro do app: grafite azulado e o azul do positivo.
+const FUNDO = [27, 29, 36]
+const ACENTO = [104, 152, 240]
 
 /** CRC32 — o PNG exige um por bloco, e não há um pronto no Node. */
 function crc32(buffer) {
@@ -41,24 +42,48 @@ function bloco(tipo, dados) {
   return Buffer.concat([tamanho, corpo, verificacao])
 }
 
-/** Desenha o ícone: fundo escuro, moeda azul e uma barra clara atravessando. */
+/**
+ * Desenha o Tino no ícone.
+ *
+ * O mesmo personagem da tela: corpo de bloco de anotação, fita de cupom saindo
+ * do topo, dois olhos e a linha de pauta no peito. Ícone e mascote precisam ser
+ * a mesma coisa — quem procura o app na tela do celular procura a cara dele.
+ *
+ * Tudo em coordenada relativa ao lado, para 192 e 512 saírem idênticos.
+ */
 function pixel(x, y, lado) {
-  const centro = lado / 2
-  const raio = lado * 0.31
-  const distancia = Math.hypot(x - centro, y - centro)
+  const u = x / lado
+  const v = y / lado
 
-  // Anel externo
-  if (distancia > raio && distancia < raio * 1.14) return ACENTO
+  const dentroDoRetangulo = (x0, y0, x1, y1) => u >= x0 && u <= x1 && v >= y0 && v <= y1
+  const distanciaDe = (cx, cy) => Math.hypot(u - cx, v - cy)
 
-  // Barra vertical do "cifrão", em azul mais claro para dar contraste no anel
-  const larguraBarra = lado * 0.045
-  if (Math.abs(x - centro) < larguraBarra && distancia < raio * 1.32) return ACENTO
+  // Corpo: retângulo com cantos aparados na diagonal, que a essa resolução
+  // lê como canto arredondado sem precisar de curva de verdade.
+  const corpo = dentroDoRetangulo(0.2, 0.26, 0.8, 0.78)
+  const cantoCortado =
+    (u < 0.26 && v < 0.32 && 0.26 - u + (0.32 - v) > 0.055) ||
+    (u > 0.74 && v < 0.32 && u - 0.74 + (0.32 - v) > 0.055) ||
+    (u < 0.26 && v > 0.72 && 0.26 - u + (v - 0.72) > 0.055) ||
+    (u > 0.74 && v > 0.72 && u - 0.74 + (v - 0.72) > 0.055)
 
-  // Traços horizontais que sugerem as linhas de um extrato
-  const alturaTraco = lado * 0.035
-  const dentro = distancia < raio * 0.82
-  if (dentro && Math.abs(y - (centro - raio * 0.3)) < alturaTraco) return ACENTO
-  if (dentro && Math.abs(y - (centro + raio * 0.3)) < alturaTraco) return ACENTO
+  if (corpo && !cantoCortado) {
+    // Olhos.
+    if (distanciaDe(0.39, 0.47) < 0.045 || distanciaDe(0.61, 0.47) < 0.045) return FUNDO
+    // Boca: traço reto, a expressão tranquila.
+    if (dentroDoRetangulo(0.41, 0.6, 0.59, 0.628)) return FUNDO
+    // Pauta do peito.
+    if (dentroDoRetangulo(0.2, 0.7, 0.8, 0.715)) return FUNDO
+    return ACENTO
+  }
+
+  // Fita de cupom saindo do topo, em duas partes: a subida e a dobra.
+  if (Math.abs(u - 0.5) < 0.02 && v > 0.16 && v < 0.27) return ACENTO
+  if (distanciaDe(0.6, 0.17) > 0.075 && distanciaDe(0.6, 0.17) < 0.1 && v < 0.2 && u > 0.5) return ACENTO
+
+  // Pés.
+  if (dentroDoRetangulo(0.34, 0.78, 0.38, 0.85)) return ACENTO
+  if (dentroDoRetangulo(0.62, 0.78, 0.66, 0.85)) return ACENTO
 
   return FUNDO
 }

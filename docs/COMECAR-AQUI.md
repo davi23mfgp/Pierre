@@ -11,8 +11,10 @@ leia isto primeiro. Em cinco minutos você sabe tanto quanto a sessão anterior.
    antes de mexer em qualquer cálculo.**
 4. **`docs/ARQUITETURA.md`** — onde fica o quê, e a regra do panorama.
 5. **`docs/HISTORICO.md`** — os doze defeitos já cometidos. Não os repita.
-6. **`docs/PUBLICAR.md`** — como colocar no ar (Neon + Vercel).
-7. **`README.md`** — o que o app faz, em linguagem de usuário.
+6. **`docs/IDENTIDADE.md`** — as cores, as fontes e o mascote, com o porquê.
+7. **`docs/TINO-MEI.md`** e **`docs/TINO-MEI-FASES.md`** — o sistema da loja.
+8. **`docs/PUBLICAR.md`** — como colocar no ar (Neon + Vercel).
+9. **`README.md`** — o que o app faz, em linguagem de usuário.
 
 ## Confirme que está tudo de pé
 

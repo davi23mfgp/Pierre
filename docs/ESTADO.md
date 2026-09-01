@@ -28,6 +28,8 @@ computador do Davi e é acessado pelo celular na rede de casa.
 | Contas fixas | `/recorrencias` | alimenta projeção e reserva |
 | Regras | `/regras` | o que o Tino aprendeu, reprocessar histórico |
 | MEI | `/mei` | limite anual, DAS, lançamento de faturamento e baixa do DAS |
+| Balcão | `/loja` | venda, formas de pagamento com taxa e prazo, caixa (Tino.mei) |
+| Prateleira | `/loja/estoque` | saldo, custo médio e margem por produto (Tino.mei) |
 | Configurações | `/configuracoes` | contas, refazer conversa inicial |
 | Conversa inicial | `/bem-vindo` | 7 perguntas, todas puláveis |
 
@@ -88,6 +90,6 @@ alguns dias de uso normal. Há também um dump de antes da troca em
   mas se o adaptador voltar ao menu, isso quebra primeiro.
 - **Telegram, PDF e modelo de linguagem: adiados.** O código existe e funciona,
   mas ele pediu foco em cálculo e análise.
-- **Visual do ERP Controllares.** `globals.css` veio de lá. Tokens `ios-*`,
-  `surface-1`, `hairline`, `.ios-card`, fonte Onest. Nada de verde estilo
-  Tino — foi corrigido uma vez, não reintroduza.
+- **Visual próprio desde 30/08/2026.** O `globals.css` do Controllares saiu
+  inteiro; a identidade atual está em `docs/IDENTIDADE.md`. Positivo é azul, não
+  verde — verde já foi rejeitado aqui uma vez, não reintroduza.
