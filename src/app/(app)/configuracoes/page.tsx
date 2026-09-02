@@ -43,14 +43,17 @@ export default function Configuracoes() {
   )
   const [nova, setNova] = useState({ nome: "", tipo: "CORRENTE", instituicao: "", saldo: "", limite: "", venc: "" })
   const [mensagem, setMensagem] = useState<string | null>(null)
+  const [temLoja, setTemLoja] = useState<boolean | null>(null)
 
   async function recarregar() {
-    const [lista, of] = await Promise.all([
+    const [lista, of, mei] = await Promise.all([
       buscar<Conta[]>("/api/contas"),
       buscar<{ provedor: string; sandbox: boolean; conexoes: Conexao[] }>("/api/open-finance"),
+      buscar<{ ativo: boolean }>("/api/mei"),
     ])
     setContas(lista)
     setOpenFinance(of)
+    setTemLoja(mei.ativo)
   }
 
   useEffect(() => {
@@ -92,6 +95,26 @@ export default function Configuracoes() {
     }
   }
 
+  /**
+   * Liga e desliga a parte da loja.
+   *
+   * Desligar apaga o perfil, nunca o histórico: faturamento declarado é prova
+   * do que foi informado à Receita, e pode ser preciso anos depois. Quem
+   * religar encontra tudo no lugar.
+   */
+  async function alternarLoja() {
+    if (temLoja) {
+      await buscar("/api/mei", { method: "DELETE" })
+      setMensagem("Parte da loja desligada. O que você já lançou continua guardado.")
+    } else {
+      await enviar("/api/mei", {}, "PUT")
+      setMensagem("Pronto. Balcão, prateleira e MEI apareceram no menu.")
+    }
+
+    await recarregar()
+    router.refresh()
+  }
+
   async function refazerConversa() {
     await buscar("/api/onboarding", { method: "DELETE" })
     router.push("/bem-vindo")
@@ -99,6 +122,28 @@ export default function Configuracoes() {
 
   return (
     <div className="space-y-4">
+      <Cartao titulo="O que o Tino cuida">
+        <p className="text-[13px] leading-relaxed text-muted-fg">
+          {temLoja
+            ? "Você tem o balcão, a prateleira e o acompanhamento do limite do MEI, além das contas pessoais."
+            : "Hoje o Tino cuida só das suas contas pessoais."}
+        </p>
+
+        <button
+          onClick={alternarLoja}
+          disabled={temLoja === null}
+          className="mt-3 rounded-full border border-pauta px-5 py-2.5 text-[13px] disabled:opacity-50"
+        >
+          {temLoja ? "Desligar a parte da loja" : "Ligar a parte da loja (sou MEI)"}
+        </button>
+
+        <p className="mt-3 text-[12px] leading-relaxed text-muted-fg">
+          {temLoja
+            ? "Desligar tira balcão, prateleira e MEI do menu. As vendas e o faturamento já lançados continuam guardados — se religar, tudo volta como estava."
+            : "Ligar acrescenta venda no balcão, controle de estoque e acompanhamento do limite anual do MEI."}
+        </p>
+      </Cartao>
+
       <Cartao titulo="Conversa inicial">
         <p className="text-[13px] leading-relaxed text-muted-fg">
           Responder as perguntas do Tino é o que faz o painel, a projeção e o plano de pagamento saírem do zero.
