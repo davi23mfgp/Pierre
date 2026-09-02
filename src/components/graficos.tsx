@@ -7,6 +7,7 @@ import {
   Bar,
   BarChart,
   Cell,
+  ComposedChart,
   Line,
   Pie,
   PieChart,
@@ -452,5 +453,65 @@ export function GraficoDaDivisao({
         <span className="mt-1 text-[11px] uppercase tracking-widest text-muted-fg">por mês</span>
       </div>
     </div>
+  )
+}
+
+// ============================================================
+// BALANÇO MÊS A MÊS
+// ============================================================
+
+/**
+ * Como o patrimônio andou.
+ *
+ * Barras para o que se tem e o que se deve, linha para o que sobra dos dois.
+ * A linha é o que importa — as barras existem para explicar de onde ela veio,
+ * porque "o patrimônio caiu" sem mostrar se foi o saldo que encolheu ou a
+ * dívida que cresceu não ajuda ninguém a decidir nada.
+ *
+ * O passivo desce abaixo do zero em vez de virar outra barra ao lado: dívida
+ * puxa para baixo, e a leitura fica imediata mesmo para quem nunca viu um
+ * balanço.
+ */
+export function GraficoBalanco({
+  dados,
+  altura = 280,
+}: {
+  dados: {
+    competencia: string
+    disponivelCentavos: number
+    passivoCentavos: number
+    patrimonioLiquidoCentavos: number
+  }[]
+  altura?: number
+}) {
+  const cores = useCores()
+
+  const series = dados.map((linha) => ({
+    rotulo: rotuloCompetencia(linha.competencia, true),
+    "Tem": linha.disponivelCentavos,
+    "Deve": -linha.passivoCentavos,
+    "Sobra": linha.patrimonioLiquidoCentavos,
+  }))
+
+  return (
+    <ResponsiveContainer width="100%" height={altura}>
+      <ComposedChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+        <XAxis dataKey="rotulo" tick={eixo} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+        <YAxis tick={eixo} tickLine={false} axisLine={false} width={62} tickFormatter={formatarMoedaCurta} />
+        <ReferenceLine y={0} stroke="currentColor" strokeOpacity={0.35} />
+        <Tooltip content={<Dica />} />
+
+        <Bar dataKey="Tem" fill={cores.positivo} fillOpacity={0.32} radius={[4, 4, 0, 0]} />
+        <Bar dataKey="Deve" fill={cores.negativo} fillOpacity={0.32} radius={[0, 0, 4, 4]} />
+        <Line
+          type="monotone"
+          dataKey="Sobra"
+          stroke={cores.positivo}
+          strokeWidth={2.5}
+          dot={false}
+          activeDot={{ r: 4 }}
+        />
+      </ComposedChart>
+    </ResponsiveContainer>
   )
 }

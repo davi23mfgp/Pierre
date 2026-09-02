@@ -3,9 +3,22 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { ArrowLeft, ShoppingBag, Wallet } from "lucide-react"
 
 import { enviar } from "@/lib/cliente"
 import { cn } from "@/lib/utils"
+import { TinoMascote } from "@/components/tino-mascote"
+
+/**
+ * Criar conta, em dois passos.
+ *
+ * O primeiro decide o produto: as contas de casa, ou as contas de casa mais a
+ * loja. A escolha muda o app inteiro — quem não é MEI nunca vê balcão,
+ * prateleira nem limite de faturamento, e o menu encolhe um terço.
+ *
+ * Perguntar isso primeiro, e não como uma caixinha no fim do formulário, é o
+ * que evita a pessoa criar a conta errada e descobrir depois de cadastrar tudo.
+ */
 
 const TIPOS = [
   { valor: "SOLO", rotulo: "Só eu", texto: "Uma pessoa, um orçamento." },
@@ -13,13 +26,16 @@ const TIPOS = [
   { valor: "FAMILIA", rotulo: "Família", texto: "Com dependentes." },
 ] as const
 
+const campo =
+  "w-full rounded-2xl border border-pauta bg-background px-4 py-3 text-sm outline-none focus:border-positivo/50"
+
 export default function Cadastro() {
   const router = useRouter()
+  const [modoMei, setModoMei] = useState<boolean | null>(null)
   const [nome, setNome] = useState("")
   const [email, setEmail] = useState("")
   const [senha, setSenha] = useState("")
   const [tipoLar, setTipoLar] = useState<"SOLO" | "CASAL" | "FAMILIA">("SOLO")
-  const [modoMei, setModoMei] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [criando, setCriando] = useState(false)
 
@@ -29,7 +45,7 @@ export default function Cadastro() {
     setErro(null)
 
     try {
-      await enviar("/api/auth/cadastro", { nome, email, senha, tipoLar, modoMei })
+      await enviar("/api/auth/cadastro", { nome, email, senha, tipoLar, modoMei: modoMei === true })
       router.push("/painel")
       router.refresh()
     } catch (excecao) {
@@ -38,19 +54,89 @@ export default function Cadastro() {
     }
   }
 
+  // ── Passo 1: que Tino ─────────────────────────────────
+  if (modoMei === null) {
+    return (
+      <main className="flex min-h-screen items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
+          <div className="flex items-center gap-3">
+            <TinoMascote estado="tranquilo" className="size-11" />
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-muted-fg">Tino</p>
+              <h1 className="font-display text-2xl font-bold tracking-tight">O que você quer organizar?</h1>
+            </div>
+          </div>
+
+          <div className="mt-8 space-y-3">
+            <button
+              onClick={() => setModoMei(false)}
+              className="ficha flex w-full items-start gap-4 p-5 text-left transition hover:border-positivo/50"
+            >
+              <Wallet className="mt-0.5 size-6 shrink-0 text-positivo" />
+              <span>
+                <span className="font-display block text-[16px] font-semibold">Meu dinheiro</span>
+                <span className="mt-1 block text-[13px] leading-relaxed text-muted-fg">
+                  Contas, cartões, dívidas e metas. Para quem quer saber onde o dinheiro está indo e o que fazer com o
+                  que sobra.
+                </span>
+              </span>
+            </button>
+
+            <button
+              onClick={() => setModoMei(true)}
+              className="ficha flex w-full items-start gap-4 p-5 text-left transition hover:border-positivo/50"
+            >
+              <ShoppingBag className="mt-0.5 size-6 shrink-0 text-positivo" />
+              <span>
+                <span className="font-display block text-[16px] font-semibold">Meu dinheiro e minha loja</span>
+                <span className="mt-1 block text-[13px] leading-relaxed text-muted-fg">
+                  Tudo o que está acima, mais venda no balcão, estoque, limite do MEI e DAS — com o dinheiro do CNPJ
+                  separado do seu.
+                </span>
+              </span>
+            </button>
+          </div>
+
+          <p className="mt-6 text-center text-[13px] text-muted-fg">
+            Dá para mudar depois, em Configurações.
+            <br />
+            Já tem conta?{" "}
+            <Link href="/login" className="text-positivo hover:underline">
+              Entrar
+            </Link>
+          </p>
+        </div>
+      </main>
+    )
+  }
+
+  // ── Passo 2: os dados ─────────────────────────────────
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">
-        <p className="text-xs uppercase tracking-[0.3em] text-muted-fg">Tino</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">Criar sua conta</h1>
+        <button
+          onClick={() => setModoMei(null)}
+          className="flex items-center gap-1.5 text-[13px] text-muted-fg hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" /> voltar
+        </button>
 
-        <form onSubmit={criar} className="mt-8 space-y-3">
+        <h1 className="font-display mt-4 text-3xl font-bold tracking-tight">
+          {modoMei ? "Sua conta e sua loja" : "Criar sua conta"}
+        </h1>
+        <p className="mt-1.5 text-[13px] text-muted-fg">
+          {modoMei
+            ? "Você vai ter o balcão, a prateleira e o acompanhamento do limite do MEI."
+            : "Contas, cartões, dívidas e metas em um lugar só."}
+        </p>
+
+        <form onSubmit={criar} className="mt-7 space-y-3">
           <input
             value={nome}
             onChange={(evento) => setNome(evento.target.value)}
             placeholder="seu nome"
             required
-            className="w-full rounded-2xl border border-pauta bg-background px-4 py-3 text-sm outline-none focus:border-acao/50"
+            className={campo}
           />
           <input
             type="email"
@@ -59,7 +145,7 @@ export default function Cadastro() {
             placeholder="seu@email.com"
             autoComplete="email"
             required
-            className="w-full rounded-2xl border border-pauta bg-background px-4 py-3 text-sm outline-none focus:border-acao/50"
+            className={campo}
           />
           <input
             type="password"
@@ -69,11 +155,11 @@ export default function Cadastro() {
             autoComplete="new-password"
             minLength={8}
             required
-            className="w-full rounded-2xl border border-pauta bg-background px-4 py-3 text-sm outline-none focus:border-acao/50"
+            className={campo}
           />
 
           <div className="space-y-2 pt-2">
-            <p className="text-xs uppercase tracking-widest text-muted-fg">Como você cuida do dinheiro</p>
+            <p className="text-xs uppercase tracking-widest text-muted-fg">Em casa, o dinheiro é de</p>
             {TIPOS.map((tipo) => (
               <button
                 key={tipo.valor}
@@ -81,9 +167,7 @@ export default function Cadastro() {
                 onClick={() => setTipoLar(tipo.valor)}
                 className={cn(
                   "w-full rounded-2xl border px-4 py-3 text-left text-sm transition",
-                  tipoLar === tipo.valor
-                    ? "border-acao/50 bg-acao/10"
-                    : "border-pauta hover:border-border",
+                  tipoLar === tipo.valor ? "border-positivo/50 bg-positivo/10" : "border-pauta hover:border-border",
                 )}
               >
                 <span className="font-medium">{tipo.rotulo}</span>
@@ -91,21 +175,6 @@ export default function Cadastro() {
               </button>
             ))}
           </div>
-
-          <label className="flex items-start gap-3 rounded-2xl border border-pauta px-4 py-3 text-sm">
-            <input
-              type="checkbox"
-              checked={modoMei}
-              onChange={(evento) => setModoMei(evento.target.checked)}
-              className="mt-1"
-            />
-            <span>
-              Sou MEI
-              <span className="block text-[12px] text-muted-fg">
-                Acompanha faturamento, limite anual e DAS, com a conta do CNPJ separada da pessoal.
-              </span>
-            </span>
-          </label>
 
           {erro && <p className="text-sm text-negativo">{erro}</p>}
 
@@ -120,7 +189,7 @@ export default function Cadastro() {
 
         <p className="mt-6 text-center text-sm text-muted-fg">
           Já tem conta?{" "}
-          <Link href="/login" className="text-acao hover:underline">
+          <Link href="/login" className="text-positivo hover:underline">
             Entrar
           </Link>
         </p>

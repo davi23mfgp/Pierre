@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   BarChart3,
+  ChevronDown,
   CreditCard,
   Flag,
   LineChart,
@@ -52,30 +53,39 @@ interface Grupo {
   itens: Item[]
 }
 
-/** O dia a dia: onde estou, o que gastei, o que anotar. */
+/**
+ * O menu curto.
+ *
+ * Vinte telas de uma vez paralisam quem abriu o app para responder uma
+ * pergunta simples. Ficam à mostra só as que se abre toda semana; o resto vive
+ * atrás de "Mais ferramentas", que abre quando alguém procura.
+ *
+ * Nenhuma tela foi removida — sumir com endereço quebra link salvo e quebra
+ * quem já aprendeu o caminho. Elas saíram da primeira vista, não do app.
+ */
 const DIARIO: Item[] = [
   { rota: "/painel", rotulo: "Visão geral", Icone: BarChart3 },
-  { rota: "/analise", rotulo: "Análise", Icone: PieChart },
   { rota: "/capturas", rotulo: "Anotar", Icone: Zap },
   { rota: "/transacoes", rotulo: "Transações", Icone: Receipt },
   { rota: "/cartoes", rotulo: "Cartões", Icone: CreditCard },
-  { rota: "/parcelamentos", rotulo: "Parcelamentos", Icone: ListOrdered },
+  { rota: "/analise", rotulo: "Análise", Icone: PieChart },
 ]
 
-/** O que se abre uma vez por mês, ou quando há decisão para tomar. */
+/** As quatro decisões que o app existe para ajudar a tomar. */
 const PLANEJAMENTO: Item[] = [
   { rota: "/orcamento", rotulo: "Orçamento", Icone: Target },
   { rota: "/dividas", rotulo: "Dívidas", Icone: Flag },
-  { rota: "/plano", rotulo: "Plano de pagamento", Icone: Flag },
   { rota: "/metas", rotulo: "Metas", Icone: Target },
-  { rota: "/projecao", rotulo: "Projeção", Icone: LineChart },
-  { rota: "/simulador", rotulo: "Simulador", Icone: Wand2 },
-  { rota: "/emprestimos", rotulo: "Empréstimo", Icone: CreditCard },
   { rota: "/investir", rotulo: "Longo prazo", Icone: Sprout },
 ]
 
-/** Ajustes que se faz uma vez e esquece. */
-const AJUSTES: Item[] = [
+/** O que se usa de vez em quando, e não precisa ocupar espaço todo dia. */
+const FERRAMENTAS: Item[] = [
+  { rota: "/plano", rotulo: "Plano de pagamento", Icone: Flag },
+  { rota: "/parcelamentos", rotulo: "Parcelamentos", Icone: ListOrdered },
+  { rota: "/projecao", rotulo: "Projeção", Icone: LineChart },
+  { rota: "/simulador", rotulo: "Simulador", Icone: Wand2 },
+  { rota: "/emprestimos", rotulo: "Empréstimo", Icone: CreditCard },
   { rota: "/recorrencias", rotulo: "Contas fixas", Icone: Repeat },
   { rota: "/regras", rotulo: "Regras", Icone: Tags },
   { rota: "/importar", rotulo: "Importar", Icone: Upload },
@@ -165,6 +175,16 @@ function Grupos({
   recolhido: boolean
   aoNavegar?: () => void
 }) {
+  // Abre sozinho quando a pessoa já está numa das ferramentas: chegar por link
+  // e não achar onde está no menu é desorientador.
+  const [ferramentas, setFerramentas] = useState(() =>
+    FERRAMENTAS.some((item) => estaAtivo(caminho, item.rota)),
+  )
+
+  useEffect(() => {
+    if (FERRAMENTAS.some((item) => estaAtivo(caminho, item.rota))) setFerramentas(true)
+  }, [caminho])
+
   return (
     <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
       {grupos.map((grupo) => (
@@ -179,6 +199,25 @@ function Grupos({
           ))}
         </div>
       ))}
+
+      <div className="space-y-0.5">
+        <button
+          onClick={() => setFerramentas((atual) => !atual)}
+          className={cn(
+            "flex w-full items-center gap-2.5 rounded-lg py-2 text-[13px] text-muted-fg transition-colors hover:text-foreground",
+            recolhido ? "justify-center px-0" : "px-2.5",
+          )}
+          title={recolhido ? "Mais ferramentas" : undefined}
+        >
+          <ChevronDown className={cn("size-4 shrink-0 transition-transform", ferramentas && "rotate-180")} />
+          {!recolhido && <span>Mais ferramentas</span>}
+        </button>
+
+        {ferramentas &&
+          FERRAMENTAS.map((item) => (
+            <Linha key={item.rota} item={item} caminho={caminho} recolhido={recolhido} aoNavegar={aoNavegar} />
+          ))}
+      </div>
     </nav>
   )
 }
@@ -226,11 +265,10 @@ export function Navegacao({ mei }: { mei?: boolean }) {
 
   const grupos: Grupo[] = [
     { titulo: "Dia a dia", itens: DIARIO },
-    { titulo: "Planejamento", itens: PLANEJAMENTO },
+    { titulo: "Decidir", itens: PLANEJAMENTO },
     // A loja só aparece para quem é MEI: quem usa o Tino para as contas de casa
     // não tem balcão nem prateleira.
-    ...(mei ? [{ titulo: "Loja", itens: LOJA }] : []),
-    { titulo: "Ajustes", itens: AJUSTES },
+    ...(mei ? [{ titulo: "Minha loja", itens: LOJA }] : []),
   ]
 
   return (

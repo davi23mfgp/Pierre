@@ -2,10 +2,11 @@ import { sessaoDaPagina } from "@/lib/pagina"
 import { competenciaAtual, rotuloCompetencia } from "@/lib/datas"
 import { formatarMoeda } from "@/lib/dinheiro"
 import { montarPanorama } from "@/lib/tino/panorama"
+import { balancoMensal } from "@/lib/tino/balanco"
 import { montarDiagnostico, type Faixa } from "@/lib/tino/diagnostico"
 import { compromissosFuturos, resumoParcelamentos } from "@/lib/parcelamentos"
 import { Barra, Cartao, Metrica, Vazio } from "@/components/ui/painel"
-import { GraficoAnel, GraficoCategorias, GraficoEvolucao } from "@/components/graficos"
+import { GraficoAnel, GraficoBalanco, GraficoCategorias, GraficoEvolucao } from "@/components/graficos"
 import { MapaDeCalor } from "@/components/mapa-de-calor"
 import { CategoriasComparadas } from "@/components/categorias-comparadas"
 import { cn } from "@/lib/utils"
@@ -54,10 +55,11 @@ export default async function Analise() {
   const sessao = await sessaoDaPagina()
   const competencia = competenciaAtual()
 
-  const [panorama, compromissos, parcelamentos] = await Promise.all([
+  const [panorama, compromissos, parcelamentos, mensal] = await Promise.all([
     montarPanorama(sessao.larId, competencia),
     compromissosFuturos(sessao.larId, 36),
     resumoParcelamentos(sessao.larId),
+    balancoMensal(sessao.larId, 12),
   ])
 
   const diagnostico = montarDiagnostico(panorama, {
@@ -219,6 +221,30 @@ export default async function Analise() {
             Patrimônio líquido é o número que diz se você avançou: dá para terminar o mês com mais dinheiro em conta e
             mesmo assim mais pobre, se a dívida cresceu mais que o saldo.
           </p>
+
+          {mensal.serie.length > 1 && (
+            <div className="mt-5 border-t border-pauta pt-4">
+              <div className="mb-3 flex items-baseline justify-between gap-3">
+                <p className="text-[13px] font-medium">Como andou nos últimos meses</p>
+                <p
+                  className={`numero text-[13px] ${
+                    mensal.variacaoCentavos >= 0 ? "text-positivo" : "text-negativo"
+                  }`}
+                >
+                  {mensal.variacaoCentavos >= 0 ? "+" : ""}
+                  {formatarMoeda(mensal.variacaoCentavos)}
+                </p>
+              </div>
+
+              <GraficoBalanco dados={mensal.serie} />
+
+              <p className="mt-3 text-[12px] leading-relaxed text-muted-fg">
+                A série usa saldo em conta e parcelamentos, que têm data em cada lançamento. Fica de fora{" "}
+                {mensal.foraDaSerie.join(", ")} — esses só têm o valor de hoje no banco, e repeti-lo para trás faria o
+                gráfico mostrar uma melhora que não houve.
+              </p>
+            </div>
+          )}
 
           {(diagnostico.riscos.length > 0 || diagnostico.pontosFortes.length > 0) && (
             <div className="mt-4 space-y-3">
