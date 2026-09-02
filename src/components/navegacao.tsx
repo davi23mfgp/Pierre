@@ -100,15 +100,25 @@ const LOJA: Item[] = [
 /**
  * Atalhos da barra inferior no celular.
  *
- * Cinco, porque é o que cabe com área de toque confortável em tela de 375px —
- * e são as cinco telas abertas todo dia.
+ * Quatro, mais o botão que abre o resto: é o que cabe com área de toque
+ * confortável em tela de 375px.
+ *
+ * Quem tem loja recebe o balcão no lugar da análise. No dia de trabalho o
+ * lojista abre o balcão dezenas de vezes e a análise nenhuma — e o polegar é o
+ * espaço mais caro da tela.
  */
 const NO_POLEGAR: Item[] = [
   { rota: "/painel", rotulo: "Início", Icone: BarChart3 },
   { rota: "/capturas", rotulo: "Anotar", Icone: Zap },
   { rota: "/analise", rotulo: "Análise", Icone: PieChart },
   { rota: "/cartoes", rotulo: "Cartões", Icone: CreditCard },
-  { rota: "/plano", rotulo: "Plano", Icone: Flag },
+]
+
+const NO_POLEGAR_COM_LOJA: Item[] = [
+  { rota: "/painel", rotulo: "Início", Icone: BarChart3 },
+  { rota: "/loja", rotulo: "Balcão", Icone: ShoppingBag },
+  { rota: "/capturas", rotulo: "Anotar", Icone: Zap },
+  { rota: "/loja/estoque", rotulo: "Prateleira", Icone: Package },
 ]
 
 const CHAVE_RECOLHIDO = "tino:menu-recolhido"
@@ -338,7 +348,7 @@ export function Navegacao({ mei }: { mei?: boolean }) {
       {/* ── Barra do polegar ── */}
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-pauta bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
         <div className="flex items-stretch justify-around">
-          {NO_POLEGAR.map((item) => {
+          {(mei ? NO_POLEGAR_COM_LOJA : NO_POLEGAR).map((item) => {
             const ativo = estaAtivo(caminho, item.rota)
             const { Icone } = item
             return (

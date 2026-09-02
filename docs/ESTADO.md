@@ -30,6 +30,7 @@ computador do Davi e é acessado pelo celular na rede de casa.
 | MEI | `/mei` | limite anual, DAS, lançamento de faturamento e baixa do DAS |
 | Balcão | `/loja` | venda, formas de pagamento com taxa e prazo, caixa (Tino.mei) |
 | Prateleira | `/loja/estoque` | saldo, custo médio e margem por produto (Tino.mei) |
+| Longo prazo | `/investir` | efeito do corte no caixa, ARCA, divisão da renda, reserva |
 | Configurações | `/configuracoes` | contas, refazer conversa inicial |
 | Conversa inicial | `/bem-vindo` | 7 perguntas, todas puláveis |
 
@@ -59,6 +60,21 @@ Em ordem de valor, na minha leitura:
   conversa inicial, então está quase vazia.
 - `demo@tino.local` / `demo12345` — demonstração "Casa da Marina", 6 meses de
   histórico. Recriar com `node scripts/demo.mjs`.
+
+## Decisões de interface
+
+- **Menu curto.** Só as cinco telas do dia a dia e as quatro decisões ficam à
+  mostra. As outras oito vivem atrás de "Mais ferramentas", que abre sozinho
+  quando alguém chega numa delas por link. Nenhuma rota foi removida: endereço
+  que some quebra link salvo.
+- **PF e MEI separados no cadastro.** A primeira pergunta é "Meu dinheiro" ou
+  "Meu dinheiro e minha loja". Quem não é MEI nunca vê balcão, prateleira nem
+  limite de faturamento. Dá para trocar depois em Configurações, e desligar
+  nunca apaga o faturamento já lançado.
+- **Barra do polegar muda com o perfil.** Lojista recebe Balcão e Prateleira no
+  lugar de Análise e Cartões: no dia de trabalho ele abre o balcão dezenas de
+  vezes e a análise nenhuma.
+- **Identidade e mascote** estão em `docs/IDENTIDADE.md`.
 
 ## Renomeação: o que ainda carrega o nome antigo
 
