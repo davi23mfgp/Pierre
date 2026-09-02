@@ -13,7 +13,7 @@ da base. Ver `CLAUDE.md` e `docs/DECISOES.md`.
 
 ---
 
-## Fase 0 — Fundação
+## Fase 0 — Fundação ✅
 
 Sem tela. Prepara o terreno para que as fases seguintes não briguem com o Tino
 pessoal.
@@ -30,7 +30,7 @@ pessoal.
 
 ---
 
-## Fase 1 — Balcão e caixa
+## Fase 1 — Balcão e caixa ✅
 
 A fase que decide o produto. Se a venda no balcão não for mais rápida que o
 caderno, nada mais importa.
@@ -56,7 +56,7 @@ cliente, troca e devolução.
 
 ---
 
-## Fase 2 — Estoque
+## Fase 2 — Estoque ✅
 
 - entrada de mercadoria com custo
 - saída automática pela venda da fase 1
@@ -74,7 +74,7 @@ lojas.
 
 ---
 
-## Fase 3 — Clientes e fiado
+## Fase 3 — Clientes e fiado ✅
 
 - cadastro leve: nome e telefone bastam
 - fiado vira dívida do cliente com a loja, com data

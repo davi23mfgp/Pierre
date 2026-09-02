@@ -30,6 +30,7 @@ computador do Davi e é acessado pelo celular na rede de casa.
 | MEI | `/mei` | limite anual, DAS, lançamento de faturamento e baixa do DAS |
 | Balcão | `/loja` | venda, formas de pagamento com taxa e prazo, caixa (Tino.mei) |
 | Prateleira | `/loja/estoque` | saldo, custo médio e margem por produto (Tino.mei) |
+| Fiado | `/loja/fiado` | quem deve, há quanto tempo, texto de cobrança (Tino.mei) |
 | Longo prazo | `/investir` | efeito do corte no caixa, ARCA, divisão da renda, reserva |
 | Configurações | `/configuracoes` | contas, refazer conversa inicial |
 | Conversa inicial | `/bem-vindo` | 7 perguntas, todas puláveis |

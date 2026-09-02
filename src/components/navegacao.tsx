@@ -10,6 +10,7 @@ import {
   Flag,
   LineChart,
   ListOrdered,
+  NotebookPen,
   Package,
   PanelLeftClose,
   PanelLeftOpen,
@@ -95,6 +96,7 @@ const LOJA: Item[] = [
   { rota: "/mei", rotulo: "MEI", Icone: Store },
   { rota: "/loja", rotulo: "Balcão", Icone: ShoppingBag },
   { rota: "/loja/estoque", rotulo: "Prateleira", Icone: Package },
+  { rota: "/loja/fiado", rotulo: "Fiado", Icone: NotebookPen },
 ]
 
 /**
