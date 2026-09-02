@@ -44,6 +44,16 @@ interface Estado {
   regras: RegraDeRecebimento[]
   caixa: Caixa | null
   ultimasVendas: { id: string; numero: number; totalCentavos: number; criadoEm: string }[]
+  resumo: {
+    vendas: number
+    brutoCentavos: number
+    liquidoCentavos: number
+    taxasCentavos: number
+    recebidoCentavos: number
+    aReceberCentavos: number
+    fiadoCentavos: number
+  }
+  aCair: { dia: string; valorCentavos: number }[]
 }
 
 const FORMAS: { valor: FormaPagamento; rotulo: string }[] = [
@@ -307,6 +317,59 @@ export default function Loja() {
           {aviso && <p className="mt-3 text-[13px] text-positivo">{aviso}</p>}
         </Cartao>
       </div>
+
+      <Cartao titulo="Os últimos 30 dias">
+        {dados && dados.resumo.vendas > 0 ? (
+          <>
+            <div className="grid gap-3 sm:grid-cols-4">
+              <Metrica
+                rotulo="Vendeu"
+                valor={formatarMoeda(dados.resumo.brutoCentavos)}
+                detalhe={`${dados.resumo.vendas} ${dados.resumo.vendas === 1 ? "venda" : "vendas"}`}
+              />
+              <Metrica
+                rotulo="Vira seu"
+                valor={formatarMoeda(dados.resumo.liquidoCentavos)}
+                tom="positivo"
+                detalhe={`${formatarMoeda(dados.resumo.taxasCentavos)} ficaram com a maquininha`}
+              />
+              <Metrica
+                rotulo="Ainda vai cair"
+                valor={formatarMoeda(dados.resumo.aReceberCentavos)}
+                tom="atencao"
+                detalhe="cartão que a adquirente ainda deve"
+              />
+              <Metrica
+                rotulo="No fiado"
+                valor={formatarMoeda(dados.resumo.fiadoCentavos)}
+                tom={dados.resumo.fiadoCentavos > 0 ? "negativo" : "neutro"}
+                detalhe="sem data para cair"
+              />
+            </div>
+
+            {dados.aCair.length > 0 && (
+              <div className="mt-4 rounded-2xl border border-pauta bg-papel-2 p-4">
+                <p className="text-[12px] uppercase tracking-widest text-muted-fg">Próximos dias</p>
+                <div className="mt-2 space-y-1">
+                  {dados.aCair.slice(0, 6).map((linha) => (
+                    <div key={linha.dia} className="flex items-center justify-between text-[13px]">
+                      <span className="text-muted-fg">
+                        {new Date(`${linha.dia}T12:00:00Z`).toLocaleDateString("pt-BR", {
+                          day: "2-digit",
+                          month: "short",
+                        })}
+                      </span>
+                      <span className="numero">{formatarMoeda(linha.valorCentavos)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <Vazio titulo="Nenhuma venda nos últimos 30 dias" />
+        )}
+      </Cartao>
 
       <Cartao titulo="Últimas vendas">
         {!dados || dados.ultimasVendas.length === 0 ? (

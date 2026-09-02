@@ -3,6 +3,7 @@ import { comSessao, corpo, ok } from "@/lib/api"
 import { caixaAberto, lojaDoLar, regrasDeRecebimento } from "@/lib/loja/dados"
 import { resumoDoCaixa } from "@/lib/loja/venda"
 import type { FormaPagamento } from "@/lib/loja/venda"
+import { aCairPorDia, resumirLoja } from "@/lib/loja/resumo"
 
 /**
  * Estado da loja: o que a tela de balcão precisa para abrir.
@@ -28,6 +29,14 @@ export const GET = comSessao(async (sessao) => {
       include: { pagamentos: true, itens: true, cliente: true },
     }),
   ])
+
+  // Trinta dias é a janela do aluguel e do fornecedor: é nesse prazo que o
+  // dono precisa saber se o dinheiro chega.
+  const desde = new Date(Date.now() - 30 * 86_400_000)
+  const vendasDoMes = await prisma.vendaLoja.findMany({
+    where: { lojaId: loja.id, criadoEm: { gte: desde } },
+    include: { pagamentos: true },
+  })
 
   const vendasDoCaixa = caixa
     ? await prisma.vendaLoja.findMany({
@@ -56,6 +65,8 @@ export const GET = comSessao(async (sessao) => {
         }
       : null,
     ultimasVendas,
+    resumo: resumirLoja(vendasDoMes),
+    aCair: aCairPorDia(vendasDoMes, 30),
   })
 })
 

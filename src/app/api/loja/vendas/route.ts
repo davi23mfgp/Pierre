@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { comSessao, corpo, ok, ErroDeUso } from "@/lib/api"
 import { caixaAberto, lojaDoLar, proximoNumero, regrasDeRecebimento, somarNoFaturamentoMei } from "@/lib/loja/dados"
-import { calcularPagamento, conferirVenda, totalDaVenda } from "@/lib/loja/venda"
+import { calcularPagamento, conferirVenda, descontarTroco, totalDaVenda } from "@/lib/loja/venda"
 import type { FormaPagamento, ItemDaVenda, PagamentoInformado } from "@/lib/loja/venda"
 
 export const GET = comSessao(async (sessao, requisicao) => {
@@ -69,7 +69,11 @@ export const POST = comSessao(async (sessao, requisicao) => {
       })
     : null
 
-  const calculados = dados.pagamentos.map((pagamento) => calcularPagamento(pagamento, regras, vendidoEm))
+  // O troco sai antes de gravar: ele volta para a mão do cliente e não é
+  // receita da loja.
+  const calculados = descontarTroco(totalCentavos, dados.pagamentos).map((pagamento) =>
+    calcularPagamento(pagamento, regras, vendidoEm),
+  )
 
   const venda = await prisma.vendaLoja.create({
     data: {

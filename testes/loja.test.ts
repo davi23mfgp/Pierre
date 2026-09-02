@@ -4,6 +4,7 @@ import { describe, it } from "node:test"
 import {
   calcularPagamento,
   conferirVenda,
+  descontarTroco,
   parcelasDoRecebimento,
   previsaoDeRecebimento,
   resumoDoCaixa,
@@ -156,6 +157,43 @@ describe("conferência da venda", () => {
     // como troco faria a loja devolver em espécie um dinheiro que não entrou.
     const conferencia = conferirVenda(9500, [{ forma: "CREDITO_VISTA", valorCentavos: 10000 }])
     assert.equal(conferencia.trocoCentavos, 0)
+  })
+})
+
+describe("troco não é receita", () => {
+  it("o dinheiro gravado é o que ficou na loja, não o que veio na mão", () => {
+    // Antes disso, uma venda de R$ 35 paga com R$ 50 gravava R$ 50, e o resumo
+    // mostrava líquido maior que bruto com taxa negativa.
+    const ajustados = descontarTroco(3500, [{ forma: "DINHEIRO", valorCentavos: 5000 }])
+    assert.equal(ajustados[0].valorCentavos, 3500)
+  })
+
+  it("pagamento exato não muda", () => {
+    const ajustados = descontarTroco(3500, [{ forma: "DINHEIRO", valorCentavos: 3500 }])
+    assert.equal(ajustados[0].valorCentavos, 3500)
+  })
+
+  it("o corte sai do dinheiro, não do cartão", () => {
+    const ajustados = descontarTroco(10000, [
+      { forma: "CREDITO_VISTA", valorCentavos: 7000 },
+      { forma: "DINHEIRO", valorCentavos: 5000 },
+    ])
+
+    assert.equal(ajustados[0].valorCentavos, 7000)
+    assert.equal(ajustados[1].valorCentavos, 3000)
+  })
+
+  it("sobra só no cartão fica como veio, para a conferência recusar", () => {
+    const ajustados = descontarTroco(9500, [{ forma: "CREDITO_VISTA", valorCentavos: 10000 }])
+    assert.equal(ajustados[0].valorCentavos, 10000)
+  })
+
+  it("a soma dos pagamentos passa a ser o total da venda", () => {
+    const ajustados = descontarTroco(3500, [{ forma: "DINHEIRO", valorCentavos: 10000 }])
+    assert.equal(
+      ajustados.reduce((soma, pagamento) => soma + pagamento.valorCentavos, 0),
+      3500,
+    )
   })
 })
 

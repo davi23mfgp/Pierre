@@ -166,6 +166,32 @@ export function conferirVenda(
   }
 }
 
+/**
+ * Tira o troco dos pagamentos antes de gravar.
+ *
+ * Quem paga R$ 50 numa venda de R$ 35 entregou R$ 50, mas deu R$ 35 à loja e
+ * levou R$ 15 de volta. Gravar os R$ 50 faria o resumo somar troco como
+ * receita — e o líquido apareceria maior que o bruto, que foi exatamente o que
+ * aconteceu antes desta função existir.
+ *
+ * O corte sai do dinheiro, porque troco só existe em espécie. Se ainda sobrar
+ * excesso depois disso, é erro de digitação no cartão e o valor fica como veio,
+ * para a conferência da venda recusar em vez de esconder.
+ */
+export function descontarTroco(totalCentavos: number, pagamentos: PagamentoInformado[]): PagamentoInformado[] {
+  const pago = pagamentos.reduce((soma, pagamento) => soma + pagamento.valorCentavos, 0)
+  let excesso = pago - totalCentavos
+  if (excesso <= 0) return pagamentos
+
+  return pagamentos.map((pagamento) => {
+    if (excesso <= 0 || pagamento.forma !== "DINHEIRO") return pagamento
+
+    const corte = Math.min(excesso, pagamento.valorCentavos)
+    excesso -= corte
+    return { ...pagamento, valorCentavos: pagamento.valorCentavos - corte }
+  })
+}
+
 export interface MovimentoDeCaixa {
   formas: { forma: FormaPagamento; valorCentavos: number }[]
 }
