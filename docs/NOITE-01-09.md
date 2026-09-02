@@ -69,9 +69,25 @@ dois registros que já estavam no banco.
 atributo do SVG, e o navegador não expande `var()` ali — a linha saía sem traço
 e o gráfico aparecia vazio, com os eixos no lugar.
 
+## Dois defeitos que uma revisão pegou depois
+
+**Parcela do dia 31 caía no mês errado.** `setMonth` em 31 de janeiro mais um
+mês devolve 3 de março, porque fevereiro não tem dia 31 e o JavaScript
+transborda o excedente. Numa venda parcelada no dia 31, a parcela caía um mês
+inteiro fora do lugar e a previsão de caixa apontava dinheiro na semana errada.
+
+**O balanço lia o histórico inteiro.** Trazia cada transação da vida da conta
+para a memória. Agora uma consulta soma tudo que veio antes da janela e a outra
+traz só o período mostrado — o número conferido é o mesmo.
+
 ## Números
 
-222 testes, 51 rotas de pé na fumaça, `tsc` limpo.
+226 testes, 51 rotas de pé na fumaça, `tsc` limpo, build de produção passando.
+
+`npm run lint` estava quebrado desde sempre: o projeto nunca teve config de
+ESLint, e o `next lint` — que gerava uma — saiu no Next 16. Virou
+`npm run tipos`. Reconfigurar o ESLint exige subir dependência com o build
+funcionando, então deixei para você decidir.
 
 ## O que ficou para você
 
