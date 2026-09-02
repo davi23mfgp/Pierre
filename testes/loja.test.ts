@@ -6,6 +6,7 @@ import {
   conferirVenda,
   descontarTroco,
   parcelasDoRecebimento,
+  somarMeses,
   previsaoDeRecebimento,
   resumoDoCaixa,
   taxaEmCentavos,
@@ -125,6 +126,31 @@ describe("parcelas do recebimento", () => {
     assert.equal(parcelas[0].previsaoEm.toISOString().slice(0, 10), "2026-09-29")
     assert.equal(parcelas[1].previsaoEm.toISOString().slice(0, 10), "2026-10-29")
     assert.equal(parcelas[2].previsaoEm.toISOString().slice(0, 10), "2026-11-29")
+  })
+})
+
+describe("soma de meses na parcela", () => {
+  it("não estoura para o mês seguinte", () => {
+    // setMonth em 31/01 + 1 devolve 03/03, porque fevereiro não tem dia 31 e o
+    // JavaScript transborda. Numa venda parcelada no dia 31 isso jogaria a
+    // parcela um mês inteiro fora do lugar.
+    const parcela = somarMeses(new Date("2026-01-31T12:00:00.000Z"), 1)
+    assert.equal(parcela.toISOString().slice(0, 10), "2026-02-28")
+  })
+
+  it("respeita ano bissexto", () => {
+    const parcela = somarMeses(new Date("2028-01-31T12:00:00.000Z"), 1)
+    assert.equal(parcela.toISOString().slice(0, 10), "2028-02-29")
+  })
+
+  it("dia que existe nos dois meses fica igual", () => {
+    const parcela = somarMeses(new Date("2026-01-15T12:00:00.000Z"), 2)
+    assert.equal(parcela.toISOString().slice(0, 10), "2026-03-15")
+  })
+
+  it("atravessa a virada do ano", () => {
+    const parcela = somarMeses(new Date("2026-11-30T12:00:00.000Z"), 3)
+    assert.equal(parcela.toISOString().slice(0, 10), "2027-02-28")
   })
 })
 

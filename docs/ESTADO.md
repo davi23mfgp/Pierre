@@ -62,6 +62,17 @@ Em ordem de valor, na minha leitura:
 - `demo@tino.local` / `demo12345` — demonstração "Casa da Marina", 6 meses de
   histórico. Recriar com `node scripts/demo.mjs`.
 
+## Pendência de ferramenta
+
+`npm run lint` estava quebrado: o projeto nunca teve arquivo de configuração do
+ESLint — o `next lint` gerava um na primeira execução, e esse comando saiu no
+Next 16. O script virou `npm run tipos` (`tsc --noEmit`), que é a verificação
+que de fato roda.
+
+Para ter ESLint de volta é preciso subir `eslint` e `eslint-config-next` (hoje
+em 14.2.3, contra Next 16) e criar um `eslint.config.mjs`. É mexer em
+dependência com o build funcionando, então fica para uma decisão sua.
+
 ## Decisões de interface
 
 - **Menu curto.** Só as cinco telas do dia a dia e as quatro decisões ficam à

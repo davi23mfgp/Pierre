@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import { competenciaAtual, fimDaCompetencia, ultimasCompetencias } from "@/lib/datas"
+import { competenciaAtual, fimDaCompetencia, inicioDaCompetencia, ultimasCompetencias } from "@/lib/datas"
 
 /**
  * Balanço mês a mês.
@@ -48,9 +48,22 @@ export interface BalancoMensal {
 export async function balancoMensal(larId: string, meses = 12): Promise<BalancoMensal> {
   const competencias = ultimasCompetencias(meses, competenciaAtual())
 
-  const [transacoes, parcelas] = await Promise.all([
+  const primeiroDia = inicioDaCompetencia(competencias[0])
+
+  /**
+   * O saldo é acumulado desde sempre, então o histórico inteiro importa — mas
+   * trazer cada lançamento para a memória é o que faz esta tela ficar lenta em
+   * quem usa o app há anos. Duas consultas resolvem: uma soma tudo que veio
+   * antes da janela, a outra traz só o período mostrado.
+   */
+  const [antes, dentro, parcelas] = await Promise.all([
+    prisma.transacao.groupBy({
+      by: ["tipo"],
+      where: { larId, conta: { tipo: { not: "CARTAO_CREDITO" } }, data: { lt: primeiroDia } },
+      _sum: { valorCentavos: true },
+    }),
     prisma.transacao.findMany({
-      where: { larId, conta: { tipo: { not: "CARTAO_CREDITO" } } },
+      where: { larId, conta: { tipo: { not: "CARTAO_CREDITO" } }, data: { gte: primeiroDia } },
       select: { data: true, valorCentavos: true, tipo: true },
       orderBy: { data: "asc" },
     }),
@@ -60,14 +73,24 @@ export async function balancoMensal(larId: string, meses = 12): Promise<BalancoM
     }),
   ])
 
+  // Transferência não entra em lugar nenhum: ela move dinheiro entre contas do
+  // mesmo dono, e somá-la contaria o mesmo real duas vezes.
+  const saldoDeAbertura = antes
+    .filter((grupo) => grupo.tipo !== "TRANSFERENCIA")
+    .reduce(
+      (soma, grupo) =>
+        soma + (grupo.tipo === "RECEITA" ? (grupo._sum.valorCentavos ?? 0) : -(grupo._sum.valorCentavos ?? 0)),
+      0,
+    )
+
   const serie: MesDoBalanco[] = competencias.map((competencia) => {
     const ultimoDia = fimDaCompetencia(competencia)
 
-    // Transferência não entra: ela move dinheiro entre contas do mesmo dono e
-    // somá-la contaria o mesmo real duas vezes.
-    const saldo = transacoes
-      .filter((linha) => linha.data <= ultimoDia && linha.tipo !== "TRANSFERENCIA")
-      .reduce((soma, linha) => soma + (linha.tipo === "RECEITA" ? linha.valorCentavos : -linha.valorCentavos), 0)
+    const saldo =
+      saldoDeAbertura +
+      dentro
+        .filter((linha) => linha.data <= ultimoDia && linha.tipo !== "TRANSFERENCIA")
+        .reduce((soma, linha) => soma + (linha.tipo === "RECEITA" ? linha.valorCentavos : -linha.valorCentavos), 0)
 
     const parcelado = parcelas
       .filter((parcela) => parcela.vencimento > ultimoDia)

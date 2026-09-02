@@ -124,11 +124,33 @@ export function parcelasDoRecebimento(
 ): { numero: number; valorCentavos: number; previsaoEm: Date }[] {
   const valores = ratear(pagamento.valorLiquidoCentavos, pagamento.parcelas)
 
-  return valores.map((valorCentavos, indice) => {
-    const previsaoEm = new Date(pagamento.previsaoRecebimentoEm)
-    previsaoEm.setMonth(previsaoEm.getMonth() + indice)
-    return { numero: indice + 1, valorCentavos, previsaoEm }
-  })
+  return valores.map((valorCentavos, indice) => ({
+    numero: indice + 1,
+    valorCentavos,
+    previsaoEm: somarMeses(pagamento.previsaoRecebimentoEm, indice),
+  }))
+}
+
+/**
+ * Soma meses sem estourar para o mês seguinte.
+ *
+ * `setMonth` em 31 de janeiro mais um mês devolve 3 de março, porque fevereiro
+ * não tem dia 31 e o JavaScript transborda o excedente. Numa venda parcelada no
+ * dia 31, isso jogaria a parcela um mês inteiro fora do lugar e a previsão de
+ * caixa apontaria dinheiro na semana errada.
+ *
+ * Aqui o dia é preso ao último do mês de destino, que é o que a adquirente faz.
+ */
+export function somarMeses(data: Date, meses: number): Date {
+  const ano = data.getUTCFullYear()
+  const mes = data.getUTCMonth() + meses
+  const dia = data.getUTCDate()
+
+  const ultimoDiaDoDestino = new Date(Date.UTC(ano, mes + 1, 0)).getUTCDate()
+
+  return new Date(
+    Date.UTC(ano, mes, Math.min(dia, ultimoDiaDoDestino), data.getUTCHours(), data.getUTCMinutes(), data.getUTCSeconds()),
+  )
 }
 
 export interface ConferenciaDaVenda {
