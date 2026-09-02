@@ -871,6 +871,7 @@ model Loja {
   caixas      Caixa[]
   recebimento FormaRecebimento[]
   clientes    ClienteLoja[]
+  contas      ContaDaLoja[]
 
   @@index([larId])
 }
@@ -1080,4 +1081,42 @@ enum TipoMovimentoEstoque {
   /// Contagem física: o saldo passa a ser o informado, e a diferença fica
   /// registrada como ajuste em vez de sumir.
   AJUSTE
+}
+
+/// Conta que a loja paga para existir: aluguel, condomínio, fornecedor, luz.
+///
+/// Separada das despesas pessoais de propósito. Misturar o aluguel do box com o
+/// aluguel de casa é o que faz o MEI achar que lucrou quando só girou dinheiro.
+model ContaDaLoja {
+  id     String @id @default(cuid())
+  lojaId String
+  loja   Loja   @relation(fields: [lojaId], references: [id], onDelete: Cascade)
+
+  descricao     String
+  categoria     CategoriaDaLoja @default(OUTRO)
+  valorCentavos Int
+  vencimento    DateTime
+
+  paga   Boolean   @default(false)
+  pagaEm DateTime?
+
+  /// Marca a conta que se repete todo mês, para a próxima nascer sozinha.
+  mensal Boolean @default(false)
+
+  observacao String?
+  criadoEm   DateTime @default(now())
+
+  @@index([lojaId, vencimento])
+  @@index([lojaId, paga])
+}
+
+enum CategoriaDaLoja {
+  ALUGUEL
+  CONDOMINIO
+  FORNECEDOR
+  ENERGIA
+  MAQUININHA
+  IMPOSTO
+  FUNCIONARIO
+  OUTRO
 }

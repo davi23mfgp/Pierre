@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
@@ -93,10 +93,11 @@ const FERRAMENTAS: Item[] = [
 ]
 
 const LOJA: Item[] = [
-  { rota: "/mei", rotulo: "MEI", Icone: Store },
   { rota: "/loja", rotulo: "Balcão", Icone: ShoppingBag },
   { rota: "/loja/estoque", rotulo: "Prateleira", Icone: Package },
   { rota: "/loja/fiado", rotulo: "Fiado", Icone: NotebookPen },
+  { rota: "/loja/contas", rotulo: "Contas a pagar", Icone: Receipt },
+  { rota: "/mei", rotulo: "MEI e DAS", Icone: Store },
 ]
 
 /**
@@ -176,6 +177,16 @@ function Linha({
   )
 }
 
+/**
+ * Os grupos do menu, um aberto por vez.
+ *
+ * Vinte opções abertas ao mesmo tempo é o cardápio com trinta sabores de pizza:
+ * a pessoa lê tudo, não escolhe nada e sai. Com um grupo aberto por vez ela
+ * enxerga cinco opções, escolhe, e o resto continua a um toque de distância.
+ *
+ * O grupo da tela atual abre sozinho. Chegar por link e não achar onde está no
+ * menu é o tipo de coisa que faz alguém achar que o app perdeu a página.
+ */
 function Grupos({
   grupos,
   caminho,
@@ -187,49 +198,61 @@ function Grupos({
   recolhido: boolean
   aoNavegar?: () => void
 }) {
-  // Abre sozinho quando a pessoa já está numa das ferramentas: chegar por link
-  // e não achar onde está no menu é desorientador.
-  const [ferramentas, setFerramentas] = useState(() =>
-    FERRAMENTAS.some((item) => estaAtivo(caminho, item.rota)),
-  )
+  const grupoDaTela = grupos.find((grupo) => grupo.itens.some((item) => estaAtivo(caminho, item.rota)))
+  const [aberto, setAberto] = useState(() => grupoDaTela?.titulo ?? grupos[0]?.titulo ?? "")
 
   useEffect(() => {
-    if (FERRAMENTAS.some((item) => estaAtivo(caminho, item.rota))) setFerramentas(true)
-  }, [caminho])
+    const atual = grupos.find((grupo) => grupo.itens.some((item) => estaAtivo(caminho, item.rota)))
+    if (atual) setAberto(atual.titulo)
+  }, [caminho, grupos])
+
+  // Recolhido só há ícones, e esconder metade deles atrás de um acordeão que
+  // não se vê seria pior que mostrar todos.
+  if (recolhido) {
+    return (
+      <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-4">
+        {grupos.map((grupo) => (
+          <div key={grupo.titulo} className="space-y-0.5">
+            {grupo.itens.map((item) => (
+              <Linha key={item.rota} item={item} caminho={caminho} recolhido aoNavegar={aoNavegar} />
+            ))}
+          </div>
+        ))}
+      </nav>
+    )
+  }
 
   return (
-    <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
-      {grupos.map((grupo) => (
-        <div key={grupo.titulo} className="space-y-0.5">
-          {/* Recolhido, o título viraria três letras sem sentido; a separação
-              fica por conta do espaço entre os blocos. */}
-          {!recolhido && (
-            <p className="px-2.5 pb-1.5 text-[10px] uppercase tracking-[0.14em] text-muted-fg">{grupo.titulo}</p>
-          )}
-          {grupo.itens.map((item) => (
-            <Linha key={item.rota} item={item} caminho={caminho} recolhido={recolhido} aoNavegar={aoNavegar} />
-          ))}
-        </div>
-      ))}
+    <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+      {grupos.map((grupo) => {
+        const estaAberto = aberto === grupo.titulo
+        const temAtivo = grupo.itens.some((item) => estaAtivo(caminho, item.rota))
 
-      <div className="space-y-0.5">
-        <button
-          onClick={() => setFerramentas((atual) => !atual)}
-          className={cn(
-            "flex w-full items-center gap-2.5 rounded-lg py-2 text-[13px] text-muted-fg transition-colors hover:text-foreground",
-            recolhido ? "justify-center px-0" : "px-2.5",
-          )}
-          title={recolhido ? "Mais ferramentas" : undefined}
-        >
-          <ChevronDown className={cn("size-4 shrink-0 transition-transform", ferramentas && "rotate-180")} />
-          {!recolhido && <span>Mais ferramentas</span>}
-        </button>
+        return (
+          <div key={grupo.titulo}>
+            <button
+              onClick={() => setAberto(estaAberto ? "" : grupo.titulo)}
+              aria-expanded={estaAberto}
+              className={cn(
+                "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-[11px] uppercase tracking-[0.12em] transition-colors",
+                temAtivo ? "text-foreground" : "text-muted-fg hover:text-foreground",
+              )}
+            >
+              <ChevronDown className={cn("size-3.5 shrink-0 transition-transform", !estaAberto && "-rotate-90")} />
+              <span className="truncate">{grupo.titulo}</span>
+              {!estaAberto && temAtivo && <span className="ml-auto size-1.5 rounded-full bg-positivo" />}
+            </button>
 
-        {ferramentas &&
-          FERRAMENTAS.map((item) => (
-            <Linha key={item.rota} item={item} caminho={caminho} recolhido={recolhido} aoNavegar={aoNavegar} />
-          ))}
-      </div>
+            {estaAberto && (
+              <div className="mb-2 space-y-0.5 pl-1.5">
+                {grupo.itens.map((item) => (
+                  <Linha key={item.rota} item={item} caminho={caminho} recolhido={false} aoNavegar={aoNavegar} />
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      })}
     </nav>
   )
 }
@@ -275,13 +298,17 @@ export function Navegacao({ mei }: { mei?: boolean }) {
     setGaveta(false)
   }, [caminho])
 
-  const grupos: Grupo[] = [
-    { titulo: "Dia a dia", itens: DIARIO },
-    { titulo: "Decidir", itens: PLANEJAMENTO },
-    // A loja só aparece para quem é MEI: quem usa o Tino para as contas de casa
-    // não tem balcão nem prateleira.
-    ...(mei ? [{ titulo: "Minha loja", itens: LOJA }] : []),
-  ]
+  const grupos: Grupo[] = useMemo(
+    () => [
+      { titulo: "Dia a dia", itens: DIARIO },
+      { titulo: "Decidir", itens: PLANEJAMENTO },
+      // A loja só aparece para quem é MEI: quem usa o Tino para as contas de
+      // casa não tem balcão nem prateleira.
+      ...(mei ? [{ titulo: "Minha loja", itens: LOJA }] : []),
+      { titulo: "Ferramentas", itens: FERRAMENTAS },
+    ],
+    [mei],
+  )
 
   return (
     <>

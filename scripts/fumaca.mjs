@@ -44,6 +44,7 @@ const PAGINAS = [
   "/loja",
   "/loja/estoque",
   "/loja/fiado",
+  "/loja/contas",
   "/bem-vindo",
 ]
 
@@ -76,6 +77,7 @@ const APIS = [
   "/api/loja/vendas",
   "/api/loja/estoque",
   "/api/loja/fiado",
+  "/api/loja/contas",
   "/api/plano-pagamento",
   "/api/recorrencias",
   "/api/regras",

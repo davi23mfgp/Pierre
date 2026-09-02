@@ -7,6 +7,7 @@ import { buscar, enviar } from "@/lib/cliente"
 import { formatarMoeda, paraCentavos } from "@/lib/dinheiro"
 import { cn } from "@/lib/utils"
 import { Cartao, Metrica, Vazio } from "@/components/ui/painel"
+import { DitarGasto } from "@/components/ditar-gasto"
 
 /**
  * Captura rápida.
@@ -112,20 +113,29 @@ export default function Capturas() {
     carregar()
   }
 
-  async function anotarRapido(evento: React.FormEvent) {
-    evento.preventDefault()
-    if (!rapido.trim()) return
+  /**
+   * Anota um texto solto.
+   *
+   * O mesmo leitor do celular roda aqui: "mercado 52,30" funciona igual no app,
+   * no bot e ditado por voz. Um leitor só significa que melhorar o
+   * reconhecimento melhora os três de uma vez.
+   */
+  async function anotar(texto: string) {
+    if (!texto.trim()) return
 
-    // O mesmo leitor do celular roda aqui: assim o texto "mercado 52,30"
-    // funciona igual no app, no bot e na notificação.
     setOcupado(true)
     try {
-      await enviar("/api/capturas/rapida", { texto: rapido })
+      await enviar("/api/capturas/rapida", { texto })
       setRapido("")
       await carregar()
     } finally {
       setOcupado(false)
     }
+  }
+
+  async function anotarRapido(evento: React.FormEvent) {
+    evento.preventDefault()
+    await anotar(rapido)
   }
 
   async function criarChave(origem: "NOTIFICACAO" | "TELEGRAM") {
@@ -158,10 +168,16 @@ export default function Capturas() {
             <Send className="size-4" />
           </button>
         </form>
-        <p className="mt-2 text-[12px] text-muted-fg">
-          Escreva como você falaria: <b>uber 18</b>, <b>farmácia 38,90</b>, <b>almoço 45</b>. O Tino adivinha a
-          categoria pelo nome.
-        </p>
+        <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
+          <p className="max-w-md text-[12px] leading-relaxed text-muted-fg">
+            Escreva como você falaria: <b>uber 18</b>, <b>farmácia 38,90</b>, <b>almoço 45</b>. O Tino adivinha a
+            categoria pelo nome.
+          </p>
+
+          {/* Ditar é o caminho para quem está saindo do caixa com a sacola na
+              mão. O texto falado entra no mesmo leitor do texto escrito. */}
+          <DitarGasto aoTranscrever={(texto) => anotar(texto)} />
+        </div>
       </Cartao>
 
       {pendentes.length > 0 && (
