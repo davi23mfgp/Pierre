@@ -159,6 +159,32 @@ Pesquisado em 03/09/2026:
   o plano inclui uma cota, e "+200 emissões" custa R$ 120/mês à parte. É o
   padrão de mercado para "já incluso no preço".
 
+**Achado de 03/09/2026 — o `flowdeal` (ERP do Davi) já fala com o Olist/Tiny,
+de verdade:** `src/lib/olist.ts` de lá tem OAuth2 completo (autorização, troca
+de código por token, renovação de refresh token) contra a API v3
+(`erp.tiny.com.br/public-api/v3`), incluindo os caminhos de emitir, cancelar,
+xml e pdf de nota. É código provado, não pesquisa — o Davi já tem conta e
+credencial funcionando.
+
+Mas o jeito que o Olist emite nota é diferente do Focus NFe, e isso muda a
+conta: Olist exige um **pedido** já existente com `produto.id`, `deposito.id`
+e `vendedor.id` — todos cadastrados *dentro* do catálogo do Olist antes de
+gerar a nota. Focus NFe recebe a venda inteira solta, sem cadastro prévio
+em lugar nenhum. Ou seja: usar o Olist para o Tino.mei não é só trocar de
+API — é manter produto e cliente sincronizados com o catálogo do Olist de
+cada lojista, um Olist conectado por loja (o Davi tem o dele; cada cliente do
+Tino.mei precisaria conectar o próprio). Focus NFe/eNotas foram desenhados
+para isso — SaaS emitindo em nome de terceiros; o Olist foi desenhado para
+"a empresa roda tudo por dentro dele", que é o uso que o próprio Davi já faz.
+
+Não decide sozinho qual dos dois é melhor: **por nota (Focus/eNotas) é
+simples e barato para pouco volume; por Olist é mais integrado mas amarra o
+lojista a ter (e manter sincronizado) um Olist próprio.** Fica para o Davi
+escolher com essa troca na mesa — o adapter do Focus NFe já está pronto para
+o primeiro caso; o segundo ainda não tem código, só o mapeamento dos
+endpoints reais (`gerar-nota-fiscal-do-pedido`, `autorizar-nota-fiscal`,
+`cancelar-nota-fiscal`, todos documentados em api-docs.erp.olist.com).
+
 **O que este documento continua não decidindo:** qual provedor usar, quanto
 cobrar a mais no plano do Tino para cobrir o custo por nota mais margem, e se
 o certificado digital é do lojista ou centralizado — decisão de preço e de

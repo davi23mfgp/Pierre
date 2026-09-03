@@ -20,11 +20,17 @@ interface Linha {
   id: string
   nome: string
   precoCentavos: number
+  ncm: string | null
   saldo: number
   custoMedioCentavos: number | null
   acabando: boolean
   semSaldo: boolean
   margem: { lucroCentavos: number | null; margemBps: number | null; markupBps: number | null }
+}
+
+interface ResultadoNcm {
+  codigo: string
+  descricao: string
 }
 
 interface Desempenho {
@@ -52,6 +58,91 @@ const DIAS_PARADO = 30
 const campo = "rounded-xl border border-pauta bg-background px-3 py-2 text-[13px] outline-none focus:border-positivo/50"
 
 const VAZIO = { produtoId: "", tipo: "ENTRADA" as "ENTRADA" | "AJUSTE", quantidade: "", custo: "", motivo: "" }
+
+/**
+ * NCM do produto, editado ali na tabela.
+ *
+ * Busca contra a tabela oficial (10.515 códigos, ver src/lib/loja/ncm.ts) —
+ * não deixa digitar um código qualquer: o PATCH do servidor também confere,
+ * mas mostrar a lista de verdade aqui evita a tentativa que ia falhar.
+ */
+function EditorNcm({
+  produtoId,
+  ncmAtual,
+  aoSalvar,
+}: {
+  produtoId: string
+  ncmAtual: string | null
+  aoSalvar: () => void
+}) {
+  const [aberto, setAberto] = useState(false)
+  const [termo, setTermo] = useState("")
+  const [resultados, setResultados] = useState<ResultadoNcm[]>([])
+  const [salvando, setSalvando] = useState(false)
+
+  useEffect(() => {
+    if (!aberto || !termo.trim()) {
+      setResultados([])
+      return
+    }
+    const espera = setTimeout(async () => {
+      const resposta = await buscar<{ resultados: ResultadoNcm[] }>(`/api/loja/ncm?busca=${encodeURIComponent(termo)}`)
+      setResultados(resposta.resultados)
+    }, 250)
+    return () => clearTimeout(espera)
+  }, [termo, aberto])
+
+  async function escolher(codigo: string) {
+    setSalvando(true)
+    try {
+      await enviar(`/api/loja/produtos/${produtoId}`, { ncm: codigo }, "PATCH")
+      setAberto(false)
+      setTermo("")
+      aoSalvar()
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  if (!aberto) {
+    return (
+      <button
+        onClick={() => setAberto(true)}
+        className="rounded-full border border-pauta px-2 py-0.5 text-[11px] text-muted-fg hover:border-acao/40 hover:text-foreground"
+      >
+        {ncmAtual ?? "definir"}
+      </button>
+    )
+  }
+
+  return (
+    <div className="relative inline-block text-left">
+      <input
+        autoFocus
+        value={termo}
+        onChange={(evento) => setTermo(evento.target.value)}
+        onBlur={() => setTimeout(() => setAberto(false), 150)}
+        placeholder="busque por nome ou código"
+        disabled={salvando}
+        className="w-44 rounded-lg border border-pauta bg-background px-2 py-1 text-[12px] outline-none focus:border-acao/50"
+      />
+      {resultados.length > 0 && (
+        <div className="absolute right-0 z-10 mt-1 w-72 rounded-xl border border-pauta bg-papel-1 p-1 shadow-lg">
+          {resultados.map((resultado) => (
+            <button
+              key={resultado.codigo}
+              onMouseDown={() => escolher(resultado.codigo)}
+              className="block w-full rounded-lg px-2 py-1.5 text-left text-[12px] hover:bg-foreground/[0.05]"
+            >
+              <span className="numero font-medium">{resultado.codigo}</span>{" "}
+              <span className="text-muted-fg">{resultado.descricao}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function Estoque() {
   const [dados, setDados] = useState<Resposta | null>(null)
@@ -225,6 +316,7 @@ export default function Estoque() {
                   <th className="pb-2 text-right font-normal">custou</th>
                   <th className="pb-2 text-right font-normal">vende por</th>
                   <th className="pb-2 text-right font-normal">sobra</th>
+                  <th className="pb-2 text-right font-normal">ncm</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-pauta">
@@ -253,6 +345,9 @@ export default function Estoque() {
                           </span>
                         </span>
                       )}
+                    </td>
+                    <td className="py-2.5 text-right">
+                      <EditorNcm produtoId={linha.id} ncmAtual={linha.ncm} aoSalvar={carregar} />
                     </td>
                   </tr>
                 ))}

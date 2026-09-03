@@ -48,6 +48,7 @@ export const GET = comSessao(async (sessao) => {
       id: produto.id,
       nome: produto.nome,
       precoCentavos: produto.precoCentavos,
+      ncm: produto.ncm,
       ...situacao,
       ...(podeVerFinanceiro
         ? {}

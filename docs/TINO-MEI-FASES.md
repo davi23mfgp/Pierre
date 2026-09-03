@@ -140,7 +140,17 @@ Resumo técnico do que muda quando entrar:
 - Reemissão manual quando a SEFAZ rejeitar. Sem retry automático: erro fiscal
   automático demais é dinheiro saindo sem o dono ver.
 - Cadastro que falta hoje e a nota exige: NCM por produto (`ProdutoLoja` não
-  tem), inscrição estadual da loja, tipo de certificado.
+  tem — **feito em 03/09/2026**, ver abaixo), inscrição estadual da loja, tipo
+  de certificado.
+
+**NCM real, não só "8 dígitos" (03/09/2026):** o Davi tem a tabela oficial
+completa (Resolução Gecex nº 926/2026) no `flowdeal` — `scripts/gerar-ncm.mjs`
+filtra as 10.515 folhas de verdade (o resto são cabeçalho de capítulo) e monta
+o caminho completo, porque a descrição de uma folha sozinha costuma ser só
+"Outros" sem o pai. `src/lib/loja/ncm.ts` (motor puro, testado) + rota
+`/api/loja/ncm` (busca) + campo na Prateleira com autocompletar. O PATCH do
+produto agora confere contra a tabela de verdade, não só o formato — antes um
+código de 8 dígitos qualquer passava e só ia falhar na hora de emitir.
 
 **Atualização de 03/09/2026 — adapter do Focus NFe escrito antes do contrato:**
 `src/lib/nota-fiscal/provedores/focus-nfe.ts` já implementa emissão de verdade
