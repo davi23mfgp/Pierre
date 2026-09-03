@@ -6,9 +6,19 @@ import type { Movimento, TipoMovimento } from "@/lib/loja/estoque"
 import { desempenhoDosProdutos } from "@/lib/loja/desempenho"
 import type { VendaDoProduto } from "@/lib/loja/desempenho"
 
-/** Prateleira: saldo, custo, margem e o que mais/menos vende de cada produto. */
+/**
+ * Prateleira: saldo, custo, margem e o que mais/menos vende de cada produto.
+ *
+ * Custo e margem ficam de fora para `FUNCIONARIO_LOJA` (ver docs/TINO-MEI.md,
+ * Fase 7 — "permissão fina" que ficou pendente até alguém precisar de
+ * verdade). O corte é aqui, no servidor: esconder só na tela deixaria o
+ * número real inteiro na resposta da API, visível em qualquer inspetor de
+ * rede. Saldo e preço de venda continuam — são o que decide se tem o produto
+ * e por quanto vender, que é a operação do balcão.
+ */
 export const GET = comSessao(async (sessao) => {
   const loja = await lojaDoLar(sessao.larId)
+  const podeVerFinanceiro = sessao.papel !== "FUNCIONARIO_LOJA"
 
   const [produtos, itensVendidos] = await Promise.all([
     prisma.produtoLoja.findMany({
@@ -32,11 +42,16 @@ export const GET = comSessao(async (sessao) => {
       criadoEm: linha.criadoEm,
     }))
 
+    const situacao = situacaoDoProduto({ precoCentavos: produto.precoCentavos, movimentos })
+
     return {
       id: produto.id,
       nome: produto.nome,
       precoCentavos: produto.precoCentavos,
-      ...situacaoDoProduto({ precoCentavos: produto.precoCentavos, movimentos }),
+      ...situacao,
+      ...(podeVerFinanceiro
+        ? {}
+        : { custoMedioCentavos: null, margem: { lucroCentavos: null, margemBps: null, markupBps: null } }),
     }
   })
 
@@ -57,8 +72,11 @@ export const GET = comSessao(async (sessao) => {
     // Contagens prontas para a tela não ter de recalcular e divergir.
     acabando: prateleira.filter((linha) => linha.acabando).length,
     semSaldo: prateleira.filter((linha) => linha.semSaldo).length,
-    semCusto: prateleira.filter((linha) => linha.custoMedioCentavos === null).length,
+    // Zerado para o funcionário: com custo escondido, contar "sem custo" pela
+    // própria linha zerada diria "nada tem custo lançado", que é mentira.
+    semCusto: podeVerFinanceiro ? prateleira.filter((linha) => linha.custoMedioCentavos === null).length : 0,
     desempenho,
+    podeVerFinanceiro,
   })
 })
 

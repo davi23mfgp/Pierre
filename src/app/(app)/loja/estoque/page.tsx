@@ -42,6 +42,7 @@ interface Resposta {
   semSaldo: number
   semCusto: number
   desempenho: Desempenho[]
+  podeVerFinanceiro: boolean
 }
 
 // Mesma janela de trinta dias que já serve de referência para "o que vai
@@ -203,6 +204,12 @@ export default function Estoque() {
       </Cartao>
 
       <Cartao titulo="O que tem na loja">
+        {dados && !dados.podeVerFinanceiro && (
+          <p className="mb-3 rounded-2xl border border-pauta bg-papel-2 px-3 py-2 text-[12px] text-muted-fg">
+            Custo e margem aparecem só pro dono. Este login vê saldo e preço de venda, o que decide se tem o produto e
+            por quanto vender.
+          </p>
+        )}
         {prateleira.length === 0 ? (
           <Vazio
             titulo="Nenhum produto ainda"
