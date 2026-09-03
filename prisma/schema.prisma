@@ -863,6 +863,15 @@ model Loja {
   /// Galeria, box, quiosque. Só para o dono se achar quando tiver mais de uma.
   endereco String?
 
+  /// Dados fiscais, preenchidos só quando o lojista liga a emissão de nota.
+  /// Sem eles a nota não sai — a tela de emissão pede antes de deixar tentar.
+  cnpj              String?
+  inscricaoEstadual String?
+  /// Não é o certificado em si — isso não é guardado no nosso banco. Marca
+  /// que o provedor de emissão confirmou o certificado configurado do lado
+  /// dele, para a tela saber se já dá para tentar emitir.
+  certificadoConfiguradoEm DateTime?
+
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
 
@@ -908,6 +917,11 @@ model ProdutoLoja {
   /// margem não é calculada, e margem estimada é pior que margem ausente.
   custoCentavos Int     @default(0)
   ativo         Boolean @default(true)
+
+  /// Exigido pela nota fiscal (NCM = código da mercadoria perante a Receita).
+  /// Fica opcional aqui porque a venda sem nota não precisa dele — só passa a
+  /// travar a emissão, não o cadastro do produto.
+  ncm String?
 
   criadoEm DateTime @default(now())
 
@@ -994,9 +1008,49 @@ model VendaLoja {
 
   itens      ItemVenda[]
   pagamentos PagamentoVenda[]
+  notaFiscal NotaFiscalVenda?
 
   @@unique([lojaId, numero])
   @@index([lojaId, criadoEm])
+}
+
+/// Nota fiscal (NFC-e) de uma venda, emitida por API de terceiro.
+///
+/// Emissão não é obrigatória para todo MEI hoje (ver docs/TINO-MEI.md) — por
+/// isso é registro à parte da venda, não campo dela: a maioria das vendas vive
+/// sem nunca ter uma.
+///
+/// Guarda o XML retornado, nunca o recria: é o documento fiscal de verdade, e
+/// recalcular por conta própria divergiria do que a SEFAZ efetivamente
+/// autorizou.
+model NotaFiscalVenda {
+  id      String    @id @default(cuid())
+  vendaId String    @unique
+  venda   VendaLoja @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+
+  status StatusNotaFiscal @default(PENDENTE)
+
+  chaveAcesso    String?
+  numero         Int?
+  serie          Int?
+  xml            String?
+  /// Preenchido só quando REJEITADA — é o que a tela mostra para o lojista
+  /// saber o que corrigir antes de tentar de novo.
+  motivoRejeicao String?
+
+  emitidaEm   DateTime?
+  canceladaEm DateTime?
+  criadoEm    DateTime  @default(now())
+
+  @@index([vendaId])
+  @@index([status])
+}
+
+enum StatusNotaFiscal {
+  PENDENTE
+  EMITIDA
+  REJEITADA
+  CANCELADA
 }
 
 model ItemVenda {

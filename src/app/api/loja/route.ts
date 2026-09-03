@@ -70,22 +70,33 @@ export const GET = comSessao(async (sessao) => {
   })
 })
 
-/** Renomeia a loja e grava a taxa e o prazo de cada forma de pagamento. */
+/**
+ * Renomeia a loja, grava a taxa e o prazo de cada forma de pagamento, e os
+ * dados fiscais usados na emissão de nota (CNPJ, inscrição estadual).
+ *
+ * `certificadoConfiguradoEm` não entra aqui: quem confirma que o certificado
+ * está de pé é o provedor de emissão, não um campo que o dono preenche à mão.
+ */
 export const PUT = comSessao(async (sessao, requisicao) => {
   const dados = await corpo<{
     nome?: string
     endereco?: string
+    cnpj?: string
+    inscricaoEstadual?: string
     regras?: { forma: FormaPagamento; taxaBps: number; prazoDias: number }[]
   }>(requisicao)
 
   const loja = await lojaDoLar(sessao.larId)
 
-  if (dados.nome !== undefined || dados.endereco !== undefined) {
+  const camposSimples = ["nome", "endereco", "cnpj", "inscricaoEstadual"] as const
+  if (camposSimples.some((campo) => dados[campo] !== undefined)) {
     await prisma.loja.update({
       where: { id: loja.id },
       data: {
         ...(dados.nome !== undefined ? { nome: dados.nome } : {}),
         ...(dados.endereco !== undefined ? { endereco: dados.endereco } : {}),
+        ...(dados.cnpj !== undefined ? { cnpj: dados.cnpj.replace(/\D/g, "") || null } : {}),
+        ...(dados.inscricaoEstadual !== undefined ? { inscricaoEstadual: dados.inscricaoEstadual || null } : {}),
       },
     })
   }
