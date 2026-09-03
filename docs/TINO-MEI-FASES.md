@@ -140,9 +140,19 @@ Resumo técnico do que muda quando entrar:
 - Cadastro que falta hoje e a nota exige: NCM por produto (`ProdutoLoja` não
   tem), inscrição estadual da loja, tipo de certificado.
 
-**Continua fora até o Davi decidir provedor e preço:** a chamada de API em si.
-Escrever o modelo e a tela sem a chamada real é possível e não trava em nada —
-plugar o provedor depois é troca de uma função, não redesenho.
+**Atualização de 03/09/2026 — adapter do Focus NFe escrito antes do contrato:**
+`src/lib/nota-fiscal/provedores/focus-nfe.ts` já implementa emissão de verdade
+(POST `/v2/nfce`, autenticação Basic com o token, mapeamento de forma de
+pagamento pra tabela SEFAZ), direto da doc oficial deles — mesmo raciocínio do
+adapter Pluggy em `open-finance/` (escrito antes do contrato existir, sem
+travar nada até lá). Falta só `FOCUS_NFE_TOKEN` de uma conta de verdade e
+`NOTA_FISCAL_PROVIDER=focus_nfe` pra sair do sandbox. Cancelamento ainda não
+funciona por esse adapter — a API cancela pela `ref` da emissão, e o schema
+não guarda essa `ref` hoje; fica para quando a Fase 6 sair do esqueleto.
+
+**Continua fora até o Davi decidir preço:** quanto cobrar a mais no plano do
+Tino para cobrir custo por nota + margem, e se o certificado digital é do
+lojista ou centralizado. Nenhuma das duas trava o código escrito até aqui.
 
 **Prova:** venda antiga sem nota continua funcionando normalmente; venda nova
 pode ficar com nota `PENDENTE` indefinidamente sem quebrar nenhum relatório.

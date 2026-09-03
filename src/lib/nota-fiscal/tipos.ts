@@ -18,6 +18,11 @@ export interface ItemDaNota {
   precoUnitarioCentavos: number
 }
 
+export interface PagamentoDaNota {
+  forma: "DINHEIRO" | "PIX" | "DEBITO" | "CREDITO_VISTA" | "CREDITO_PARCELADO" | "FIADO"
+  valorCentavos: number
+}
+
 export interface DadosParaEmissao {
   cnpj: string
   inscricaoEstadual: string
@@ -25,6 +30,7 @@ export interface DadosParaEmissao {
   /// a venda de novo se a resposta do provedor se perder no caminho.
   numeroVenda: number
   itens: ItemDaNota[]
+  pagamentos: PagamentoDaNota[]
   totalCentavos: number
 }
 

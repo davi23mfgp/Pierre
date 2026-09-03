@@ -1,16 +1,18 @@
 /**
  * Emissão de nota fiscal de uma venda.
  *
- * Sem provedor escolhido ainda (ver docs/TINO-MEI.md, Fase 6) — por isso só
- * existe o sandbox aqui. Plugar Focus NFe, eNotas ou outro é escrever um
- * arquivo novo em `provedores/` e um `case` novo em `criarEmissor`, sem tocar
- * na tela nem na rota. Mesmo desenho de `open-finance/index.ts`.
+ * Provedor ainda não contratado — preço e escolha final são decisão do Davi
+ * (ver docs/TINO-MEI.md, Fase 6). O adapter do Focus NFe já está escrito
+ * (mesmo espírito do Pluggy em `open-finance/provedores/`: pronto para o dia
+ * em que o contrato existir, sem travar nada até lá) — `NOTA_FISCAL_PROVIDER`
+ * continua em "sandbox" por padrão.
  */
 
 import { prisma } from "@/lib/prisma"
 import { verificarPendenciasDeEmissao } from "@/lib/nota-fiscal/pendencias"
-import type { EmissorDeNotaFiscal, ItemDaNota } from "@/lib/nota-fiscal/tipos"
+import type { EmissorDeNotaFiscal, ItemDaNota, PagamentoDaNota } from "@/lib/nota-fiscal/tipos"
 import { emissorSandbox } from "@/lib/nota-fiscal/provedores/sandbox"
+import { emissorFocusNfe } from "@/lib/nota-fiscal/provedores/focus-nfe"
 
 export function criarEmissor(): EmissorDeNotaFiscal {
   const escolhido = (process.env.NOTA_FISCAL_PROVIDER || "sandbox").toLowerCase()
@@ -20,6 +22,7 @@ export function criarEmissor(): EmissorDeNotaFiscal {
   if (process.env.NODE_ENV === "production" && escolhido === "sandbox") {
     throw new Error("Nota fiscal: provedor sandbox não pode ser usado em produção. Configure NOTA_FISCAL_PROVIDER.")
   }
+  if (escolhido === "focus_nfe") return emissorFocusNfe
   return emissorSandbox
 }
 
@@ -40,7 +43,7 @@ export class PendenciaDeEmissao extends Error {
 export async function emitirNotaDaVenda(params: { larId: string; vendaId: string }) {
   const venda = await prisma.vendaLoja.findFirstOrThrow({
     where: { id: params.vendaId, loja: { larId: params.larId } },
-    include: { itens: { include: { produto: true } }, loja: true },
+    include: { itens: { include: { produto: true } }, pagamentos: true, loja: true },
   })
 
   const itensParaNota: ItemDaNota[] = venda.itens.map((item) => ({
@@ -48,6 +51,11 @@ export async function emitirNotaDaVenda(params: { larId: string; vendaId: string
     ncm: item.produto?.ncm ?? "",
     quantidade: item.quantidade,
     precoUnitarioCentavos: item.precoUnitarioCentavos,
+  }))
+
+  const pagamentosParaNota: PagamentoDaNota[] = venda.pagamentos.map((pagamento) => ({
+    forma: pagamento.forma as PagamentoDaNota["forma"],
+    valorCentavos: pagamento.valorCentavos,
   }))
 
   const verificacao = verificarPendenciasDeEmissao(
@@ -69,6 +77,7 @@ export async function emitirNotaDaVenda(params: { larId: string; vendaId: string
       inscricaoEstadual: venda.loja.inscricaoEstadual as string,
       numeroVenda: venda.numero,
       itens: itensParaNota,
+      pagamentos: pagamentosParaNota,
       totalCentavos: venda.totalCentavos,
     })
 
