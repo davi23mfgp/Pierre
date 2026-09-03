@@ -149,36 +149,41 @@ pode ficar com nota `PENDENTE` indefinidamente sem quebrar nenhum relatório.
 
 ---
 
-## Fase 7 — Login por papel: dono e funcionário da loja
+## Fase 7 — Login por papel: dono e funcionário da loja ✅ (falta a migration)
 
 Motivação e decisão em `TINO-MEI.md`, seção "Extensão de 03/09/2026".
 
 - `PapelMembro` ganha `FUNCIONARIO_LOJA`, ao lado de `TITULAR`, `CONJUGE`,
-  `DEPENDENTE`, `CONVIDADO`. Migration de banco simples (novo valor de enum),
-  mas precisa rodar contra um Postgres de pé — **fica para o Davi**
-  (`npx prisma migrate dev --name papel_funcionario_loja`), o ambiente que
-  gerou este documento não tinha banco local para testar de verdade.
-- Restrição de rota por `middleware.ts` na raiz do projeto (novo arquivo):
-  lê o papel do token (já vem no JWT da sessão) e barra qualquer caminho fora
-  de `/loja`, `/api/loja` e `/api/auth/logout` para quem for
-  `FUNCIONARIO_LOJA`. Escolhido middleware, e não um `if` dentro de
-  `sessaoDaPagina`, porque só o middleware do Next sabe o caminho da
-  requisição antes da página renderizar — `sessaoDaPagina` não recebe isso
-  hoje.
-- `Navegacao` (componente do menu) esconde os itens fora da loja para esse
-  papel, mas isso é só cosmético: quem barra de verdade é o middleware, contra
-  URL digitada direto.
-- Cadastro do funcionário: tela em Configurações → "Balcão" → "Adicionar quem
-  atende", que cria `Usuario` + `Membro` com o papel novo, senha definida pelo
-  dono na hora (funcionário de loja troca de gente com frequência; convite por
-  e-mail é fricção que este fluxo não precisa).
+  `DEPENDENTE`, `CONVIDADO`.
+- Papel gravado no próprio JWT da sessão (login e cadastro) — `src/lib/acesso.ts`
+  (`rotaPermitida`, motor puro, testado) diz o que cada papel abre, e é a
+  mesma resposta usada tanto pelo `src/proxy.ts` (bloqueio de URL, sem tocar
+  banco) quanto pela `Navegacao` (esconde item do menu). Um só lugar decide;
+  os outros dois só perguntam.
+- `src/proxy.ts` — chama-se assim porque o Next 16 renomeou `middleware.ts` —
+  barra qualquer caminho fora de `/loja`, `/api/loja` e `/login` para
+  `FUNCIONARIO_LOJA`. MEI e DAS ficam de fora de propósito: é situação
+  tributária do dono, não operação de balcão.
+- Layout pula o redirect de onboarding (`/bem-vindo`) para esse papel — sem a
+  exceção, um lar sem onboarding feito entraria em loop (layout manda para
+  lá, o proxy barra e manda de volta).
+- Cadastro do funcionário: Configurações → "Quem atende o balcão". Dono
+  define a senha na hora (funcionário de loja troca de gente com frequência;
+  convite por e-mail seria fricção sem necessidade), API em
+  `/api/loja/funcionario`, bloqueada para quem já é `FUNCIONARIO_LOJA` —
+  ninguém cria acesso de dentro do próprio acesso restrito.
 
 **Fora desta fase:** permissão fina dentro da loja (esconder custo/margem do
 funcionário, por exemplo). Entra quando um lojista de verdade pedir.
 
 **Prova:** funcionário loga e vê só `/loja/*`; URL digitada direto para
 `/painel` ou `/dividas` redireciona sem erro de servidor; dono continua vendo
-tudo, sem mudança de comportamento para ele.
+tudo, sem mudança de comportamento para ele. 246 testes passando, `tsc`
+limpo, build de produção completo.
+
+**Pendência real:** a migration do enum novo precisa rodar contra Postgres de
+pé — `npx prisma migrate dev --name papel_funcionario_loja` — o ambiente que
+escreveu isto não tinha banco local para confirmar de ponta a ponta.
 
 ---
 
