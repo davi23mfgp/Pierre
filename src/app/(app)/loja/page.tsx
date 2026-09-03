@@ -43,7 +43,13 @@ interface Estado {
   produtos: Produto[]
   regras: RegraDeRecebimento[]
   caixa: Caixa | null
-  ultimasVendas: { id: string; numero: number; totalCentavos: number; criadoEm: string }[]
+  ultimasVendas: {
+    id: string
+    numero: number
+    totalCentavos: number
+    criadoEm: string
+    notaFiscal: { status: "PENDENTE" | "EMITIDA" | "REJEITADA" | "CANCELADA" } | null
+  }[]
   resumo: {
     vendas: number
     brutoCentavos: number
@@ -77,6 +83,8 @@ export default function Loja() {
   const [ocupado, setOcupado] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
+  const [notaEmOperacao, setNotaEmOperacao] = useState<string | null>(null)
+  const [notaErro, setNotaErro] = useState<string | null>(null)
 
   const carregar = useCallback(async () => {
     setDados(await buscar<Estado>("/api/loja"))
@@ -121,6 +129,19 @@ export default function Loja() {
       { descricao: avulso.descricao.trim(), quantidade: 1, precoUnitarioCentavos: paraCentavos(avulso.preco) },
     ])
     setAvulso({ descricao: "", preco: "" })
+  }
+
+  async function emitirNota(vendaId: string) {
+    setNotaEmOperacao(vendaId)
+    setNotaErro(null)
+    try {
+      await enviar(`/api/loja/vendas/${vendaId}/nota-fiscal`, {})
+      await carregar()
+    } catch (falha) {
+      setNotaErro(falha instanceof Error ? falha.message : "Não consegui emitir a nota.")
+    } finally {
+      setNotaEmOperacao(null)
+    }
   }
 
   async function fechar() {
@@ -377,14 +398,42 @@ export default function Loja() {
         ) : (
           <div className="divide-y divide-pauta">
             {dados.ultimasVendas.map((venda) => (
-              <div key={venda.id} className="flex items-center justify-between py-2.5 text-sm">
+              <div key={venda.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                 <span className="text-muted-fg">#{venda.numero}</span>
                 <span>{new Date(venda.criadoEm).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}</span>
                 <span>{formatarMoeda(venda.totalCentavos)}</span>
+
+                {venda.notaFiscal?.status === "EMITIDA" ? (
+                  <span className="rounded-full bg-positivo/10 px-2.5 py-1 text-[11px] text-positivo">
+                    nota emitida
+                  </span>
+                ) : venda.notaFiscal?.status === "CANCELADA" ? (
+                  <span className="rounded-full bg-muted-fg/10 px-2.5 py-1 text-[11px] text-muted-fg">
+                    nota cancelada
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => emitirNota(venda.id)}
+                    disabled={notaEmOperacao === venda.id}
+                    title={
+                      venda.notaFiscal?.status === "REJEITADA"
+                        ? "A tentativa anterior foi rejeitada. Corrija o que faltar e tente de novo."
+                        : undefined
+                    }
+                    className="rounded-full border border-pauta px-2.5 py-1 text-[11px] text-muted-fg hover:border-acao/40 disabled:opacity-50"
+                  >
+                    {notaEmOperacao === venda.id
+                      ? "emitindo…"
+                      : venda.notaFiscal?.status === "REJEITADA"
+                        ? "tentar de novo"
+                        : "emitir nota"}
+                  </button>
+                )}
               </div>
             ))}
           </div>
         )}
+        {notaErro && <p className="mt-3 text-[13px] text-negativo">{notaErro}</p>}
       </Cartao>
     </div>
   )

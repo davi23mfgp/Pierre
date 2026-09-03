@@ -133,8 +133,10 @@ Resumo técnico do que muda quando entrar:
 - Campos: status (`PENDENTE` | `EMITIDA` | `REJEITADA` | `CANCELADA`), chave de
   acesso, XML retornado (guardado, nunca regerado — é o documento fiscal de
   verdade), motivo quando rejeitada.
-- Botão "emitir nota" na venda já fechada, não obrigatório — nem todo MEI
-  precisa hoje (ver a exceção de São Paulo em `TINO-MEI.md`).
+- Botão "emitir nota" na venda já fechada (`/loja`, lista "Últimas vendas"),
+  não obrigatório — nem todo MEI precisa hoje (ver a exceção de São Paulo em
+  `TINO-MEI.md`). Rejeitada mostra "tentar de novo"; emitida não pode mais
+  ser reenviada por ali.
 - Reemissão manual quando a SEFAZ rejeitar. Sem retry automático: erro fiscal
   automático demais é dinheiro saindo sem o dono ver.
 - Cadastro que falta hoje e a nota exige: NCM por produto (`ProdutoLoja` não

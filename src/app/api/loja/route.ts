@@ -26,7 +26,7 @@ export const GET = comSessao(async (sessao) => {
       where: { lojaId: loja.id, cancelada: false },
       orderBy: { criadoEm: "desc" },
       take: 20,
-      include: { pagamentos: true, itens: true, cliente: true },
+      include: { pagamentos: true, itens: true, cliente: true, notaFiscal: { select: { status: true } } },
     }),
   ])
 
