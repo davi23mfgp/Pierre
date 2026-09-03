@@ -290,7 +290,7 @@ export default function Simulador() {
                     >
                       {comparacao?.entrada.dividas.map((divida) => (
                         <option key={divida.id} value={divida.id}>
-                          {divida.nome} — {formatarMoeda(divida.saldoCentavos)}
+                          {divida.nome} ({formatarMoeda(divida.saldoCentavos)})
                         </option>
                       ))}
                     </select>
@@ -379,7 +379,7 @@ export default function Simulador() {
               <Metrica
                 rotulo="Patrimônio em"
                 valor={formatarMoeda(cenario.patrimonioFinalCentavos)}
-                detalhe={`${meses} meses — saldo menos dívidas`}
+                detalhe={`${meses} meses (saldo menos dívidas)`}
                 tom={cenario.patrimonioFinalCentavos >= 0 ? "positivo" : "negativo"}
               />
               <Metrica

@@ -7,7 +7,7 @@ import { DIAS_DE_TESTE, PLANOS, descontoAnualBps } from "@/lib/planos"
 import { TinoMascote } from "@/components/tino-mascote"
 
 export const metadata: Metadata = {
-  title: "Tino — o contador que olha suas contas todo dia",
+  title: "Tino, o contador que olha suas contas todo dia",
   description:
     "Organize contas, dívidas e metas, e saiba o que fazer com o que sobra. Para pessoa física e para o MEI que atende no balcão.",
 }

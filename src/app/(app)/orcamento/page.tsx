@@ -248,7 +248,7 @@ export default function OrcamentoPagina() {
               <p className="mt-1 text-[11px] text-muted-fg">
                 {linha.estourou
                   ? `Passou ${formatarMoeda(-linha.restanteCentavos)} do limite.`
-                  : `Restam ${formatarMoeda(linha.restanteCentavos)} — ${linha.percentual}% usado.`}
+                  : `Restam ${formatarMoeda(linha.restanteCentavos)}. ${linha.percentual}% usado.`}
               </p>
             </div>
           ))}

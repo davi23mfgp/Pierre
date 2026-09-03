@@ -127,7 +127,7 @@ export default function Emprestimos() {
         <input
           value={titulo}
           onChange={(e) => setTitulo(e.target.value)}
-          placeholder="apelido da proposta (ex.: Itaú 24x) — para comparar depois"
+          placeholder="nome para lembrar essa proposta depois, ex.: Itaú 24x"
           className={cn(campo, "mt-2")}
         />
 
