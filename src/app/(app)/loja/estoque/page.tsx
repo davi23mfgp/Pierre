@@ -27,12 +27,26 @@ interface Linha {
   margem: { lucroCentavos: number | null; margemBps: number | null; markupBps: number | null }
 }
 
+interface Desempenho {
+  produtoId: string
+  descricao: string
+  saldo: number
+  quantidadeVendida: number
+  diasSemVender: number | null
+  nuncaVendeu: boolean
+}
+
 interface Resposta {
   prateleira: Linha[]
   acabando: number
   semSaldo: number
   semCusto: number
+  desempenho: Desempenho[]
 }
+
+// Mesma janela de trinta dias que já serve de referência para "o que vai
+// cair na conta" no balcão — reaproveitar o corte em vez de inventar outro.
+const DIAS_PARADO = 30
 
 const campo = "rounded-xl border border-pauta bg-background px-3 py-2 text-[13px] outline-none focus:border-positivo/50"
 
@@ -75,6 +89,12 @@ export default function Estoque() {
   }
 
   const prateleira = dados?.prateleira ?? []
+  const desempenho = dados?.desempenho ?? []
+  // Já vem ordenado do mais vendido para o menos — a rota devolve nessa ordem.
+  const maisVendidos = desempenho.filter((linha) => linha.quantidadeVendida > 0).slice(0, 5)
+  const parados = desempenho
+    .filter((linha) => linha.saldo > 0 && (linha.nuncaVendeu || (linha.diasSemVender ?? 0) >= DIAS_PARADO))
+    .sort((a, b) => (b.diasSemVender ?? Infinity) - (a.diasSemVender ?? Infinity))
 
   return (
     <div className="space-y-4">
@@ -234,6 +254,46 @@ export default function Estoque() {
           </div>
         )}
       </Cartao>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Cartao titulo="O que mais vende">
+          {maisVendidos.length === 0 ? (
+            <Vazio titulo="Nenhuma venda ainda" texto="Assim que vender pelo balcão, o ranking aparece aqui." />
+          ) : (
+            <ol className="divide-y divide-pauta text-sm">
+              {maisVendidos.map((linha, indice) => (
+                <li key={linha.produtoId} className="flex items-center justify-between py-2.5">
+                  <span className="flex items-center gap-2">
+                    <span className="numero text-[11px] text-muted-fg">{indice + 1}º</span>
+                    {linha.descricao}
+                  </span>
+                  <span className="numero text-right">{linha.quantidadeVendida} un.</span>
+                </li>
+              ))}
+            </ol>
+          )}
+        </Cartao>
+
+        <Cartao titulo="Parado na prateleira">
+          {parados.length === 0 ? (
+            <Vazio
+              titulo="Nada parado"
+              texto={`Todo produto com saldo vendeu há menos de ${DIAS_PARADO} dias.`}
+            />
+          ) : (
+            <ul className="divide-y divide-pauta text-sm">
+              {parados.map((linha) => (
+                <li key={linha.produtoId} className="flex items-center justify-between py-2.5">
+                  <span>{linha.descricao}</span>
+                  <span className="text-right text-[13px] text-atencao">
+                    {linha.nuncaVendeu ? "nunca vendeu" : `sem vender há ${linha.diasSemVender} dias`}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Cartao>
+      </div>
     </div>
   )
 }

@@ -3,16 +3,26 @@ import { comSessao, corpo, ok, ErroDeUso } from "@/lib/api"
 import { lojaDoLar } from "@/lib/loja/dados"
 import { situacaoDoProduto } from "@/lib/loja/estoque"
 import type { Movimento, TipoMovimento } from "@/lib/loja/estoque"
+import { desempenhoDosProdutos } from "@/lib/loja/desempenho"
+import type { VendaDoProduto } from "@/lib/loja/desempenho"
 
-/** Prateleira: saldo, custo e margem de cada produto. */
+/** Prateleira: saldo, custo, margem e o que mais/menos vende de cada produto. */
 export const GET = comSessao(async (sessao) => {
   const loja = await lojaDoLar(sessao.larId)
 
-  const produtos = await prisma.produtoLoja.findMany({
-    where: { lojaId: loja.id, ativo: true },
-    orderBy: { nome: "asc" },
-    include: { movimentos: { orderBy: { criadoEm: "asc" } } },
-  })
+  const [produtos, itensVendidos] = await Promise.all([
+    prisma.produtoLoja.findMany({
+      where: { lojaId: loja.id, ativo: true },
+      orderBy: { nome: "asc" },
+      include: { movimentos: { orderBy: { criadoEm: "asc" } } },
+    }),
+    // Venda cancelada não conta como saída de verdade — mesmo corte do
+    // financeiro em resumirLoja: não é isso que decide o que repor.
+    prisma.itemVenda.findMany({
+      where: { produtoId: { not: null }, venda: { lojaId: loja.id, cancelada: false } },
+      select: { produtoId: true, descricao: true, quantidade: true, venda: { select: { criadoEm: true } } },
+    }),
+  ])
 
   const prateleira = produtos.map((produto) => {
     const movimentos: Movimento[] = produto.movimentos.map((linha) => ({
@@ -30,12 +40,25 @@ export const GET = comSessao(async (sessao) => {
     }
   })
 
+  const vendasPorProduto: VendaDoProduto[] = itensVendidos.map((item) => ({
+    produtoId: item.produtoId as string,
+    descricao: item.descricao,
+    quantidade: item.quantidade,
+    criadoEm: item.venda.criadoEm,
+  }))
+
+  const desempenho = desempenhoDosProdutos(
+    vendasPorProduto,
+    prateleira.map((linha) => ({ produtoId: linha.id, descricao: linha.nome, saldo: linha.saldo })),
+  )
+
   return ok({
     prateleira,
     // Contagens prontas para a tela não ter de recalcular e divergir.
     acabando: prateleira.filter((linha) => linha.acabando).length,
     semSaldo: prateleira.filter((linha) => linha.semSaldo).length,
     semCusto: prateleira.filter((linha) => linha.custoMedioCentavos === null).length,
+    desempenho,
   })
 })
 

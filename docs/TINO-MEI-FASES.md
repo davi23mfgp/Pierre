@@ -102,16 +102,24 @@ custo de mercadoria vendida menos despesa.
 
 ---
 
-## Fase 5 — O que a loja rende
+## Fase 5 — O que a loja rende ✅
 
-- venda por dia, por hora e por forma de pagamento
-- produto que mais sai e produto parado no estoque
-- quanto cai na conta nos próximos 30 dias, somando o que a maquininha deve
-- limite do MEI: usado, disponível, e em que mês estoura no ritmo atual
-  (reaproveita `avaliarMei`, que já existe e está testado)
+- venda por dia e por forma de pagamento — `resumirLoja`, na tela do Balcão
+- quanto cai na conta nos próximos 30 dias, somando o que a maquininha deve —
+  `aCairPorDia`, mesma tela
+- produto que mais sai e produto parado no estoque — `desempenhoDosProdutos`,
+  na Prateleira; "parado" usa os mesmos 30 dias do item anterior como
+  referência, documentado no código, em vez de um corte novo
+- limite do MEI: usado, disponível, e em que mês estoura no ritmo atual —
+  `avaliarMei`, na tela MEI (a venda da loja já alimenta a competência sozinha,
+  por `somarNoFaturamentoMei`)
 
 **Prova:** todo indicador com faixa de referência, como manda a regra 4 do
 `CLAUDE.md`. Indicador sem base real não recebe nota.
+
+Por hora não entrou: a venda de balcão grava a data completa, mas nenhuma tela
+ainda agrupa por hora do dia. Fica para quando um lojista de verdade pedir —
+é consulta nova em cima de dado que já existe, não modelagem.
 
 ---
 
