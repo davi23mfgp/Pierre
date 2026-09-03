@@ -46,4 +46,15 @@ describe("rota permitida por papel", () => {
     assert.equal(rotaPermitida("FUNCIONARIO_LOJA", "/mei"), false)
     assert.equal(rotaPermitida("FUNCIONARIO_LOJA", "/api/mei"), false)
   })
+
+  it("finanças da loja (DRE/lucro) fica fora mesmo vivendo sob /loja", () => {
+    assert.equal(rotaPermitida("FUNCIONARIO_LOJA", "/loja/financas"), false)
+    assert.equal(rotaPermitida("FUNCIONARIO_LOJA", "/api/loja/demonstrativo"), false)
+    // Continua podendo abrir o resto da loja normalmente.
+    assert.equal(rotaPermitida("FUNCIONARIO_LOJA", "/loja/estoque"), true)
+  })
+
+  it("gerenciar quem tem acesso também fica fora — funcionário não cria outro funcionário", () => {
+    assert.equal(rotaPermitida("FUNCIONARIO_LOJA", "/api/loja/funcionario"), false)
+  })
 })

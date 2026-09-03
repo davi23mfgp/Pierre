@@ -23,6 +23,7 @@ import {
   Tags,
   Target,
   Upload,
+  Wallet,
   Wand2,
   X,
   Zap,
@@ -97,6 +98,7 @@ const LOJA: Item[] = [
   { rota: "/loja/estoque", rotulo: "Prateleira", Icone: Package },
   { rota: "/loja/fiado", rotulo: "Fiado", Icone: NotebookPen },
   { rota: "/loja/contas", rotulo: "Contas a pagar", Icone: Receipt },
+  { rota: "/loja/financas", rotulo: "Finanças da loja", Icone: Wallet },
   { rota: "/mei", rotulo: "MEI e DAS", Icone: Store },
 ]
 
@@ -124,9 +126,15 @@ const NO_POLEGAR_COM_LOJA: Item[] = [
   { rota: "/loja/estoque", rotulo: "Prateleira", Icone: Package },
 ]
 
+/// Fora do funcionário: MEI/DAS (tributário do dono) e Finanças da loja
+/// (lucro/DRE) — mesmo corte de `src/lib/acesso.ts`, que é quem barra de
+/// verdade por URL. Aqui é só o menu não oferecer o que a URL já recusaria.
+const ROTAS_FORA_DO_FUNCIONARIO = ["/mei", "/loja/financas"]
+const LOJA_PARA_FUNCIONARIO = LOJA.filter((item) => !ROTAS_FORA_DO_FUNCIONARIO.includes(item.rota))
+
 /// Funcionário não tem "Início" (é o painel pessoal do dono) nem "Anotar" (é
 /// captura de gasto pessoal) — as quatro telas de loja cabem certinho no lugar.
-const NO_POLEGAR_FUNCIONARIO: Item[] = LOJA.filter((item) => item.rota !== "/mei")
+const NO_POLEGAR_FUNCIONARIO: Item[] = LOJA_PARA_FUNCIONARIO
 
 const CHAVE_RECOLHIDO = "tino:menu-recolhido"
 
@@ -308,7 +316,7 @@ export function Navegacao({ mei, apenasLoja }: { mei?: boolean; apenasLoja?: boo
   const grupos: Grupo[] = useMemo(
     () =>
       apenasLoja
-        ? [{ titulo: "Balcão", itens: LOJA.filter((item) => item.rota !== "/mei") }]
+        ? [{ titulo: "Balcão", itens: LOJA_PARA_FUNCIONARIO }]
         : [
             { titulo: "Dia a dia", itens: DIARIO },
             { titulo: "Decidir", itens: PLANEJAMENTO },

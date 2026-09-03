@@ -18,8 +18,17 @@ export type PapelDeAcesso = "TITULAR" | "CONJUGE" | "DEPENDENTE" | "CONVIDADO" |
 
 const LIBERADO_PARA_FUNCIONARIO = ["/loja", "/api/loja", "/login", "/api/auth/logout"]
 
+/// Vive sob "/loja" mas é resultado/lucro do negócio, não operação de balcão —
+/// checado antes do prefixo geral, senão "começa com /loja" liberaria sozinho.
+const BLOQUEADO_MESMO_NA_LOJA = ["/loja/financas", "/api/loja/demonstrativo", "/api/loja/funcionario"]
+
+function combinaAlgumPrefixo(caminho: string, prefixos: string[]): boolean {
+  return prefixos.some((prefixo) => caminho === prefixo || caminho.startsWith(`${prefixo}/`))
+}
+
 export function rotaPermitida(papel: PapelDeAcesso, caminho: string): boolean {
   if (papel !== "FUNCIONARIO_LOJA") return true
+  if (combinaAlgumPrefixo(caminho, BLOQUEADO_MESMO_NA_LOJA)) return false
 
-  return LIBERADO_PARA_FUNCIONARIO.some((prefixo) => caminho === prefixo || caminho.startsWith(`${prefixo}/`))
+  return combinaAlgumPrefixo(caminho, LIBERADO_PARA_FUNCIONARIO)
 }

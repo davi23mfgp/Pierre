@@ -187,31 +187,41 @@ escreveu isto não tinha banco local para confirmar de ponta a ponta.
 
 ---
 
-## Fase 8 — A empresa, separada do pessoal
+## Fase 8 — A empresa, separada do pessoal ✅ (parcial — ver ressalva)
 
-Motivação em `TINO-MEI.md`. Cobre as duas partes do pedido do Davi que cabem
-dentro do MEI como está (DRE/balanço e conta PJ) — a terceira (sócio,
-pró-labore, distribuição de lucro) está descrita ali como pendência de
-decisão, não como fase.
+Motivação em `TINO-MEI.md`. Cobre a parte do pedido do Davi que tinha escopo
+claro (DRE) — conciliação de conta PJ e a terceira parte (sócio, pró-labore,
+distribuição de lucro) continuam como pendência de decisão, não como fase.
 
-- **DRE e balanço só da empresa.** Hoje `/analise` mistura pessoal e loja no
-  mesmo parecer, porque os dois vivem no mesmo `Lar`. A fatia técnica é
-  filtrar `diagnostico.ts` por origem (`Conta.tipo === "PJ_MEI"` já existe no
-  enum de conta) em vez de modelar uma segunda "empresa" — menos schema novo,
-  mesmo resultado. Tela nova: `/loja/financas`, no espírito do menu "Finanças"
-  do Olist (Balancete, DRE, Fluxo de Caixa, Contas a Pagar, Contas a Receber
-  como abas de relatório do mesmo lugar, reaproveitando `resumirLoja`,
-  `aCairPorDia` e as contas da Fase 4).
-- **Conta PJ com conciliação própria.** `Conta` já tem o tipo PJ do MEI; falta
-  só permitir importar extrato (`src/lib/importar/`, que já lê OFX/CSV/PDF)
-  filtrando para essa conta específica, sem misturar com o extrato pessoal do
-  dono na mesma tela.
+- **DRE só da empresa**, em `/loja/financas` + `/api/loja/demonstrativo`:
+  receita líquida (`resumirLoja`, Fase 5), custo da mercadoria vendida
+  (`custoDaMercadoriaVendida`, Fase 2, pelo custo médio atual do produto —
+  mesma referência que a Prateleira já usa na margem, não o custo exato do dia
+  da venda) e despesa (`ContaDaLoja` pagas no período, Fase 4). Motor puro
+  `demonstrativoDaLoja` testado (4 testes).
+- **Decisão tomada no caminho, revisando o plano original:** não veio de um
+  filtro em `diagnostico.ts` por `Conta.tipo === "PJ_MEI"` como este documento
+  previa antes de codar. `demonstrativoDaLoja` nunca lê `Conta` nem
+  `Transacao` — é construído só a partir dos modelos da loja, então não existe
+  número pessoal para vazar, em vez de existir e precisar ser filtrado. Mais
+  simples e com uma garantia mais forte que a do plano original.
+- **Conta PJ com conciliação:** `Conta.tipo = PJ_MEI` já existe, e `/importar`
+  já deixa escolher a conta de destino — logo um extrato PJ já entra separado
+  do pessoal, na conta certa, sem código novo.
 
-**Prova:** demonstrativo da empresa bate com a soma das vendas líquidas da
-loja menos custo de mercadoria vendida menos despesa da loja (mesma prova da
-Fase 4), sem nenhum número da vida pessoal do dono dentro. Extrato da conta PJ
-importado não aparece em `/transacoes` (tela pessoal) nem entra no cálculo do
-painel pessoal.
+**O que a "conciliação" pedida ainda não tem, e por quê parou aqui:**
+conciliação de verdade é casar o que caiu no extrato do banco com o que
+`aCairPorDia` (Fase 5) previu — não só guardar o extrato na conta certa, que
+já funciona. Isso é bater valor e data contra a previsão e sinalizar
+divergência, uma tela e uma regra de casamento que este documento ainda não
+tem definidas. Não dá pra codar sem saber, por exemplo, o que fazer quando o
+valor bate mas a data não, ou quando duas vendas do mesmo dia têm o mesmo
+valor — perguntas de produto, não de banco de dados.
+
+**Prova do que está pronto:** demonstrativo bate com a soma das vendas
+líquidas da loja menos CMV menos despesa da loja, sem nenhum número da vida
+pessoal do dono dentro — garantido pela fonte de dados, não por um filtro.
+252 testes passando, `tsc` limpo, build de produção completo.
 
 ---
 
