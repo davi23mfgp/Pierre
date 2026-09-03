@@ -125,11 +125,88 @@ ainda agrupa por hora do dia. Fica para quando um lojista de verdade pedir —
 
 ## Fase 6 — Nota fiscal
 
-Último de propósito. Depende de certificado digital e de regra municipal, e a
-maior parte da venda de balcão do MEI não exige nota para o consumidor.
+Escopo e pesquisa de mercado em `TINO-MEI.md`, seção "Extensão de 03/09/2026".
+Resumo técnico do que muda quando entrar:
 
-Quando chegar, é integração com emissor terceiro. Escrever emissor de NFC-e do
-zero é um projeto inteiro, não uma fase.
+- Modelo novo, `NotaFiscalVenda`, preso a `VendaLoja` (uma venda pode ter nota
+  emitida depois, não só na hora — SEFAZ cai, contingência existe).
+- Campos: status (`PENDENTE` | `EMITIDA` | `REJEITADA` | `CANCELADA`), chave de
+  acesso, XML retornado (guardado, nunca regerado — é o documento fiscal de
+  verdade), motivo quando rejeitada.
+- Botão "emitir nota" na venda já fechada, não obrigatório — nem todo MEI
+  precisa hoje (ver a exceção de São Paulo em `TINO-MEI.md`).
+- Reemissão manual quando a SEFAZ rejeitar. Sem retry automático: erro fiscal
+  automático demais é dinheiro saindo sem o dono ver.
+- Cadastro que falta hoje e a nota exige: NCM por produto (`ProdutoLoja` não
+  tem), inscrição estadual da loja, tipo de certificado.
+
+**Continua fora até o Davi decidir provedor e preço:** a chamada de API em si.
+Escrever o modelo e a tela sem a chamada real é possível e não trava em nada —
+plugar o provedor depois é troca de uma função, não redesenho.
+
+**Prova:** venda antiga sem nota continua funcionando normalmente; venda nova
+pode ficar com nota `PENDENTE` indefinidamente sem quebrar nenhum relatório.
+
+---
+
+## Fase 7 — Login por papel: dono e funcionário da loja
+
+Motivação e decisão em `TINO-MEI.md`, seção "Extensão de 03/09/2026".
+
+- `PapelMembro` ganha `FUNCIONARIO_LOJA`, ao lado de `TITULAR`, `CONJUGE`,
+  `DEPENDENTE`, `CONVIDADO`. Migration de banco simples (novo valor de enum),
+  mas precisa rodar contra um Postgres de pé — **fica para o Davi**
+  (`npx prisma migrate dev --name papel_funcionario_loja`), o ambiente que
+  gerou este documento não tinha banco local para testar de verdade.
+- Restrição de rota por `middleware.ts` na raiz do projeto (novo arquivo):
+  lê o papel do token (já vem no JWT da sessão) e barra qualquer caminho fora
+  de `/loja`, `/api/loja` e `/api/auth/logout` para quem for
+  `FUNCIONARIO_LOJA`. Escolhido middleware, e não um `if` dentro de
+  `sessaoDaPagina`, porque só o middleware do Next sabe o caminho da
+  requisição antes da página renderizar — `sessaoDaPagina` não recebe isso
+  hoje.
+- `Navegacao` (componente do menu) esconde os itens fora da loja para esse
+  papel, mas isso é só cosmético: quem barra de verdade é o middleware, contra
+  URL digitada direto.
+- Cadastro do funcionário: tela em Configurações → "Balcão" → "Adicionar quem
+  atende", que cria `Usuario` + `Membro` com o papel novo, senha definida pelo
+  dono na hora (funcionário de loja troca de gente com frequência; convite por
+  e-mail é fricção que este fluxo não precisa).
+
+**Fora desta fase:** permissão fina dentro da loja (esconder custo/margem do
+funcionário, por exemplo). Entra quando um lojista de verdade pedir.
+
+**Prova:** funcionário loga e vê só `/loja/*`; URL digitada direto para
+`/painel` ou `/dividas` redireciona sem erro de servidor; dono continua vendo
+tudo, sem mudança de comportamento para ele.
+
+---
+
+## Fase 8 — A empresa, separada do pessoal
+
+Motivação em `TINO-MEI.md`. Cobre as duas partes do pedido do Davi que cabem
+dentro do MEI como está (DRE/balanço e conta PJ) — a terceira (sócio,
+pró-labore, distribuição de lucro) está descrita ali como pendência de
+decisão, não como fase.
+
+- **DRE e balanço só da empresa.** Hoje `/analise` mistura pessoal e loja no
+  mesmo parecer, porque os dois vivem no mesmo `Lar`. A fatia técnica é
+  filtrar `diagnostico.ts` por origem (`Conta.tipo === "PJ_MEI"` já existe no
+  enum de conta) em vez de modelar uma segunda "empresa" — menos schema novo,
+  mesmo resultado. Tela nova: `/loja/financas`, no espírito do menu "Finanças"
+  do Olist (Balancete, DRE, Fluxo de Caixa, Contas a Pagar, Contas a Receber
+  como abas de relatório do mesmo lugar, reaproveitando `resumirLoja`,
+  `aCairPorDia` e as contas da Fase 4).
+- **Conta PJ com conciliação própria.** `Conta` já tem o tipo PJ do MEI; falta
+  só permitir importar extrato (`src/lib/importar/`, que já lê OFX/CSV/PDF)
+  filtrando para essa conta específica, sem misturar com o extrato pessoal do
+  dono na mesma tela.
+
+**Prova:** demonstrativo da empresa bate com a soma das vendas líquidas da
+loja menos custo de mercadoria vendida menos despesa da loja (mesma prova da
+Fase 4), sem nenhum número da vida pessoal do dono dentro. Extrato da conta PJ
+importado não aparece em `/transacoes` (tela pessoal) nem entra no cálculo do
+painel pessoal.
 
 ---
 

@@ -119,3 +119,77 @@ próprio. Mesma base de código no que ele não vê — o motor financeiro em
 centavos, a autenticação, os componentes de tela e o cálculo do limite do MEI
 já existem e estão testados. Manter dois repositórios seria pagar duas vezes
 pela mesma manutenção sem entregar nada a mais.
+
+## Extensão de 03/09/2026: acesso por papel, nota fiscal de verdade, e a empresa fora do MEI
+
+Três pedidos do Davi, na mesma conversa. Os três pesam mais como decisão de
+negócio do que como código — por isso entram aqui antes de qualquer linha
+escrita, do jeito que este documento já pede para o resto.
+
+### Login separado para o funcionário da loja
+
+Decidido com o Davi: não são duas contas de verdade. É um **papel de acesso**
+dentro do mesmo lar — o dono continua com um usuário só, e pode criar um
+segundo login (para quem atende o balcão) que só entra em `/loja/*`. Tentando
+abrir uma tela pessoal (painel, dívidas, cartões...), é barrado.
+
+Fica de fora desta entrada: permissão fina dentro da própria loja (por
+exemplo, funcionário não ver o custo do produto, só o preço de venda). Entra
+quando um lojista de verdade pedir. Detalhe técnico em `TINO-MEI-FASES.md`,
+Fase 7.
+
+### Nota fiscal: dados reais, não suposição
+
+Pesquisado em 03/09/2026:
+
+- É **NFC-e** (nota de venda a consumidor, modelo 65), não NFS-e (nota de
+  serviço) — o Tino.mei já é só para quem vende produto, não presta serviço.
+- Hoje o MEI é **dispensado** de emitir NFC-e na venda para pessoa física, na
+  maioria dos estados. **Exceção: São Paulo passou a exigir desde janeiro de
+  2026.** A partir de **2027**, com a reforma tributária, vira obrigatório
+  para todo MEI de varejo, em qualquer estado.
+- Pré-requisito que o Tino não resolve: **certificado digital e-CNPJ A1** e
+  inscrição na SEFAZ do estado do lojista, além de NCM cadastrado por produto.
+  Sem isso nenhuma API emite nada — é o lojista que providencia.
+- Provedores cotados: Focus NFe, eNotas e WebmaniaBR cobram **por nota
+  emitida** (R$ 0,15–0,50/nota) — é o formato que cabe dentro do preço de quem
+  vende pouco. NFe.io cobra plano mensal fixo (a partir de R$ 190/mês por 250
+  notas) — só compensa em volume que o MEI de balcão não tem.
+- Referência que o Davi trouxe (Olist): venda emissão como **add-on medido** —
+  o plano inclui uma cota, e "+200 emissões" custa R$ 120/mês à parte. É o
+  padrão de mercado para "já incluso no preço".
+
+**O que este documento continua não decidindo:** qual provedor usar, quanto
+cobrar a mais no plano do Tino para cobrir o custo por nota mais margem, e se
+o certificado digital é do lojista ou centralizado — decisão de preço e de
+risco, do Davi, antes de qualquer integração. Detalhe técnico do que muda
+quando entrar em `TINO-MEI-FASES.md`, Fase 6.
+
+### A empresa fora do MEI
+
+O Davi pediu três coisas juntas: DRE e balanço da empresa separado do
+pessoal, conta PJ com conciliação própria, e **sócio, pró-labore e
+distribuição de lucro**.
+
+As duas primeiras cabem dentro do MEI como está modelado hoje — são só
+modelagem nova (Fase 8 em `TINO-MEI-FASES.md`), inspirada no menu "Finanças"
+do Olist (Balancete, DRE, Fluxo de Caixa, Contas a Pagar/Receber como
+relatórios de um mesmo lugar).
+
+A terceira **não é MEI**. Por definição legal, MEI é empreendedor individual —
+não tem sócio. Sócio, pró-labore de mais de uma pessoa e distribuição de lucro
+são coisa de ME/LTDA, que este documento já tinha marcado como fora de escopo
+lá em cima: "Não é loja com CNPJ acima do MEI, que precisa [...] de regime
+tributário mais complicado."
+
+Duas leituras possíveis, e só o Davi decide qual é a certa — nada foi codado
+para esta parte até ele responder:
+
+1. O pedido é sobre o **futuro**: não fechar a porta para quando (se) a loja
+   crescer e sair do MEI. O trabalho de agora seria só não gravar nada que
+   pressuponha "só existe um dono" de um jeito caro de desfazer depois.
+2. O pedido é para **agora**: já existe ou vai existir sócio numa loja de
+   cliente real. Nesse caso o Tino.mei muda de público — deixa de ser só MEI e
+   passa a atender também ME/LTDA de comércio, o que muda tributação (Simples
+   Nacional com mais de uma faixa, distribuição de lucro isenta até o limite
+   legal, pró-labore com INSS) e é produto novo, não extensão do que existe.
