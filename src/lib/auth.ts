@@ -17,6 +17,11 @@ export interface Sessao {
   nome: string
   larId: string
   membroId: string | null
+  /// Vai no próprio token para o middleware decidir rota sem consultar banco
+  /// (roda no edge). Todo usuário de verdade nasce com membro e papel — este
+  /// campo só cai no default "TITULAR" num estado que a criação de conta não
+  /// deveria permitir, e é o default que não tranca ninguém fora por engano.
+  papel: string
 }
 
 export async function criarToken(sessao: Sessao): Promise<string> {

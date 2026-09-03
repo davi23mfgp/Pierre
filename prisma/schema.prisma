@@ -32,6 +32,9 @@ enum PapelMembro {
   CONJUGE
   DEPENDENTE
   CONVIDADO // vê, não edita (ex.: contador externo)
+  /// Login próprio, mas só abre /loja — ver src/lib/acesso.ts e
+  /// docs/TINO-MEI.md, Fase 7. Não é dono nem enxerga a vida pessoal do lar.
+  FUNCIONARIO_LOJA
 }
 
 enum TipoConta {

@@ -7,7 +7,7 @@ export async function POST(requisicao: Request) {
   const email = exigir(dados.email, "Informe o e-mail").trim().toLowerCase()
   const senha = exigir(dados.senha, "Informe a senha")
 
-  const usuario = await prisma.usuario.findUnique({ where: { email } })
+  const usuario = await prisma.usuario.findUnique({ where: { email }, include: { membro: true } })
 
   // Mesma mensagem para e-mail inexistente e senha errada: respostas diferentes
   // permitiriam descobrir quais e-mails têm conta no sistema.
@@ -24,6 +24,7 @@ export async function POST(requisicao: Request) {
       nome: usuario.nome,
       larId: usuario.larId,
       membroId: usuario.membroId,
+      papel: usuario.membro?.papel ?? "TITULAR",
     }),
   )
 

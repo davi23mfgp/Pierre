@@ -45,7 +45,7 @@ export async function POST(requisicao: Request) {
   await semearLar(lar.id, { modoMei: dados.modoMei ?? false })
 
   await gravarCookieSessao(
-    await criarToken({ usuarioId: usuario.id, email, nome, larId: lar.id, membroId: membro.id }),
+    await criarToken({ usuarioId: usuario.id, email, nome, larId: lar.id, membroId: membro.id, papel: membro.papel }),
   )
 
   return ok({ id: usuario.id, nome, email, larId: lar.id }, 201)

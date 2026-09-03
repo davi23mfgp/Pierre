@@ -26,6 +26,13 @@ interface Conexao {
   diasParaExpirar: number | null
 }
 
+interface Funcionario {
+  id: string
+  nome: string
+  email: string
+  ultimoLogin: string | null
+}
+
 const TIPOS_CONTA = [
   { valor: "CORRENTE", rotulo: "Conta corrente" },
   { valor: "POUPANCA", rotulo: "Poupança" },
@@ -44,6 +51,9 @@ export default function Configuracoes() {
   const [nova, setNova] = useState({ nome: "", tipo: "CORRENTE", instituicao: "", saldo: "", limite: "", venc: "" })
   const [mensagem, setMensagem] = useState<string | null>(null)
   const [temLoja, setTemLoja] = useState<boolean | null>(null)
+  const [funcionarios, setFuncionarios] = useState<Funcionario[]>([])
+  const [novoFuncionario, setNovoFuncionario] = useState({ nome: "", email: "", senha: "" })
+  const [erroFuncionario, setErroFuncionario] = useState<string | null>(null)
 
   async function recarregar() {
     const [lista, of, mei] = await Promise.all([
@@ -54,6 +64,11 @@ export default function Configuracoes() {
     setContas(lista)
     setOpenFinance(of)
     setTemLoja(mei.ativo)
+
+    if (mei.ativo) {
+      const { funcionarios } = await buscar<{ funcionarios: Funcionario[] }>("/api/loja/funcionario")
+      setFuncionarios(funcionarios)
+    }
   }
 
   useEffect(() => {
@@ -115,6 +130,23 @@ export default function Configuracoes() {
     router.refresh()
   }
 
+  async function criarFuncionario(evento: React.FormEvent) {
+    evento.preventDefault()
+    setErroFuncionario(null)
+    try {
+      await enviar("/api/loja/funcionario", novoFuncionario)
+      setNovoFuncionario({ nome: "", email: "", senha: "" })
+      await recarregar()
+    } catch (erro) {
+      setErroFuncionario(erro instanceof Error ? erro.message : "Não consegui criar o acesso.")
+    }
+  }
+
+  async function removerFuncionario(id: string) {
+    await buscar(`/api/loja/funcionario/${id}`, { method: "DELETE" })
+    await recarregar()
+  }
+
   async function refazerConversa() {
     await buscar("/api/onboarding", { method: "DELETE" })
     router.push("/bem-vindo")
@@ -143,6 +175,68 @@ export default function Configuracoes() {
             : "Ligar acrescenta venda no balcão, controle de estoque e acompanhamento do limite anual do MEI."}
         </p>
       </Cartao>
+
+      {temLoja && (
+        <Cartao titulo="Quem atende o balcão">
+          <p className="text-[13px] leading-relaxed text-muted-fg">
+            Login separado do seu: entra só no Balcão, na Prateleira, no Fiado e nas Contas a pagar da loja. Não vê
+            conta pessoal, dívida nem o limite do MEI.
+          </p>
+
+          <div className="mt-3 divide-y divide-pauta">
+            {funcionarios.map((funcionario) => (
+              <div key={funcionario.id} className="flex items-center justify-between py-2.5">
+                <div>
+                  <p className="text-sm">{funcionario.nome}</p>
+                  <p className="text-[12px] text-muted-fg">
+                    {funcionario.email}
+                    {funcionario.ultimoLogin
+                      ? ` · último acesso ${new Date(funcionario.ultimoLogin).toLocaleDateString("pt-BR")}`
+                      : " · nunca entrou"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => removerFuncionario(funcionario.id)}
+                  className="rounded-full border border-pauta px-3 py-1.5 text-xs hover:border-negativo/40"
+                >
+                  remover acesso
+                </button>
+              </div>
+            ))}
+            {funcionarios.length === 0 && <Vazio titulo="Ninguém com acesso separado ainda" />}
+          </div>
+
+          <form onSubmit={criarFuncionario} className="mt-4 grid gap-2 sm:grid-cols-3">
+            <input
+              value={novoFuncionario.nome}
+              onChange={(evento) => setNovoFuncionario({ ...novoFuncionario, nome: evento.target.value })}
+              placeholder="nome"
+              required
+              className="rounded-2xl border border-pauta bg-background px-4 py-2.5 text-sm"
+            />
+            <input
+              type="email"
+              value={novoFuncionario.email}
+              onChange={(evento) => setNovoFuncionario({ ...novoFuncionario, email: evento.target.value })}
+              placeholder="e-mail de acesso"
+              required
+              className="rounded-2xl border border-pauta bg-background px-4 py-2.5 text-sm"
+            />
+            <input
+              type="password"
+              value={novoFuncionario.senha}
+              onChange={(evento) => setNovoFuncionario({ ...novoFuncionario, senha: evento.target.value })}
+              placeholder="senha (mín. 8 caracteres)"
+              required
+              className="rounded-2xl border border-pauta bg-background px-4 py-2.5 text-sm"
+            />
+            <button className="rounded-2xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground sm:col-span-3">
+              Criar acesso
+            </button>
+          </form>
+          {erroFuncionario && <p className="mt-2 text-[13px] text-negativo">{erroFuncionario}</p>}
+        </Cartao>
+      )}
 
       <Cartao titulo="Conversa inicial">
         <p className="text-[13px] leading-relaxed text-muted-fg">

@@ -124,6 +124,10 @@ const NO_POLEGAR_COM_LOJA: Item[] = [
   { rota: "/loja/estoque", rotulo: "Prateleira", Icone: Package },
 ]
 
+/// Funcionário não tem "Início" (é o painel pessoal do dono) nem "Anotar" (é
+/// captura de gasto pessoal) — as quatro telas de loja cabem certinho no lugar.
+const NO_POLEGAR_FUNCIONARIO: Item[] = LOJA.filter((item) => item.rota !== "/mei")
+
 const CHAVE_RECOLHIDO = "tino:menu-recolhido"
 
 /**
@@ -257,7 +261,7 @@ function Grupos({
   )
 }
 
-export function Navegacao({ mei }: { mei?: boolean }) {
+export function Navegacao({ mei, apenasLoja }: { mei?: boolean; apenasLoja?: boolean }) {
   const caminho = usePathname()
   const [recolhido, setRecolhido] = useState(false)
   const [gaveta, setGaveta] = useState(false)
@@ -298,16 +302,22 @@ export function Navegacao({ mei }: { mei?: boolean }) {
     setGaveta(false)
   }, [caminho])
 
+  // Funcionário da loja não vê os outros grupos nem no menu — coerente com o
+  // que `middleware.ts` já barra por URL. Esconder só o que a URL também
+  // barra evita um menu que promete tela que a pessoa não consegue abrir.
   const grupos: Grupo[] = useMemo(
-    () => [
-      { titulo: "Dia a dia", itens: DIARIO },
-      { titulo: "Decidir", itens: PLANEJAMENTO },
-      // A loja só aparece para quem é MEI: quem usa o Tino para as contas de
-      // casa não tem balcão nem prateleira.
-      ...(mei ? [{ titulo: "Minha loja", itens: LOJA }] : []),
-      { titulo: "Ferramentas", itens: FERRAMENTAS },
-    ],
-    [mei],
+    () =>
+      apenasLoja
+        ? [{ titulo: "Balcão", itens: LOJA.filter((item) => item.rota !== "/mei") }]
+        : [
+            { titulo: "Dia a dia", itens: DIARIO },
+            { titulo: "Decidir", itens: PLANEJAMENTO },
+            // A loja só aparece para quem é MEI: quem usa o Tino para as
+            // contas de casa não tem balcão nem prateleira.
+            ...(mei ? [{ titulo: "Minha loja", itens: LOJA }] : []),
+            { titulo: "Ferramentas", itens: FERRAMENTAS },
+          ],
+    [mei, apenasLoja],
   )
 
   return (
@@ -377,7 +387,7 @@ export function Navegacao({ mei }: { mei?: boolean }) {
       {/* ── Barra do polegar ── */}
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-pauta bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
         <div className="flex items-stretch justify-around">
-          {(mei ? NO_POLEGAR_COM_LOJA : NO_POLEGAR).map((item) => {
+          {(apenasLoja ? NO_POLEGAR_FUNCIONARIO : mei ? NO_POLEGAR_COM_LOJA : NO_POLEGAR).map((item) => {
             const ativo = estaAtivo(caminho, item.rota)
             const { Icone } = item
             return (
