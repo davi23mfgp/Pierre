@@ -20,6 +20,9 @@
     "test:watch": "node --import tsx --test --watch \"testes/*.test.ts\"",
     "test:fumaca": "node scripts/fumaca.mjs"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",
     "@prisma/client": "^5.14.0",
