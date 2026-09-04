@@ -116,3 +116,41 @@ catálogo dele** antes de gerar a nota. O Focus NFe recebe a venda solta. Ou
 seja: usar o Olist no Tino.mei significa manter produto e cliente sincronizados
 com o Olist de cada lojista, um Olist conectado por loja. Está documentado em
 `docs/TINO-MEI.md`, com a troca na mesa, para você escolher.
+
+---
+
+## Adendo de 04/09/2026
+
+O dia foi quase todo no Fixa (redesenho com shadcn e linguagem Apple — ver o
+relatório de lá). No Tino só houve preparo de ambiente:
+
+- Subi um Postgres descartável em Docker para poder rodar o app localmente:
+
+  ```bash
+  docker run -d --name tino-pg -e POSTGRES_PASSWORD=tino_local_dev \
+    -e POSTGRES_DB=tino -p 5434:5432 postgres:16
+  ```
+
+  Com um `.env` local (ignorado pelo git) apontando `DATABASE_URL` e
+  `DIRECT_URL` para ele, mais `JWT_SECRET` de desenvolvimento. O schema exige
+  as duas URLs porque a Neon separa a com pool da direta; no Postgres local as
+  duas são a mesma coisa.
+
+- `npx prisma migrate deploy` aplicou tudo, incluindo as migrations das fases
+  6, 7 e 8 que estavam pendentes. **Isso valeu só para o banco local** — em
+  produção elas continuam por rodar.
+
+- `npm run dev` sobe. Mas **`prisma/seed.ts` não existe no repositório**,
+  embora o `package.json` o declare em `prisma.seed`. O banco fica vazio, e as
+  telas caem nos estados de "sem dado".
+
+### O que o Tino precisa, na ordem
+
+1. **Criar o `prisma/seed.ts`** ou tirar a declaração do `package.json`. Hoje
+   `npx prisma db seed` falha com "Cannot find module".
+2. **Levantamento visual**: o Tino está bem à frente de onde o Fixa estava —
+   23 componentes shadcn em `src/components/ui/`, Radix completo, Tailwind 3, e
+   24 das 32 telas já importam de `@/components/ui/`. Falta o `components.json`
+   (só a CLI precisa dele) e portar a linguagem Apple do flowdeal, que é o que
+   o dono pediu.
+3. Os itens **(você)** que já estavam na lista de 03/09 seguem de pé.
