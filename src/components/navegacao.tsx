@@ -23,6 +23,7 @@ import {
   Tags,
   Target,
   Upload,
+  Wallet,
   Wand2,
   X,
   Zap,
@@ -90,6 +91,7 @@ const FERRAMENTAS: Item[] = [
   { rota: "/recorrencias", rotulo: "Contas fixas", Icone: Repeat },
   { rota: "/regras", rotulo: "Regras", Icone: Tags },
   { rota: "/importar", rotulo: "Importar", Icone: Upload },
+  { rota: "/assinatura", rotulo: "Assinatura", Icone: Wallet },
 ]
 
 const LOJA: Item[] = [

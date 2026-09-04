@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { AlertTriangle, Bell, LogOut, Settings } from "lucide-react"
+import { AlertTriangle, Bell, LogOut, Settings, ShieldCheck } from "lucide-react"
 
 import { buscar, enviar } from "@/lib/cliente"
 import { cn } from "@/lib/utils"
@@ -22,7 +22,11 @@ const COR: Record<Alerta["severidade"], string> = {
   INFO: "border-pauta bg-papel-2 text-foreground",
 }
 
-export function BarraTopo({ nome }: { nome: string }) {
+/**
+ * `admin` chega do layout, que já leu o banco. Ele controla só o atalho: a
+ * proteção de verdade está na rota, e um atalho escondido nunca foi segurança.
+ */
+export function BarraTopo({ nome, admin }: { nome: string; admin?: boolean }) {
   const router = useRouter()
   const [alertas, setAlertas] = useState<Alerta[]>([])
   const [aberto, setAberto] = useState(false)
@@ -99,6 +103,16 @@ export function BarraTopo({ nome }: { nome: string }) {
             </div>
           )}
         </div>
+
+        {admin && (
+          <Link
+            href="/admin"
+            className="rounded-full border border-pauta p-2.5 transition hover:border-acao/40"
+            aria-label="Administração"
+          >
+            <ShieldCheck className="h-4 w-4" />
+          </Link>
+        )}
 
         <Link
           href="/configuracoes"

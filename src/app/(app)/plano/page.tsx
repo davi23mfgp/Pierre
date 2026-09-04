@@ -6,21 +6,27 @@ import { montarPanorama } from "@/lib/tino/panorama"
 import { compromissosFuturos } from "@/lib/parcelamentos"
 import { montarPlanoPagamento, type AlvoPagamento } from "@/lib/tino/plano-pagamento"
 import { Cartao, Metrica, Vazio } from "@/components/ui/painel"
+import { valoresVigentes } from "@/lib/parametros"
 
 export const dynamic = "force-dynamic"
-
-/// Mesmos patamares usados na rota /api/plano-pagamento.
-const JUROS_PADRAO = { chequeEspecial: 800, rotativo: 1400 }
 
 export default async function Plano() {
   const sessao = await sessaoDaPagina()
   const competencia = competenciaAtual()
 
-  const [panorama, dividas, compromissos] = await Promise.all([
+  const [panorama, dividas, compromissos, parametros] = await Promise.all([
     montarPanorama(sessao.larId, competencia),
     prisma.divida.findMany({ where: { larId: sessao.larId, quitada: false } }),
     compromissosFuturos(sessao.larId, 36),
+    valoresVigentes(),
   ])
+
+  /// Os mesmos patamares que a rota /api/plano-pagamento usa: tela e API leem o
+  /// mesmo parâmetro justamente para não contarem histórias diferentes.
+  const JUROS_PADRAO = {
+    chequeEspecial: parametros["juros.chequeEspecialBps"],
+    rotativo: parametros["juros.rotativoBps"],
+  }
 
   const alvos: AlvoPagamento[] = []
 

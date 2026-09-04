@@ -3,7 +3,8 @@ import type { Metadata } from "next"
 import { ArrowRight, Check, Minus } from "lucide-react"
 
 import { formatarMoeda, formatarPercentual } from "@/lib/dinheiro"
-import { DIAS_DE_TESTE, PLANOS, descontoAnualBps } from "@/lib/planos"
+import { descontoAnualBps } from "@/lib/planos"
+import { diasDeTesteVigentes, planosVigentes } from "@/lib/parametros"
 import { TinoMascote } from "@/components/tino-mascote"
 
 export const metadata: Metadata = {
@@ -46,7 +47,20 @@ const PERGUNTAS = [
   },
 ]
 
-export default function Vitrine() {
+/**
+ * Preço lido do banco a cada visita, e não congelado no build.
+ *
+ * O admin edita o preço sem deploy; se esta página guardasse o valor do build,
+ * a propaganda continuaria anunciando o preço velho até o próximo commit — e
+ * anunciar um valor e cobrar outro é a pior forma de começar uma relação
+ * comercial. Se o banco não responder, `planosVigentes` devolve o padrão do
+ * código e a página continua de pé.
+ */
+export const dynamic = "force-dynamic"
+
+export default async function Vitrine() {
+  const [PLANOS, DIAS_DE_TESTE] = await Promise.all([planosVigentes(), diasDeTesteVigentes()])
+
   return (
     <main>
       {/* ── O que o produto faz, mostrado em vez de prometido ── */}
