@@ -69,3 +69,15 @@ Detalhes em `docs/AMBIENTE.md`. O `.env` não está no repositório.
 - Já disse: **não vai usar Open Finance**. O código fica, mas fora do menu.
 - Já disse: por enquanto, esqueça Telegram, PDF de fatura e integração com
   modelo de linguagem. O foco é cálculo e análise.
+
+## Autonomia e trabalho visual (pedido em 2026-09-04)
+
+- Trabalhar de forma autônoma: usar as skills disponíveis para decidir a
+  abordagem sem parar para perguntar o óbvio, e trocar de modelo (ex.: um
+  modelo mais forte para desenho de arquitetura/decisão complexa, o padrão
+  da sessão para execução mecânica) quando a tarefa pedir.
+- Parte visual: usar os componentes de shadcn/ui
+  (https://ui.shadcn.com/docs/components) como base, a skill `frontend-design`
+  para direção visual, e `find-skills` quando faltar skill para o caso.
+- Registrar aqui qualquer instrução nova de escopo permanente, para não
+  precisar repetir a cada sessão.
