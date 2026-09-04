@@ -14,8 +14,14 @@
    isso positivo é azul e não verde — e porque verde de fintech já
    é o que todo mundo faz.
 
-   A ação (botão, link) é a própria tinta: quase preta. Deixa a cor
-   sobrar para o que informa, em vez de gastar em decoração.
+   A ação (botão, link, foco) é o azul do iOS. Vem de fora, do
+   sistema operacional em que este app é usado: no celular, azul
+   cheio é o que a pessoa já leu a vida inteira como "isto se
+   toca". Convive com o azul do positivo porque os dois estão em
+   lugares diferentes da escala — a ação é clara e saturada, o
+   valor é fundo e contido — e porque nunca disputam o mesmo
+   pedaço da tela: um é preenchimento de botão, o outro é
+   algarismo.
    ============================================================ */
 
 @layer base {
@@ -33,7 +39,13 @@
     --muted-fg: oklch(0.485 0.018 258);
 
     /* --- cores que informam --- */
-    --lch-acao: 0.29 0.045 262;
+    /* O azul de sistema do iOS, um degrau mais escuro que o #007AFF. O tom
+       da Apple sobre branco dá 3,6:1, e aqui ele também vira TEXTO de 12px
+       ("Avalanche: paga primeiro o juro mais alto", rótulo de pílula
+       selecionada), não só preenchimento de botão. Escurecer até 4,8:1 põe
+       no critério de AA sem sair do azul que o iOS ensinou a ler como
+       "isto se toca". */
+    --lch-acao: 0.5 0.19 258;
     --lch-positivo: 0.49 0.13 248;
     --lch-negativo: 0.52 0.18 26;
     --lch-atencao: 0.6 0.13 66;
@@ -46,7 +58,9 @@
     --card-foreground: 258 22% 14%;
     --popover: 0 0% 100%;
     --popover-foreground: 258 22% 14%;
-    --primary: 258 30% 18%;
+    /* Mesmo azul da ação, aqui como preenchimento de botão: o branco por cima
+       precisa dos 4,5:1 que o #007AFF não dá. */
+    --primary: 211 100% 44%;
     --primary-foreground: 0 0% 100%;
     --secondary: 255 14% 94%;
     --secondary-foreground: 258 20% 22%;
@@ -58,9 +72,11 @@
     --destructive-foreground: 0 0% 100%;
     --border: 255 12% 87%;
     --input: 255 12% 84%;
-    --ring: 248 45% 45%;
+    --ring: 211 100% 50%;
 
-    --radius: 12px;
+    /* 14px: o raio de cartão do iOS. Abaixo disso a tela endurece, acima
+       vira bolha e o cartão perde o canto que o olho usa pra alinhar. */
+    --radius: 14px;
 
     /* Sombra de papel sobre papel: curta e sem borrão. */
     --sombra-ficha: 0 1px 2px oklch(0.22 0.03 258 / 6%), 0 6px 18px oklch(0.22 0.03 258 / 5%);
@@ -80,7 +96,9 @@
     --pauta: oklch(1 0 0 / 11%);
     --muted-fg: oklch(0.7 0.015 258);
 
-    --lch-acao: 0.95 0.01 258;
+    /* #0A84FF: o iOS clareia o azul no escuro em vez de reusar o mesmo tom.
+       O #007AFF sobre grafite perde contraste e o botão afunda no fundo. */
+    --lch-acao: 0.645 0.185 258;
     --lch-positivo: 0.76 0.13 246;
     --lch-negativo: 0.7 0.17 26;
     --lch-atencao: 0.78 0.14 70;
@@ -92,8 +110,11 @@
     --card-foreground: 0 0% 96%;
     --popover: 258 16% 15%;
     --popover-foreground: 0 0% 96%;
-    --primary: 0 0% 96%;
-    --primary-foreground: 258 22% 14%;
+    /* No escuro o botão sobe dois pontos de luz — precisa se separar do
+       grafite — mas não os quatro do #0A84FF, que devolveria o rótulo branco
+       a 3,7:1. Aqui dá 4,6:1 no texto e 4,1:1 contra o fundo. */
+    --primary: 211 100% 46%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 258 12% 22%;
     --secondary-foreground: 0 0% 96%;
     --muted: 258 12% 21%;
@@ -104,7 +125,7 @@
     --destructive-foreground: 258 22% 14%;
     --border: 258 10% 27%;
     --input: 258 10% 30%;
-    --ring: 246 60% 70%;
+    --ring: 211 100% 62%;
 
     --sombra-ficha: 0 1px 2px oklch(0 0 0 / 40%), 0 8px 24px oklch(0 0 0 / 30%);
     --sombra-alta: 0 10px 32px oklch(0 0 0 / 55%), 0 2px 8px oklch(0 0 0 / 35%);
@@ -144,12 +165,16 @@
     letter-spacing: -0.022em;
   }
 
+  /* Seleção e foco falam da mesma coisa — "o sistema está te respondendo" —
+     então usam a cor da ação, não a do saldo positivo. Antes um campo em foco
+     ficava com a mesma borda azul que um valor no azul, e a tela dizia duas
+     coisas diferentes com uma cor só. */
   ::selection {
-    background: oklch(var(--lch-positivo) / 22%);
+    background: oklch(var(--lch-acao) / 22%);
   }
 
   :focus-visible {
-    outline: 2px solid oklch(var(--lch-positivo));
+    outline: 2px solid oklch(var(--lch-acao));
     outline-offset: 2px;
   }
 }
@@ -157,12 +182,18 @@
 @layer components {
   /* A ficha: o cartão do livro-caixa.
      A pauta no topo é o único enfeite do sistema — e é o que dá à tela
-     a cara de papel pautado em vez de painel de aplicativo. */
+     a cara de papel pautado em vez de painel de aplicativo.
+
+     Ela encolheu de 2px para 1px e perdeu metade da opacidade quando o resto
+     foi para a linguagem do iOS: numa tela com seis fichas empilhadas, seis
+     barras coloridas viram listra, e superfície do iOS é lisa. O traço fica
+     porque é a assinatura da casa; fica fino porque parou de ser o que se vê
+     primeiro. */
   .ficha {
     position: relative;
     background: var(--papel-1);
     border: 1px solid var(--pauta);
-    border-radius: 14px;
+    border-radius: 16px;
     box-shadow: var(--sombra-ficha);
     overflow: hidden;
   }
@@ -171,8 +202,8 @@
     content: "";
     position: absolute;
     inset: 0 0 auto 0;
-    height: 2px;
-    background: linear-gradient(90deg, oklch(var(--lch-positivo) / 55%), transparent 62%);
+    height: 1px;
+    background: linear-gradient(90deg, oklch(var(--lch-positivo) / 28%), transparent 62%);
   }
 
   .toque {
