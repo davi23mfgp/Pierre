@@ -4,9 +4,12 @@ import { useEffect, useState } from "react"
 
 import { useRouter } from "next/navigation"
 
+import Link from "next/link"
+
 import { buscar, enviar } from "@/lib/cliente"
 import { formatarMoeda, paraCentavos } from "@/lib/dinheiro"
 import { Cartao, Vazio } from "@/components/ui/painel"
+import { RelatarProblema } from "@/components/relatar-problema"
 
 interface Conta {
   id: string
@@ -122,6 +125,18 @@ export default function Configuracoes() {
 
   return (
     <div className="space-y-4">
+      <Cartao titulo="Assinatura">
+        <p className="text-[13px] leading-relaxed text-muted-fg">
+          Plano contratado, situação do pagamento, próxima cobrança e cancelamento ficam numa tela só.
+        </p>
+        <Link
+          href="/assinatura"
+          className="mt-3 inline-block rounded-full border border-pauta px-5 py-2.5 text-[13px] transition-colors hover:border-acao/40"
+        >
+          Ver minha assinatura
+        </Link>
+      </Cartao>
+
       <Cartao titulo="O que o Tino cuida">
         <p className="text-[13px] leading-relaxed text-muted-fg">
           {temLoja
@@ -285,6 +300,8 @@ export default function Configuracoes() {
 
         {mensagem && <p className="mt-3 text-sm text-muted-fg">{mensagem}</p>}
       </Cartao>
+
+      <RelatarProblema />
     </div>
   )
 }

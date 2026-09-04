@@ -35,7 +35,7 @@ const numero = IBM_Plex_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Tino — seu contador pessoal",
+  title: "Tino, seu contador pessoal",
   description:
     "Organize contas, dívidas e metas em um lugar só. Projeção de caixa, plano de pagamento e ajuda para decidir empréstimo. Para pessoa física e MEI.",
   manifest: "/manifest.webmanifest",

@@ -10,10 +10,15 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
   const sessao = await getSessao()
   if (!sessao) redirect("/login")
 
-  const lar = await prisma.lar.findUnique({
-    where: { id: sessao.larId },
-    select: { onboardingEm: true, meiPerfil: { select: { id: true } } },
-  })
+  const [lar, usuario] = await Promise.all([
+    prisma.lar.findUnique({
+      where: { id: sessao.larId },
+      select: { onboardingEm: true, meiPerfil: { select: { id: true } } },
+    }),
+    // O papel vem do banco, não do token: o token vale 30 dias, e tirar o papel
+    // de alguém precisa valer no próximo clique.
+    prisma.usuario.findUnique({ where: { id: sessao.usuarioId }, select: { admin: true } }),
+  ])
 
   // Lar apagado com token ainda válido: manda para o login em vez de estourar.
   // A mesma checagem existe em `sessaoDaPagina`, porque o Next renderiza layout
@@ -29,7 +34,7 @@ export default async function LayoutApp({ children }: { children: React.ReactNod
       <Navegacao mei={Boolean(lar.meiPerfil)} />
 
       <div className="mx-auto w-full max-w-6xl px-4 pb-28 md:pb-10">
-        <BarraTopo nome={sessao.nome} />
+        <BarraTopo nome={sessao.nome} admin={usuario?.admin ?? false} />
         <main className="animate-page-enter">{children}</main>
       </div>
 

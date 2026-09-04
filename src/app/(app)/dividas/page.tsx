@@ -224,7 +224,7 @@ export default function Dividas() {
         <Cartao titulo="Qual estratégia sai mais barata">
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl border border-acao/40 bg-acao/10 p-4">
-              <p className="text-[13px] font-medium text-acao">Avalanche — maior juro primeiro</p>
+              <p className="text-[13px] font-medium text-acao">Avalanche: paga primeiro o juro mais alto</p>
               <p className="mt-1.5 text-[20px] font-semibold">{comparativo.avalanche.meses} meses</p>
               <p className="text-[12px] text-muted-fg">
                 {formatarMoeda(comparativo.avalanche.totalJurosCentavos)} de juros
@@ -232,7 +232,7 @@ export default function Dividas() {
             </div>
 
             <div className="rounded-2xl border border-pauta p-4">
-              <p className="text-[13px] font-medium">Bola de neve — menor saldo primeiro</p>
+              <p className="text-[13px] font-medium">Bola de neve: paga primeiro o menor saldo</p>
               <p className="mt-1.5 text-[20px] font-semibold">{comparativo.bolaDeNeve.meses} meses</p>
               <p className="text-[12px] text-muted-fg">
                 {formatarMoeda(comparativo.bolaDeNeve.totalJurosCentavos)} de juros

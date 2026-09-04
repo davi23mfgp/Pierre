@@ -82,10 +82,10 @@ export default async function Metas() {
                 </p>
                 {meta.dataAlvo && (
                   <p className={projecao.noPrazo ? "text-positivo" : "text-atencao"}>
-                    Alvo: {formatarData(meta.dataAlvo)} —{" "}
+                    Alvo: {formatarData(meta.dataAlvo)}.{" "}
                     {projecao.noPrazo
-                      ? "está no prazo"
-                      : `precisaria de ${formatarMoeda(projecao.aporteNecessarioCentavos)}/mês`}
+                      ? "Está no prazo"
+                      : `Precisaria de ${formatarMoeda(projecao.aporteNecessarioCentavos)}/mês`}
                   </p>
                 )}
                 {projecao.dataPrevista && !meta.dataAlvo && (

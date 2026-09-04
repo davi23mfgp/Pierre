@@ -281,7 +281,7 @@ export default function BemVindo() {
                     <input
                       value={conta.jurosChequeEspecial}
                       onChange={(e) => atualizar(setContas, indice, { jurosChequeEspecial: e.target.value })}
-                      placeholder="8,0 — está no seu extrato ou no app do banco"
+                      placeholder="8,0, veja no seu extrato ou no app do banco"
                       className={campo}
                       inputMode="decimal"
                     />
